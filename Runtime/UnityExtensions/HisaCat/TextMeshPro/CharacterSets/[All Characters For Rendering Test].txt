@@ -1,0 +1,249 @@
+All characters for rendering test
+(Except ko_KR, ja_JP, zh_CN, zh_TW because too many)
+
+Afrikaans (af_ZA)
+Die wêreld is vol verrassings.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á â è ê ë î ï ô û
+
+Arabic (ar_SA)
+العالم مليء بالمفاجآت.
+ء آ أ ؤ إ ئ ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي
+ى
+
+Basque (eu_ES)
+Euskara hizkuntza zoragarria da.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ñ ç
+
+Belarusian (be_BY)
+Свет поўны сюрпрызаў.
+АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ
+абвгдеёжзийклмнопрстуфхцчшщъыьэюя
+Ґґ Іі Ўў
+
+Bulgarian (bg_BG)
+Светът е пълен с изненади.
+АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ
+абвгдежзийклмнопрстуфхцчшщъыьэюя
+
+Catalan (ca_ES)
+El món està ple de sorpreses.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+à ç é í ò ó ú ï ü
+·
+
+Czech (cs_CZ)
+Svět je plný překvapení.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á č ď é ě í ň ó ř š ť ú ů ý ž
+
+Danish (da_DK)
+Svět je plný překvapení.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+æ ø å
+
+Dutch (nl_NL)
+De wereld zit vol verrassingen.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á à é è ë ï í ó ò ö ú ù ü
+‘ ’
+
+English (en_US)
+The world is full of surprises.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+‘ ’ “ ”
+
+Estonian (et_EE)
+Maailm on täis üllatusi.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ä ö õ ü
+
+Faroese (fo_FO)
+Heimurin er fullur av yvirraskilsi.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á í ó ú ý æ ø
+
+Finnish (fi_FI)
+Maailma on täynnä yllätyksiä.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ä å ö
+
+French (fr_FR)
+Le monde est plein de surprises.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+à â ä é è ê ë î ï ô ù û ü ÿ ç
+’
+
+German (de_DE)
+Die Welt ist voller Überraschungen.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ä ö ü ß
+
+Greek (el_GR)
+Die Welt ist voller Überraschungen.
+ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
+αβγδεζηθικλμνξοπρσςτυφχψω
+Ά Έ Ή Ί Ό Ύ Ώ ά έ ή ί ϊ ΐ ό ύ ϋ ΰ ώ
+
+Hebrew (he_IL)
+העולם מלא הפתעות.
+אבגדהוזחטיכלמנסעפצקרשתםןךףץ
+׳ ״
+
+Hungarian (hu_HU)
+A világ tele van meglepetésekkel.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á é í ó ö ő ú ü ű
+
+Icelandic (is_IS)
+Heimurinn er fullur af óvæntum atburðum.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á é í ó ú ý ð þ æ ö
+
+Indonesian (id_ID)
+Dunia penuh kejutan.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+
+Italian (it_IT)
+Il mondo è pieno di sorprese.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+à è é ì í ò ó ù ú
+‘ ’
+
+Japanese (ja_JP)
+世界は驚きで満ちている。
+
+Korean (ko_KR)
+세상은 놀라움으로 가득 차 있다.
+
+Latvian (lv_LV)
+Pasaule ir pilna pārsteigumu.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ā č ē ģ ī ķ ļ ņ š ū ž
+
+Lithuanian (lt_LT)
+Pasaulis pilnas staigmenų.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ą č ę ė į š ų ū ž
+
+Norwegian (no_NO)
+Verden er full av overraskelser.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+æ ø å
+
+Polish (pl_PL)
+Świat jest pełen niespodzianek.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ą ć ę ł ń ó ś ź ż
+
+Portuguese (pt_PT)
+O mundo está cheio de surpresas.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á â ã à ç é ê í ó ô õ ú
+
+Romanian (ro_RO)
+Lumea este plină de surprize.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ă â î ș ț
+
+Russian (ru_RU)
+Мир полон сюрпризов.
+АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ
+абвгдеёжзийклмнопрстуфхцчшщъыьэюя
+
+SerboCroatian (sr_RS)
+Свет је пун изненађења.
+АБВГДЂЕЖЗИЈКЛЉМНОПРСТЋУФХЦЧЏШ
+абвгдђежзијклљмнопрстћуфхцчџш
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+č ć đ š ž
+
+Slovak (sk_SK)
+Svet je plný prekvapení.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á ä č ď é í ľ ĺ ň ó ô ŕ š ť ú ý ž
+
+Slovenian (sl_SI)
+Svet je poln presenečenj.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+č š ž
+
+Spanish (es_ES)
+El mundo está lleno de sorpresas.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+á é í ñ ó ú ü
+
+Swedish (sv_SE)
+Världen är full av överraskningar.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ä å ö
+
+Thai (th_TH)
+โลกเต็มไปด้วยความประหลาดใจ
+ก ข ฃ ค ฅ ฆ ง จ ฉ ช ซ ฌ ญ ฎ ฏ ฐ ฑ ฒ ณ ด ต ถ ท ธ น บ ป ผ ฝ พ ฟ ภ ม ย ร ฤ ล ฦ ว ศ ษ ส ห ฬ อ ฮ
+ะ ั า ำ ิ ี ึ ื ุ ู เ แ โ ใ ไ ๅ ๆ ็ ่ ้ ๊ ๋ ์
+
+Turkish (tr_TR)
+Dünya sürprizlerle dolu.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+ç ğ ı İ ö ş ü
+
+Ukrainian (uk_UA)
+Світ повен сюрпризів.
+АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ
+абвгдеёжзийклмнопрстуфхцчшщъыьэюя
+Ґґ Єє Іі Її
+’
+
+Vietnamese (vi_VN)
+Thế giới đầy bất ngờ.
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+À Á Â Ã È É Ê Ì Í Ò Ó Ô Õ Ù Ú Ă Đ Ĩ Ũ Ơ Ư
+à á â ã è é ê ì í ò ó ô õ ù ú ă đ ĩ ũ ơ ư
+Ạ Ả Ấ Ầ Ẩ Ẫ Ậ Ắ Ằ Ẳ Ẵ Ặ
+Ẹ Ẻ Ẽ Ề Ể Ễ Ệ
+Ị Ỉ Ọ Ỏ Ố Ồ Ổ Ỗ Ộ
+Ớ Ờ Ở Ỡ Ợ
+Ụ Ủ Ứ Ừ Ử Ữ Ự
+
+ChineseSimplified (zh_CN)
+世界充满了惊喜。
+
+ChineseTraditional (zh_TW)
+世界充滿了驚喜。
+
+Hindi (hi_IN)
+दुनिया आश्चर्य से भरी हुई है।
+अ आ इ ई उ ऊ ऋ ए ऐ ओ औ अं अः
+क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न
+प फ ब भ म य र ल व श ष स ह

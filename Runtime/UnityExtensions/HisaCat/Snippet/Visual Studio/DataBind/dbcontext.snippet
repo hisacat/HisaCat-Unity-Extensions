@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DataBind Context</Title>
+			<Shortcut>dbcontext</Shortcut>
+			<Author>HisaCat</Author>
+			<Description>Creates a context.</Description>
+		</Header>
+
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Name</ID>
+					<ToolTip>Replace with the context name.</ToolTip>
+					<Default>My</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="CSharp">
+				<![CDATA[public class $Name$Context : Slash.Unity.DataBind.Core.Data.Context
+{
+    $end$
+}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

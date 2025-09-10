@@ -1,0 +1,22 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.FishNet.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:7803894f88baad044ad5beee3afa77af",
+        "GUID:5c90e57db00be6040affee85ac0bbafe"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FISHNET"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

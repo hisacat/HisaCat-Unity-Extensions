@@ -1,0 +1,87 @@
+{
+    "Unity Singleton Component": {
+        "prefix": "usc",
+        "body": [
+            "#if UNITY_EDITOR",
+            "#pragma warning disable IDE0051",
+            "[UnityEditor.InitializeOnEnterPlayMode]",
+            "private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)",
+            "{",
+            "    if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))",
+            "    {",
+            "        Instance = null;",
+            "    }",
+            "}",
+            "#pragma warning restore IDE0051",
+            "#endif",
+            "",
+            "#region Singleton",
+            "public static ${1:Type} Instance { get; private set; } = null;",
+            "private void Awake()",
+            "{",
+            "    if (Instance != null)",
+            "    {",
+            "        Debug.LogError($\"[{nameof(${1:Type})}] Instance already exists!\");",
+            "        return;",
+            "    }",
+            "",
+            "    Instance = this;",
+            "    Init();",
+            "}",
+            "private void OnDestroy()",
+            "{",
+            "    if (Instance == null)",
+            "    {",
+            "        Instance = null;",
+            "        Dispose();",
+            "    }",
+            "}",
+            "#endregion Singleton",
+            "",
+            "private void Init() { }",
+            "private void Dispose() { }$0"
+        ],
+        "description": "Creates funtions and fields for singleton component."
+    },
+    "SerializeField Property": {
+        "prefix": "sfprop",
+        "body": [
+            "public ${1:Type} ${2:Name} => this.m_${2:Name};",
+            "[SerializeField] private ${1:Type} m_${2:Name} = $0;"
+        ],
+        "description": "Creates a property for a public value and the corresponding SerializeField property."
+    },
+    "Cached component Property": {
+        "prefix": "getcpprop",
+        "body": [
+            "private ${1:Type} ${2:Name}",
+            "{",
+            "    get",
+            "    {",
+            "        if(this.${3:name} == null) this.${3:name} = GetComponent<${1:Type}>();",
+            "        return this.${3:name};",
+            "    }",
+            "}",
+            "private ${1:Type} ${3:name} = null;$0"
+        ],
+        "description": "Creates a property for a cached component using GetComponent<T>."
+    },
+    "OnEnterPlaymodeInEditor Function": {
+        "prefix": "epie",
+        "body": [
+            "#if UNITY_EDITOR",
+            "#pragma warning disable IDE0051",
+            "[UnityEditor.InitializeOnEnterPlayMode]",
+            "private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)",
+            "{",
+            "    if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))",
+            "    {",
+            "        $0",
+            "    }",
+            "}",
+            "#pragma warning restore IDE0051",
+            "#endif"
+        ],
+        "description": "Creates OnEnterPlaymodeInEditor function."
+    }
+}

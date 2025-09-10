@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DataBind ID based Context</Title>
+			<Shortcut>dbidcontext</Shortcut>
+			<Author>HisaCat</Author>
+			<Description>Creates a id based context.</Description>
+		</Header>
+
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Name</ID>
+					<ToolTip>Replace with the context name.</ToolTip>
+					<Default>My</Default>
+				</Literal>
+				<Literal>
+					<ID>IDType</ID>
+					<ToolTip>Replace with the id type.</ToolTip>
+					<Default>int</Default>
+				</Literal>
+				<Literal>
+					<ID>IDName</ID>
+					<ToolTip>Replace with the data name.</ToolTip>
+					<Default>Name</Default>
+				</Literal>
+				<Literal>
+					<ID>idName</ID>
+					<ToolTip>Replace with the data name, but with a lower case first letter.</ToolTip>
+					<Default>name</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="CSharp">
+				<![CDATA[public class $Name$Context : Slash.Unity.DataBind.Core.Data.Context, HisaCat.DataBindEx.ContextEx.Base.IIdContext<$IDType$>
+{
+    $IDType$ HisaCat.DataBindEx.ContextEx.Base.IIdContext<$IDType$>.ContextId { get => $IDName$; set => $IDName$ = value; }
+    public $IDType$ $IDName$ { get { return this.$idName$Property.Value; } set { this.$idName$Property.Value = value; } }
+    private readonly Slash.Unity.DataBind.Core.Data.Property<$IDType$> $idName$Property = new();
+    $end$
+}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

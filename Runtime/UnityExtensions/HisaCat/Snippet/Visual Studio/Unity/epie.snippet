@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>OnEnterPlaymodeInEditor Function</Title>
+			<Shortcut>epie</Shortcut>
+			<Author>HisaCat</Author>
+			<Description>Creates OnEnterPlaymodeInEditor function.</Description>
+		</Header>
+
+		<Snippet>
+			<Code Language="CSharp">
+				<![CDATA[#if UNITY_EDITOR
+#pragma warning disable IDE0051
+[UnityEditor.InitializeOnEnterPlayMode]
+private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
+{
+    if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+    {
+        $end$
+    }
+}
+#pragma warning restore IDE0051
+#endif]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

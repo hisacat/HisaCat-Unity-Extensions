@@ -1,0 +1,28 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.UnityUIExtensions.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:7803894f88baad044ad5beee3afa77af",
+        "GUID:b993a32dc2949ec45a702566ab41fdbd",
+        "GUID:cf414061cae3a954baf92763590f3127",
+        "GUID:c053729641303074282de705dbd4b1b8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.uiextensions",
+            "expression": "",
+            "define": "UNITY_UI_EXTENSIONS"
+        }
+    ],
+    "noEngineReferences": false
+}

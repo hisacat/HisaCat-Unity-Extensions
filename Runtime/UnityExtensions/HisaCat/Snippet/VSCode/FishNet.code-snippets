@@ -1,0 +1,16 @@
+{
+    "FishNet Owner Sync Vars Functions": {
+        "prefix": "ownersync",
+        "body": [
+            "private readonly OwnerSyncVar<${1:Type}> ${2:Name} = new($0, new() { Channel = Channel.Reliable });",
+            "private void Set${2:Name}(${1:Type} value)",
+            "{",
+            "    if (this.ValidateSetOwnerSyncVar() == false) return;",
+            "    if (this.IsServerInitialized) { this.${2:Name}.SetValueFromRpc(value); return; }",
+            "    SetValueRpc(value);",
+            "    [ServerRpc(RunLocally = true, RequireOwnership = false)] void SetValueRpc(${1:Type} value) => this.${2:Name}.SetValueFromRpc(value);",
+            "}"
+        ],
+        "description": "Creates a FishNet functions for value sync var from owner side."
+    }
+}

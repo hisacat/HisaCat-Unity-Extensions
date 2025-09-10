@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DataBind Property</Title>
+			<Shortcut>dbprop</Shortcut>
+			<Author>HisaCat</Author>
+			<Description>Creates a property for a data value and the corresponding data property.</Description>
+		</Header>
+
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Type</ID>
+					<ToolTip>Replace with the data type.</ToolTip>
+					<Default>string</Default>
+				</Literal>
+				<Literal>
+					<ID>Name</ID>
+					<ToolTip>Replace with the data name.</ToolTip>
+					<Default>Name</Default>
+				</Literal>
+				<Literal>
+					<ID>name</ID>
+					<ToolTip>Replace with the data name, but with a lower case first letter.</ToolTip>
+					<Default>name</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="CSharp">
+				<![CDATA[public $Type$ $Name$ { get { return this.$name$Property.Value; } set { this.$name$Property.Value = value; } }
+private readonly Slash.Unity.DataBind.Core.Data.Property<$Type$> $name$Property = new();
+$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

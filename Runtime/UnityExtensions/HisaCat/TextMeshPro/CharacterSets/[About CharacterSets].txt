@@ -1,0 +1,12 @@
+[LatinPlus]
+	* Defaults
+		Commonly used alphabets, Arabic numerals and special characters.
+	* Basic Latin
+		af_ZA, en_US, eu_ES, ca_ES, nl_NL, it_IT, es_ES, pt_PT, no_NO, sv_SE, da_DK, is_IS, fo_FO, fi_FI, fr_FR, de_DE, id_ID
+	* Extended Latin
+		cs_CZ, pl_PL, sk_SK, sl_SI, ro_RO, et_EE, lv_LV, lt_LT, hu_HU, tr_TR
+	* Cyrillic
+		ru_RU, be_BY, uk_UA, sr_RS, bg_BG
+
+[Others]
+	ar_SA, el_GR, he_IL, hi_IN, ja_JP, ko_KR, th_TH, vi_VN, zh_CN, zh_TW
