@@ -26,14 +26,34 @@
   "licensesUrl": "https://github.com/hisacat/HisaCat-Unity-Extensions/blob/main/LICENSE.md",
   "samples": [
     {
+      "displayName": "Window System",
+      "description": "Prefab based UGUI Window system.\r\n- It recommands import Addressables and Input Manager.",
+      "path": "Samples~/WindowSystem"
+    },
+    {
+      "displayName": "Input Manager",
+      "description": "Helper for Input System.\r\n- It requires new Unity Input System.",
+      "path": "Samples~/InputManager"
+    },
+    {
+      "displayName": "I18NFont",
+      "description": "Localized TextMeshPro font features.\r\n- It requires TextMeshPro.\r\n- It recommands import Addressables.",
+      "path": "Samples~/I18NFont"
+    },
+    {
       "displayName": "DataBindEx",
-      "description": "Extensions of Data Bind for Unity\r\nhttps://assetstore.unity.com/packages/tools/gui/data-bind-for-unity-28301",
+      "description": "Extensions of Data Bind for Unity.\r\n- https://assetstore.unity.com/packages/tools/gui/data-bind-for-unity-28301",
       "path": "Samples~/DataBindEx"
     },
     {
       "displayName": "DOTweenEx",
-      "description": "Extensions of DOTween\r\nhttps://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676\r\nhttps://assetstore.unity.com/packages/tools/visual-scripting/dotween-pro-32416",
+      "description": "Extensions of DOTween.\r\n- https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676\r\n- https://assetstore.unity.com/packages/tools/visual-scripting/dotween-pro-32416",
       "path": "Samples~/DOTweenEx"
+    },
+    {
+      "displayName": "SteamworksEx",
+      "description": "Extensions of Steamworks.NET.\r\n- https://github.com/rlabrecque/Steamworks.NET",
+      "path": "Samples~/SteamworksEx"
     }
   ],
   "repository": {
