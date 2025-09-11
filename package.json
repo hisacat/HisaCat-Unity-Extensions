@@ -1,6 +1,6 @@
 {
   "name": "cat.hisa.hisacat-unity-extensions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "HUE: HisaCat's Unity Extensions",
   "description": "A collection of useful unity plugins and scripts",
   "unity": "2020.3",
