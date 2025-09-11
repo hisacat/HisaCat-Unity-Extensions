@@ -7,11 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.2] - 2025-09-11
+## [0.0.2] - 2025-09-12
 
-## Changed
+### Added
+
+- InputActionExtensions: Input system action extensions.
+- AssetLoader: Load assets utilities.
+- I18NFontInitializer: I18NFont initializer.
+- Sample - InputManager: Input management.
+- Sample - WindowSystem: Window system sample.
+
+### Changed
 
 - Optimizing directory structure.
+- Package display name updated.
 
 ## [0.0.1] - 2025-09-11
 
