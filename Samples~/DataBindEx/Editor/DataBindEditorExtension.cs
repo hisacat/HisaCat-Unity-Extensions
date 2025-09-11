@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace HisaCat.DataBindEx.Extensions.Editors
+namespace HisaCat.HUE.DataBindEx.Extensions.Editors
 {
     public class DataBindEditorExtension : Editor
     {

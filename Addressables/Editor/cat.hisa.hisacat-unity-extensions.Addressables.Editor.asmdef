@@ -1,0 +1,28 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.Addressables.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:7803894f88baad044ad5beee3afa77af",
+        "GUID:9f7b666c571d58c47b2b1c035bb8c3be",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "",
+            "define": "HUE_UNITY_ADDRESSABLES"
+        }
+    ],
+    "noEngineReferences": false
+}

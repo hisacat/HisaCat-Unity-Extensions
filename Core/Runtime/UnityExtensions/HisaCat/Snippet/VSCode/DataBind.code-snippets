@@ -1,0 +1,63 @@
+{
+    "DataBind Property": {
+        "prefix": "dbprop",
+        "body": [
+            "public ${1:Type} ${2:Name} { get { return this.${3:name}Property.Value; } set { this.${3:name}Property.Value = value; } }",
+            "private readonly Slash.Unity.DataBind.Core.Data.Property<${1:Type}> ${3:name}Property = new();",
+            "$0"
+        ],
+        "description": "Creates a property for a data value and the corresponding data property."
+    },
+    "DataBind ID based Context": {
+        "prefix": "dbidcontext",
+        "body": [
+            "public class ${1:Name}Context : Slash.Unity.DataBind.Core.Data.Context, HisaCat.HUE.DataBindEx.ContextEx.Base.IIdContext<${2:IDType}>",
+            "{",
+            "    ${2:IDType} HisaCat.HUE.DataBindEx.ContextEx.Base.IIdContext<${2:IDType}>.ContextId { get => ${3:IDName}; set => ${3:IDName} = value; }",
+            "    public ${2:IDType} ${3:IDName} { get { return this.${4:idName}Property.Value; } set { this.${4:idName}Property.Value = value; } }",
+            "    private readonly Slash.Unity.DataBind.Core.Data.Property<${2:IDType}> ${4:idName}Property = new();",
+            "    $0",
+            "}"
+        ],
+        "description": "Creates a id based context."
+    },
+    "DataBind ID based Collection Context": {
+        "prefix": "dbidcollection",
+        "body": [
+            "public class ${1:Name}CollectionContext : HisaCat.HUE.DataBindEx.ContextEx.Base.IdCollectionContextBase<${2:ContextType}, ${3:IDType}>",
+            "{",
+            "    $0",
+            "}"
+        ],
+        "description": "Creates a id based collection context."
+    },
+    "DataBind Context": {
+        "prefix": "dbcontext",
+        "body": [
+            "public class ${1:Name}Context : Slash.Unity.DataBind.Core.Data.Context",
+            "{",
+            "    $0",
+            "}"
+        ],
+        "description": "Creates a context."
+    },
+    "DataBind Collection Property": {
+        "prefix": "dbcollprop",
+        "body": [
+            "public Slash.Unity.DataBind.Core.Data.Collection<${1:Type}> ${2:Name} { get { return this.${3:name}Property.Value; } set { this.${3:name}Property.Value = value; } }",
+            "private readonly Slash.Unity.DataBind.Core.Data.Property<Slash.Unity.DataBind.Core.Data.Collection<${1:Type}>> ${3:name}Property = new();",
+            "$0"
+        ],
+        "description": "Creates a collection property for a data value and the corresponding collection data property."
+    },
+    "DataBind Collection Context": {
+        "prefix": "dbcoll",
+        "body": [
+            "public class ${1:Name}CollectionContext  : HisaCat.HUE.DataBindEx.ContextEx.Base.CollectionContextBase<${2:ContextType}>",
+            "{",
+            "    $0",
+            "}"
+        ],
+        "description": "Creates a collection context."
+    }
+}

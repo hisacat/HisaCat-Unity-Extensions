@@ -1,11 +1,10 @@
 {
-    "name": "cat.hisa.hisacat-unity-extensions.FishNet.Editor",
+    "name": "cat.hisa.hisacat-unity-extensions.DOTweenEx.Editor",
     "rootNamespace": "",
     "references": [
         "GUID:a5688c3073f6b82439535ca7ee3f04b1",
         "GUID:7803894f88baad044ad5beee3afa77af",
-        "GUID:5c90e57db00be6040affee85ac0bbafe",
-        "GUID:7c88a4a7926ee5145ad2dfa06f454c67"
+        "GUID:2751b92e901edd749b0c95afe19f2199"
     ],
     "includePlatforms": [
         "Editor"
@@ -15,9 +14,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "FISHNET"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

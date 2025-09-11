@@ -1,9 +1,8 @@
 {
-    "name": "cat.hisa.hisacat-unity-extensions.FishNet",
+    "name": "cat.hisa.hisacat-unity-extensions.DOTweenEx",
     "rootNamespace": "",
     "references": [
-        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
-        "GUID:7c88a4a7926ee5145ad2dfa06f454c67"
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -11,9 +10,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "FISHNET"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

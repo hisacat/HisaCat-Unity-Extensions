@@ -1,9 +1,9 @@
 {
-    "name": "cat.hisa.hisacat-unity-extensions.FishNet",
+    "name": "cat.hisa.hisacat-unity-extensions.InputSystem",
     "rootNamespace": "",
     "references": [
         "GUID:a5688c3073f6b82439535ca7ee3f04b1",
-        "GUID:7c88a4a7926ee5145ad2dfa06f454c67"
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,8 +12,14 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "FISHNET"
+        "HUE_UNITY_INPUTSYSTEM"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "",
+            "define": "HUE_UNITY_INPUTSYSTEM"
+        }
+    ],
     "noEngineReferences": false
 }
