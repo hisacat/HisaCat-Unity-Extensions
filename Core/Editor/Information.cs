@@ -4,32 +4,16 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace HisaCat
+namespace HisaCat.HUE
 {
     public static class Information
     {
-        private static bool assetDatabaseRefreshed = false;
-        [InitializeOnLoadMethod]
-        public static void InitializeOnLoad()
-        {
-            assetDatabaseRefreshed = false;
-        }
-
         public const string PackageManifestGUID = "9a1dabbf651a5c644bd0a3c5992786c3";
         private static PackageManifest _packageManifest = null;
         public static bool GetPackageManifest(out PackageManifest packageManifest)
         {
             if (_packageManifest == null)
             {
-                // This method can be called from InitializeOnLoadMethod (ScriptingDefines.cs)
-                // When the package is first loaded, the package manifest may not be loaded yet
-                // So we manually refresh the asset database once to ensure it's available
-                if (assetDatabaseRefreshed == false)
-                {
-                    AssetDatabase.Refresh();
-                    assetDatabaseRefreshed = true;
-                }
-
                 _packageManifest = AssetDatabase.LoadAssetByGUID<PackageManifest>(new GUID(PackageManifestGUID));
                 if (_packageManifest == null) Debug.LogError("Package manifest not found");
             }

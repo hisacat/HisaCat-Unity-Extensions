@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace HisaCat
+namespace HisaCat.HUE
 {
     internal static class ScriptingDefines
     {
@@ -34,7 +34,7 @@ namespace HisaCat
             if (addedDefineList.Count > 0)
             {
                 Debug.Log(
-                    $"{Information.GetDisplayName()} defines added within player settings."
+                    $"{nameof(HUE)}: defines added within player settings."
                     + $"\r\n {string.Join("\r\n", addedDefineList.ToArray().Select(e => $"- {e}"))}");
             }
         }
