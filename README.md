@@ -39,6 +39,12 @@ Also, you can refer to the following official documents:
 
 ---
 
+## Via Hard-Link
+
+:construction: Work in progress.
+
+---
+
 ## Via Git Subtree
 
 For contributors, you can use Git Subtree to install this package in your local repository.  
