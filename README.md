@@ -65,7 +65,7 @@ git push hue hue-split:develop
 
 3. Add push & pull aliases
 ```bash
-git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop --rejoin'
+git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop'
 git config alias.huepush 'subtree push --prefix=Packages/HisaCat-Unity-Extensions hue develop'
 ```
 
