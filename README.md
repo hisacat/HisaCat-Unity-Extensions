@@ -52,6 +52,7 @@ After this, you can **push** your commits or **pull** this repository from your 
 
 1. Install subtree
 ```bash
+git checkout 
 git remote add hue git@github.com:hisacat/HisaCat-Unity-Extensions.git
 git subtree add --prefix=Packages/HisaCat-Unity-Extensions hue develop
 ```
@@ -65,7 +66,7 @@ git push hue hue-split:develop
 3. Add push & pull aliases
 ```bash
 git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop --rejoin'
-git config alias.huepush '!sh -c "git subtree split --prefix=Packages/HisaCat-Unity-Extensions --onto hue-split -b hue-split >/dev/null && git push hue hue-split:develop"'
+git config alias.huepush 'subtree push --prefix=Packages/HisaCat-Unity-Extensions hue develop'
 ```
 
 ### Usage
