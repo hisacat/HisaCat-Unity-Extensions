@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace HisaCat.UI
+namespace HisaCat.HUE.UI
 {
     [RequireComponent(typeof(Button))]
     public class ButtonHoldingExtension : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler

@@ -5,7 +5,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-namespace HisaCat.Fonts
+namespace HisaCat.HUE.Fonts
 {
     [CustomEditor(typeof(I18NFontDataAsset), true)]
     public class I18NFontDataAssetEditor : Editor

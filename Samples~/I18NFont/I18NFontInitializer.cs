@@ -1,7 +1,7 @@
 using HisaCat.PropertyAttributes;
 using UnityEngine;
 
-namespace HisaCat.Fonts
+namespace HisaCat.HUE.Fonts
 {
     public class I18NFontInitializer : MonoBehaviour
     {

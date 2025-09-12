@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HisaCat.Fonts
+namespace HisaCat.HUE.Fonts
 {
     [CreateAssetMenu(fileName = "I18NFontDataListAsset", menuName = "HisaCat/I18NFontDataListAsset", order = 1)]
     public class I18NFontDataListAsset : ScriptableObject

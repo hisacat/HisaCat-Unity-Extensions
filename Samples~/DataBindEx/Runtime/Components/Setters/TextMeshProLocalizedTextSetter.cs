@@ -1,5 +1,6 @@
-namespace HisaCat.Localization.DataBind.Setters
+namespace HisaCat.HUE.DataBindEx.Setters
 {
+    using HisaCat.Localization;
     using Slash.Unity.DataBind.Core.Presentation;
     using Slash.Unity.DataBind.Foundation.Setters;
     using UnityEngine;

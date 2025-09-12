@@ -1,5 +1,6 @@
-namespace HisaCat.UI.DataBind
+namespace HisaCat.HUE.DataBindEx.Commands
 {
+    using HisaCat.HUE.UI;
     using Slash.Unity.DataBind.UI.Unity.Commands;
     using UnityEngine;
     using UnityEngine.Events;

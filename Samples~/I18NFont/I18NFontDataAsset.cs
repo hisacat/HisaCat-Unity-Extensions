@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace HisaCat.Fonts
+namespace HisaCat.HUE.Fonts
 {
     [CreateAssetMenu(fileName = "I18NFontAsset", menuName = "HisaCat/I18NFontDataAsset", order = 2)]
     public class I18NFontDataAsset : ScriptableObject

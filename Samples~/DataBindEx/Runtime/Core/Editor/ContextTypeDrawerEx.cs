@@ -1,12 +1,11 @@
 using Slash.Unity.DataBind.Editor.PropertyDrawers;
+using Slash.Unity.DataBind.Core.Utils;
+using Slash.Unity.DataBind.Editor.Utils;
+using UnityEditor;
+using UnityEngine;
 
 namespace HisaCat.HUE.DataBindEx.Editors
 {
-    using Slash.Unity.DataBind.Core.Utils;
-    using Slash.Unity.DataBind.Editor.Utils;
-    using UnityEditor;
-    using UnityEngine;
-
     [CustomPropertyDrawer(typeof(ContextTypeAttribute))]
     public class ContextTypeDrawerEx : ContextTypeDrawer
     {

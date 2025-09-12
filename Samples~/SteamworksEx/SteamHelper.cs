@@ -2,7 +2,7 @@
 using Steamworks;
 using UnityEngine;
 
-namespace HisaCat.Steamworks
+namespace HisaCat.HUE.Steamworks
 {
     // Steamworks의 사용법에 관해서는 아래 링크 참고:
     // https://github.com/rlabrecque/Steamworks.NET-Test/tree/master

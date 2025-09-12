@@ -1,9 +1,7 @@
-using HisaCat.HUE.Assets;
 using HisaCat.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.InputSystem;
 
 namespace HisaCat.HUE.UI.Windows
 {

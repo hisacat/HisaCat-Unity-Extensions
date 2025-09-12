@@ -1,5 +1,6 @@
-namespace HisaCat.Localization.DataBind
+namespace HisaCat.HUE.DataBindEx.Providers
 {
+    using HisaCat.Localization;
     using Slash.Unity.DataBind.Core.Presentation;
     using UnityEngine;
 

@@ -1,4 +1,4 @@
-namespace HisaCat.HUE.DataBindEx.UI.Unity.Setters
+namespace HisaCat.HUE.DataBindEx.Setters
 {
     using Slash.Unity.DataBind.Foundation.Setters;
     using UnityEngine;

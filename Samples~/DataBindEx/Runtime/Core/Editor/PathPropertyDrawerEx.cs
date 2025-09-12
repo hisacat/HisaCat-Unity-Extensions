@@ -1,11 +1,10 @@
 using Slash.Unity.DataBind.Editor.PropertyDrawers;
+using Slash.Unity.DataBind.Core.Utils;
+using UnityEditor;
+using UnityEngine;
 
 namespace HisaCat.HUE.DataBindEx.Editors
 {
-    using Slash.Unity.DataBind.Core.Utils;
-    using UnityEditor;
-    using UnityEngine;
-
     [CustomPropertyDrawer(typeof(ContextPathAttribute))]
     public class PathPropertyDrawerEx : PathPropertyDrawer
     {

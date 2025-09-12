@@ -1,11 +1,12 @@
 #if true && (UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_5 || UNITY_2017_1_OR_NEWER) // MODULE_MARKER
+using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using HisaCat.SpriteEx;
 using UnityEngine;
 
 #pragma warning disable 1591
-namespace DG.Tweening
+namespace HisaCat.HUE.DOTweenEx
 {
     public static class DOTweenModuleSpriteEx
     {
