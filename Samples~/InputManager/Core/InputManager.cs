@@ -36,6 +36,7 @@ namespace HisaCat.HUE.Inputs
         private string DefaultControlScheme => this.defaultInputActions.KeyboardMouseScheme.name;
         public InputDevice LastInputDevice { get; private set; } = null;
         public string LastControlScheme { get; private set; } = null;
+
         private void Awake()
         {
             if (Instance != null)
