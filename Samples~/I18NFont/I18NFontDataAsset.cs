@@ -9,6 +9,27 @@ namespace HisaCat.HUE.Fonts
     [CreateAssetMenu(fileName = "I18NFontAsset", menuName = "HisaCat/I18NFontDataAsset", order = 2)]
     public class I18NFontDataAsset : ScriptableObject
     {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
+        [UnityEditor.InitializeOnEnterPlayMode]
+        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
+        {
+            // This is ScriptableObject so isInitialized field is doe not reset to default value even it is not static.
+            // So we need to reset it manually on Editor Environment.
+            var assetGUIDs = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(I18NFontDataAsset)}");
+            foreach (var assetGUID in assetGUIDs)
+            {
+                var assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(assetGUID);
+                var i18nFontDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<I18NFontDataAsset>(assetPath);
+                if (i18nFontDataAsset == null) continue;
+
+                i18nFontDataAsset.ResetInitializedFlag();
+            }
+        }
+        public void ResetInitializedFlag() => this.isInitialized = false;
+#pragma warning restore IDE0051
+#endif
+
         private bool isInitialized = false;
         public void Initialize()
         {
@@ -19,7 +40,7 @@ namespace HisaCat.HUE.Fonts
             }
 
             LocalizationManager.OnLanguageChanged += OnLanguageChanged;
-            
+
             UpdateBaseFontFallbacks(LocalizationManager.SelectedLanguage);
             this.isInitialized = true;
         }
