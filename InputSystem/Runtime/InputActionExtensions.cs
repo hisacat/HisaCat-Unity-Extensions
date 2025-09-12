@@ -12,4 +12,14 @@ namespace HisaCat.HUE.Inputs.Extensions
         public static bool GetButtonUp(this InputAction inputAction)
             => inputAction.WasReleasedThisFrame();
     }
+
+    public static class InputActionCallbackContextExtensions
+    {
+        public static bool GetButtonDown(this InputAction.CallbackContext ctx)
+            => ctx.ReadValue<float>() > 0f;
+        public static bool GetButton(this InputAction.CallbackContext ctx)
+            => ctx.ReadValue<float>() > 0f;
+        public static bool GetButtonUp(this InputAction.CallbackContext ctx)
+            => ctx.ReadValue<float>() > 0f;
+    }
 }
