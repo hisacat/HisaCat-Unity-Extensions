@@ -1,4 +1,3 @@
-using HisaCat.HUE.Inputs.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -32,8 +31,6 @@ namespace HisaCat.HUE.Inputs
 
         [SerializeField] private InputSystemUIInputModule m_InputSystemUIInputModule;
         public InputSystemUIInputModule InputSystemUIInputModule { get => this.m_InputSystemUIInputModule; }
-
-        private DefaultInputActions defaultInputActions;
 
         private System.IDisposable onAnyButtonPressHandler = null;
         private string DefaultControlScheme => this.defaultInputActions.KeyboardMouseScheme.name;
