@@ -39,12 +39,6 @@ Also, you can refer to the following official documents:
 
 ---
 
-## Via Hard-Link
-
-:construction: Work in progress.
-
----
-
 ## Via Git Subtree
 
 For contributors, you can use Git Subtree to install this package in your local repository.  
@@ -56,27 +50,32 @@ After this, you can **push** your commits or **pull** this repository from your 
 
 ### Procedure
 
-1. Install subtree
+**Performance Note**: As the number of commits increases after subtree installation, push operations become significantly slower due to Git subtree's nature of processing the entire commit history.  
+To maintain optimal performance when making changes to this repository, we recommend reinstalling the subtree before committing and pushing changes. The `huepull` alias below implements this approach automatically.
+
+1. Add subtree remote
 ```bash
 git remote add hue git@github.com:hisacat/HisaCat-Unity-Extensions.git
-git subtree add --prefix=Packages/HisaCat-Unity-Extensions hue develop
 ```
 
 2. Add push & pull aliases
 ```bash
-git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop'
+git config alias.huepull '!git fetch hue && git rm -r Packages/HisaCat-Unity-Extensions && git commit -m "chore: remove subtree package for re-install" && git subtree add --prefix=Packages/HisaCat-Unity-Extensions hue develop'
+# Option - Just pull without re-installing:
+# git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop
 git config alias.huepush 'subtree push --prefix=Packages/HisaCat-Unity-Extensions hue develop'
 ```
 
 ### Usage
 
+Pull
+```bash
+git huepull
+```
+
 Push:
 ```bash
 git huepush
-```
-Pull:
-```bash
-git huepull
 ```
 
 ### Remove
