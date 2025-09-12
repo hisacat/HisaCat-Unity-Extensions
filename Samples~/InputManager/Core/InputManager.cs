@@ -47,7 +47,7 @@ namespace HisaCat.HUE.Inputs
             }
 
             // Initialize input action
-            this.defaultInputActions = new DefaultInputActions();
+            this.CreateInputActions();
 
             // Initialize & Caching last control scheme
             this.LastControlScheme = this.DefaultControlScheme;

@@ -10,5 +10,7 @@ namespace HisaCat.HUE.Inputs
     public partial class InputManager : MonoBehaviour
     {
         private DefaultInputActions defaultInputActions;
+
+        private void CreateInputActions() => this.defaultInputActions = new DefaultInputActions();
     }
 }
