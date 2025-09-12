@@ -37,8 +37,8 @@ namespace HisaCat.HUE.UI.Windows
             // Delegate ui events here.
             // ==============================
             // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigatePerformed += OnUINavigatePerformed;
-            // Inputs.InputManager.Maps.UI.OnCancelPerformed += OnCancelPerformed;
+            // Inputs.InputManager.Maps.UI.OnNavigateStarted += OnUINavigateStarted;
+            // Inputs.InputManager.Maps.UI.OnCancelStarted += OnCancelStarted;
         }
 
         protected override void Dispose()
@@ -47,15 +47,15 @@ namespace HisaCat.HUE.UI.Windows
             // Undelegate ui events here.
             // ==============================
             // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigatePerformed -= OnUINavigatePerformed;
-            // Inputs.InputManager.Maps.UI.OnCancelPerformed -= OnCancelPerformed;
+            // Inputs.InputManager.Maps.UI.OnNavigateStarted -= OnUINavigateStarted;
+            // Inputs.InputManager.Maps.UI.OnCancelStarted -= OnCancelStarted;
         }
 
         // ==============================
         // Define ui event callbacks here.
         // ==============================
         // Example:
-        // private void OnUINavigatePerformed(InputAction.CallbackContext ctx) => base.OnUINavigatePerformed();
-        // private void OnCancelPerformed(InputAction.CallbackContext ctx) => base.OnBackButton();
+        // private void OnUINavigateStarted(InputAction.CallbackContext ctx) => base.OnUINavigateStarted();
+        // private void OnCancelStarted(InputAction.CallbackContext ctx) => base.OnBackButton();
     }
 }

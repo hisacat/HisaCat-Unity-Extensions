@@ -72,7 +72,9 @@ namespace HisaCat.HUE.Inputs
                 {
                     if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                     {
-                        OnNavigatePerformed = null;
+                        OnNavigateStarted = null;
+                        OnSubmitStarted = null;
+                        OnCancelStarted = null;
 
                         IsInitialized = false;
                     }
@@ -80,9 +82,9 @@ namespace HisaCat.HUE.Inputs
 #pragma warning restore IDE0051
 #endif
 
-                public static event InputActionCallbackDelegate OnNavigatePerformed;
-                public static event InputActionCallbackDelegate OnSubmitPerformed;
-                public static event InputActionCallbackDelegate OnCancelPerformed;
+                public static event InputActionCallbackDelegate OnNavigateStarted;
+                public static event InputActionCallbackDelegate OnSubmitStarted;
+                public static event InputActionCallbackDelegate OnCancelStarted;
 
                 public static bool IsInitialized { get; private set; } = false;
                 public static void InitializeInternal()
@@ -93,14 +95,14 @@ namespace HisaCat.HUE.Inputs
                         return;
                     }
 
-                    Instance.defaultInputActions.UI.Navigate.performed += OnNavigatePerformedCallback;
-                    static void OnNavigatePerformedCallback(InputAction.CallbackContext ctx) => OnNavigatePerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.UI.Navigate.started += OnNavigatePerformedCallback;
+                    static void OnNavigatePerformedCallback(InputAction.CallbackContext ctx) => OnNavigateStarted?.Invoke(ctx);
 
-                    Instance.defaultInputActions.UI.Submit.performed += OnSubmitPerformedCallback;
-                    static void OnSubmitPerformedCallback(InputAction.CallbackContext ctx) => OnSubmitPerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.UI.Submit.started += OnSubmitPerformedCallback;
+                    static void OnSubmitPerformedCallback(InputAction.CallbackContext ctx) => OnSubmitStarted?.Invoke(ctx);
 
-                    Instance.defaultInputActions.UI.Cancel.performed += OnCancelPerformedCallback;
-                    static void OnCancelPerformedCallback(InputAction.CallbackContext ctx) => OnCancelPerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.UI.Cancel.started += OnCancelPerformedCallback;
+                    static void OnCancelPerformedCallback(InputAction.CallbackContext ctx) => OnCancelStarted?.Invoke(ctx);
 
                     IsInitialized = true;
                 }
