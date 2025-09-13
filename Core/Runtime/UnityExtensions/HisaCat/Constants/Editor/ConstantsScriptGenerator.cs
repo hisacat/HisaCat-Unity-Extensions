@@ -5,10 +5,17 @@ using System.Collections.Generic;
 
 public class ConstantsScriptGenerator : AssetPostprocessor
 {
+    [InitializeOnLoadMethod]
+    private static void InitializeOnLoad()
+    {
+        GenerateConstantsScript();
+    }
+
     private const string SelfScriptPath = "Assets/HisaCat/Constants/Editor/ConstantsScriptGenerator.cs";
     private const string EditorBuildSettingsPath = "ProjectSettings/EditorBuildSettings.asset";
     private const string TagManagerPath = "ProjectSettings/TagManager.asset";
     private const string ConstantsScriptPath = "Assets/Constants/Constants.cs";
+
     private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
         var allAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
