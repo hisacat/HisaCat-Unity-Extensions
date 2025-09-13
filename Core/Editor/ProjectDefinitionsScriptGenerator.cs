@@ -28,12 +28,10 @@ namespace HisaCat.HUE
             if (needGenerate) GenerateProjectDefinitionsScriptIfDirty();
         }
 
+        [MenuItem("HisaCat/HUE/Generate Project Definitions Script")]
         public static void GenerateProjectDefinitionsScriptIfDirty()
         {
             HashSet<string> sceneNames = new();
-            Dictionary<int, string> layers = new();
-            Dictionary<int, string> renderingLayers = new();
-
             foreach (var scene in EditorBuildSettings.scenes)
             {
                 var sceneName = System.IO.Path.GetFileNameWithoutExtension(scene.path);
@@ -47,6 +45,23 @@ namespace HisaCat.HUE
                 return;
             }
             var serializedObject = new SerializedObject(tagManager);
+
+            Dictionary<int, string> sortingLayers = new();
+            var sortingLayersProperty = serializedObject.FindProperty("m_SortingLayers");
+            if (sortingLayersProperty != null)
+            {
+                for (int i = 0; i < sortingLayersProperty.arraySize; i++)
+                {
+                    var element = sortingLayersProperty.GetArrayElementAtIndex(i);
+                    var nameProperty = element.FindPropertyRelative("name");
+                    var idProperty = element.FindPropertyRelative("uniqueID");
+
+                    if (nameProperty != null && idProperty != null)
+                        sortingLayers.Add(idProperty.intValue, nameProperty.stringValue);
+                }
+            }
+
+            Dictionary<int, string> layers = new();
             var layersProperty = serializedObject.FindProperty("layers");
             if (layersProperty != null)
             {
@@ -58,17 +73,15 @@ namespace HisaCat.HUE
                 }
             }
 
-            var renderingLayersProperty = serializedObject.FindProperty("m_SortingLayers");
+            Dictionary<int, string> renderingLayers = new();
+            var renderingLayersProperty = serializedObject.FindProperty("m_RenderingLayers");
             if (renderingLayersProperty != null)
             {
                 for (int i = 0; i < renderingLayersProperty.arraySize; i++)
                 {
-                    var element = renderingLayersProperty.GetArrayElementAtIndex(i);
-                    var nameProperty = element.FindPropertyRelative("name");
-                    var idProperty = element.FindPropertyRelative("uniqueID");
-
-                    if (nameProperty != null && idProperty != null)
-                        renderingLayers.Add(idProperty.intValue, nameProperty.stringValue);
+                    var renderingLayerProperty = renderingLayersProperty.GetArrayElementAtIndex(i);
+                    if (renderingLayerProperty != null && string.IsNullOrEmpty(renderingLayerProperty.stringValue) == false)
+                        renderingLayers.Add(i, renderingLayerProperty.stringValue);
                 }
             }
 
@@ -97,6 +110,37 @@ namespace HisaCat.HUE
                         {
                             string validName = NormalizeName(sceneName);
                             scriptBuilder.AppendLine($"            public const string {validName} = \"{sceneName}\";");
+                        }
+                        scriptBuilder.AppendLine("        }");
+                        scriptBuilder.AppendLine();
+                    }
+
+                    // SortingLayers
+                    {
+                        scriptBuilder.AppendLine("        public static class SortingLayers");
+                        scriptBuilder.AppendLine("        {");
+                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
+                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
+                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
+                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
+                        scriptBuilder.AppendLine("            {");
+                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
+                        scriptBuilder.AppendLine("                {");
+                        foreach (var sortingLayer in sortingLayers)
+                        {
+                            string validName = NormalizeName(sortingLayer.Value);
+                            scriptBuilder.AppendLine($"                    {validName} = {sortingLayer.Key};");
+                        }
+                        scriptBuilder.AppendLine("                }");
+                        scriptBuilder.AppendLine("            }");
+                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
+                        scriptBuilder.AppendLine("#endif");
+                        scriptBuilder.AppendLine();
+
+                        foreach (var sortingLayer in sortingLayers)
+                        {
+                            string validName = NormalizeName(sortingLayer.Value);
+                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = {sortingLayer.Key};");
                         }
                         scriptBuilder.AppendLine("        }");
                         scriptBuilder.AppendLine();
