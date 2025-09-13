@@ -60,10 +60,10 @@ git remote add hue git@github.com:hisacat/HisaCat-Unity-Extensions.git
 
 2. Add push & pull aliases
 ```bash
-git config alias.huepull '!git fetch hue && git rm -r Packages/HisaCat-Unity-Extensions && git commit -m "chore: remove subtree package for re-install" && git subtree add --prefix=Packages/HisaCat-Unity-Extensions hue develop'
+git config alias.huepull '!git fetch hue && git rm -r Packages/cat.hisa.hisacat-unity-extensions && git commit -m "chore: remove subtree package for re-install" && git subtree add --prefix=Packages/cat.hisa.hisacat-unity-extensions hue develop'
 # Option - Just pull without re-installing:
-# git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/HisaCat-Unity-Extensions hue develop
-git config alias.huepush 'subtree push --prefix=Packages/HisaCat-Unity-Extensions hue develop'
+# git config alias.huepull '!git fetch hue && git subtree pull --prefix=Packages/cat.hisa.hisacat-unity-extensions hue develop
+git config alias.huepush 'subtree push --prefix=Packages/cat.hisa.hisacat-unity-extensions hue develop'
 ```
 
 ### Usage
