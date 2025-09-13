@@ -3,194 +3,195 @@ using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
 
-public class ConstantsScriptGenerator : AssetPostprocessor
+namespace HisaCat.HUE
 {
-    [InitializeOnLoadMethod]
-    private static void InitializeOnLoad()
+    public class ConstantsScriptGenerator : AssetPostprocessor
     {
-        GenerateConstantsScript();
-    }
-
-    private const string SelfScriptPath = "Assets/HisaCat/Constants/Editor/ConstantsScriptGenerator.cs";
-    private const string EditorBuildSettingsPath = "ProjectSettings/EditorBuildSettings.asset";
-    private const string TagManagerPath = "ProjectSettings/TagManager.asset";
-    private const string ConstantsScriptPath = "Assets/Constants/Constants.cs";
-
-    private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
-    {
-        var allAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-        var needGenerate = allAssets.Any(
-            path => path == SelfScriptPath ||
-            path == EditorBuildSettingsPath ||
-            path == TagManagerPath
-        );
-
-        if (needGenerate) GenerateConstantsScript();
-    }
-
-    public static void GenerateConstantsScript()
-    {
-        HashSet<string> sceneNames = new();
-        Dictionary<int, string> layers = new();
-        Dictionary<int, string> renderingLayers = new();
-
-        foreach (var scene in EditorBuildSettings.scenes)
+        [InitializeOnLoadMethod]
+        private static void InitializeOnLoad()
         {
-            var sceneName = System.IO.Path.GetFileNameWithoutExtension(scene.path);
-            sceneNames.Add(sceneName);
+            GenerateConstantsScript();
         }
 
-        var tagManager = AssetDatabase.LoadAssetAtPath<Object>("ProjectSettings/TagManager.asset");
-        var serializedObject = new SerializedObject(tagManager);
-        var layersProperty = serializedObject.FindProperty("layers");
-        if (layersProperty != null)
+        private const string EditorBuildSettingsPath = "ProjectSettings/EditorBuildSettings.asset";
+        private const string TagManagerPath = "ProjectSettings/TagManager.asset";
+        private const string ConstantsScriptPath = "Assets/Constants/Constants.cs";
+
+        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            for (int i = 0; i < layersProperty.arraySize; i++)
+            var allAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
+            var needGenerate = allAssets.Any(path =>
+                path == EditorBuildSettingsPath ||
+                path == TagManagerPath
+            );
+
+            if (needGenerate) GenerateConstantsScript();
+        }
+
+        public static void GenerateConstantsScript()
+        {
+            HashSet<string> sceneNames = new();
+            Dictionary<int, string> layers = new();
+            Dictionary<int, string> renderingLayers = new();
+
+            foreach (var scene in EditorBuildSettings.scenes)
             {
-                var layerProperty = layersProperty.GetArrayElementAtIndex(i);
-                if (layerProperty != null && string.IsNullOrEmpty(layerProperty.stringValue) == false)
-                    layers.Add(i, layerProperty.stringValue);
+                var sceneName = System.IO.Path.GetFileNameWithoutExtension(scene.path);
+                sceneNames.Add(sceneName);
             }
-        }
 
-        var renderingLayersProperty = serializedObject.FindProperty("m_SortingLayers");
-        if (renderingLayersProperty != null)
-        {
-            for (int i = 0; i < renderingLayersProperty.arraySize; i++)
+            var tagManager = AssetDatabase.LoadAssetAtPath<Object>("ProjectSettings/TagManager.asset");
+            var serializedObject = new SerializedObject(tagManager);
+            var layersProperty = serializedObject.FindProperty("layers");
+            if (layersProperty != null)
             {
-                var element = renderingLayersProperty.GetArrayElementAtIndex(i);
-                var nameProperty = element.FindPropertyRelative("name");
-                var idProperty = element.FindPropertyRelative("uniqueID");
-
-                if (nameProperty != null && idProperty != null)
-                    renderingLayers.Add(idProperty.intValue, nameProperty.stringValue);
+                for (int i = 0; i < layersProperty.arraySize; i++)
+                {
+                    var layerProperty = layersProperty.GetArrayElementAtIndex(i);
+                    if (layerProperty != null && string.IsNullOrEmpty(layerProperty.stringValue) == false)
+                        layers.Add(i, layerProperty.stringValue);
+                }
             }
-        }
 
-        // Generate Constants Script
-        var scriptBuilder = new System.Text.StringBuilder();
-        scriptBuilder.AppendLine($"// This file is automatically generated by {nameof(ConstantsScriptGenerator)}.cs.");
-        scriptBuilder.AppendLine("// Do not edit this file manually.");
-        scriptBuilder.AppendLine("using UnityEngine;");
-        scriptBuilder.AppendLine();
-
-        // Namespace
-        {
-            scriptBuilder.AppendLine("namespace HisaCat");
-            scriptBuilder.AppendLine("{");
-
-            // Constants
+            var renderingLayersProperty = serializedObject.FindProperty("m_SortingLayers");
+            if (renderingLayersProperty != null)
             {
-                scriptBuilder.AppendLine("    public static class Constants");
-                scriptBuilder.AppendLine("    {");
-
-                // Scenes
+                for (int i = 0; i < renderingLayersProperty.arraySize; i++)
                 {
-                    scriptBuilder.AppendLine("        public static class Scenes");
-                    scriptBuilder.AppendLine("        {");
-                    foreach (var sceneName in sceneNames)
-                    {
-                        string validName = NormalizeName(sceneName);
-                        scriptBuilder.AppendLine($"            public const string {validName} = \"{sceneName}\";");
-                    }
-                    scriptBuilder.AppendLine("        }");
-                    scriptBuilder.AppendLine();
+                    var element = renderingLayersProperty.GetArrayElementAtIndex(i);
+                    var nameProperty = element.FindPropertyRelative("name");
+                    var idProperty = element.FindPropertyRelative("uniqueID");
+
+                    if (nameProperty != null && idProperty != null)
+                        renderingLayers.Add(idProperty.intValue, nameProperty.stringValue);
                 }
-
-                // Layers
-                {
-                    scriptBuilder.AppendLine("        public static class Layers");
-                    scriptBuilder.AppendLine("        {");
-                    scriptBuilder.AppendLine("#if UNITY_EDITOR");
-                    scriptBuilder.AppendLine("#pragma warning disable IDE0051");
-                    scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
-                    scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
-                    scriptBuilder.AppendLine("            {");
-                    scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
-                    scriptBuilder.AppendLine("                {");
-                    foreach (var layer in layers)
-                    {
-                        string validName = NormalizeName(layer.Value);
-                        scriptBuilder.AppendLine($"                    {validName} = LayerMask.NameToLayer(\"{layer.Value}\");");
-                    }
-                    scriptBuilder.AppendLine("                }");
-                    scriptBuilder.AppendLine("            }");
-                    scriptBuilder.AppendLine("#pragma warning restore IDE0051");
-                    scriptBuilder.AppendLine("#endif");
-                    scriptBuilder.AppendLine();
-
-                    foreach (var layer in layers)
-                    {
-                        string validName = NormalizeName(layer.Value);
-                        scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = LayerMask.NameToLayer(\"{layer.Value}\");");
-                    }
-                    scriptBuilder.AppendLine("        }");
-                    scriptBuilder.AppendLine();
-                }
-
-                // RenderingLayers
-                {
-                    scriptBuilder.AppendLine("        public static class RenderingLayers");
-                    scriptBuilder.AppendLine("        {");
-                    scriptBuilder.AppendLine("#if UNITY_EDITOR");
-                    scriptBuilder.AppendLine("#pragma warning disable IDE0051");
-                    scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
-                    scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
-                    scriptBuilder.AppendLine("            {");
-                    scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
-                    scriptBuilder.AppendLine("                {");
-                    foreach (var renderingLayer in renderingLayers)
-                    {
-                        string validName = NormalizeName(renderingLayer.Value);
-                        scriptBuilder.AppendLine($"                    {validName} = RenderingLayerMask.NameToRenderingLayer(\"{renderingLayer.Value}\");");
-                    }
-                    scriptBuilder.AppendLine("                }");
-                    scriptBuilder.AppendLine("            }");
-                    scriptBuilder.AppendLine("#pragma warning restore IDE0051");
-                    scriptBuilder.AppendLine("#endif");
-                    scriptBuilder.AppendLine();
-
-                    foreach (var renderingLayer in renderingLayers)
-                    {
-                        string validName = NormalizeName(renderingLayer.Value);
-                        scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = RenderingLayerMask.NameToRenderingLayer(\"{renderingLayer.Value}\");");
-                    }
-                    scriptBuilder.AppendLine("        }");
-                }
-                scriptBuilder.AppendLine("    }");
             }
-            scriptBuilder.AppendLine("}");
+
+            // Generate Constants Script
+            var scriptBuilder = new System.Text.StringBuilder();
+            scriptBuilder.AppendLine($"// This file is automatically generated by {nameof(ConstantsScriptGenerator)}.cs.");
+            scriptBuilder.AppendLine("// Do not edit this file manually.");
+            scriptBuilder.AppendLine("using UnityEngine;");
+            scriptBuilder.AppendLine();
+
+            // Namespace
+            {
+                scriptBuilder.AppendLine("namespace HisaCat.HUE");
+                scriptBuilder.AppendLine("{");
+
+                // Constants
+                {
+                    scriptBuilder.AppendLine("    public static class Constants");
+                    scriptBuilder.AppendLine("    {");
+
+                    // Scenes
+                    {
+                        scriptBuilder.AppendLine("        public static class Scenes");
+                        scriptBuilder.AppendLine("        {");
+                        foreach (var sceneName in sceneNames)
+                        {
+                            string validName = NormalizeName(sceneName);
+                            scriptBuilder.AppendLine($"            public const string {validName} = \"{sceneName}\";");
+                        }
+                        scriptBuilder.AppendLine("        }");
+                        scriptBuilder.AppendLine();
+                    }
+
+                    // Layers
+                    {
+                        scriptBuilder.AppendLine("        public static class Layers");
+                        scriptBuilder.AppendLine("        {");
+                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
+                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
+                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
+                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
+                        scriptBuilder.AppendLine("            {");
+                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
+                        scriptBuilder.AppendLine("                {");
+                        foreach (var layer in layers)
+                        {
+                            string validName = NormalizeName(layer.Value);
+                            scriptBuilder.AppendLine($"                    {validName} = LayerMask.NameToLayer(\"{layer.Value}\");");
+                        }
+                        scriptBuilder.AppendLine("                }");
+                        scriptBuilder.AppendLine("            }");
+                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
+                        scriptBuilder.AppendLine("#endif");
+                        scriptBuilder.AppendLine();
+
+                        foreach (var layer in layers)
+                        {
+                            string validName = NormalizeName(layer.Value);
+                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = LayerMask.NameToLayer(\"{layer.Value}\");");
+                        }
+                        scriptBuilder.AppendLine("        }");
+                        scriptBuilder.AppendLine();
+                    }
+
+                    // RenderingLayers
+                    {
+                        scriptBuilder.AppendLine("        public static class RenderingLayers");
+                        scriptBuilder.AppendLine("        {");
+                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
+                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
+                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
+                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
+                        scriptBuilder.AppendLine("            {");
+                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
+                        scriptBuilder.AppendLine("                {");
+                        foreach (var renderingLayer in renderingLayers)
+                        {
+                            string validName = NormalizeName(renderingLayer.Value);
+                            scriptBuilder.AppendLine($"                    {validName} = RenderingLayerMask.NameToRenderingLayer(\"{renderingLayer.Value}\");");
+                        }
+                        scriptBuilder.AppendLine("                }");
+                        scriptBuilder.AppendLine("            }");
+                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
+                        scriptBuilder.AppendLine("#endif");
+                        scriptBuilder.AppendLine();
+
+                        foreach (var renderingLayer in renderingLayers)
+                        {
+                            string validName = NormalizeName(renderingLayer.Value);
+                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = RenderingLayerMask.NameToRenderingLayer(\"{renderingLayer.Value}\");");
+                        }
+                        scriptBuilder.AppendLine("        }");
+                    }
+                    scriptBuilder.AppendLine("    }");
+                }
+                scriptBuilder.AppendLine("}");
+            }
+
+            string script = scriptBuilder.ToString();
+
+            string directory = System.IO.Path.GetDirectoryName(ConstantsScriptPath);
+            if (System.IO.Directory.Exists(directory) == false)
+                System.IO.Directory.CreateDirectory(directory);
+
+            System.IO.File.WriteAllText(ConstantsScriptPath, script);
+            AssetDatabase.Refresh();
         }
 
-        string script = scriptBuilder.ToString();
-
-        string directory = System.IO.Path.GetDirectoryName(ConstantsScriptPath);
-        if (System.IO.Directory.Exists(directory) == false)
-            System.IO.Directory.CreateDirectory(directory);
-
-        System.IO.File.WriteAllText(ConstantsScriptPath, script);
-        AssetDatabase.Refresh();
-    }
-
-    private static string NormalizeName(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-            return "Invalid";
-
-        // If first character is a digit, add _
-        if (char.IsDigit(name[0]))
-            name = "_" + name;
-
-        // Replace invalid characters with _
-        var validName = new System.Text.StringBuilder();
-        foreach (char c in name)
+        private static string NormalizeName(string name)
         {
-            if (char.IsLetterOrDigit(c) || c == '_')
-                validName.Append(c);
-            else
-                validName.Append('_');
-        }
+            if (string.IsNullOrEmpty(name))
+                return "Invalid";
 
-        return validName.ToString();
+            // If first character is a digit, add _
+            if (char.IsDigit(name[0]))
+                name = "_" + name;
+
+            // Replace invalid characters with _
+            var validName = new System.Text.StringBuilder();
+            foreach (char c in name)
+            {
+                if (char.IsLetterOrDigit(c) || c == '_')
+                    validName.Append(c);
+                else
+                    validName.Append('_');
+            }
+
+            return validName.ToString();
+        }
     }
 }
