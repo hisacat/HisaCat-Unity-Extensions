@@ -98,15 +98,39 @@ This method ensures:
 
 Run the following command in the root of your Unity project repository:
 
+1. Add git embed alias
+2. 
 ```bash
-rm -rf Packages/cat.hisa.hisacat-unity-extensions \
-  && mkdir -p Packages/cat.hisa.hisacat-unity-extensions \
-  && touch Packages/cat.hisa.hisacat-unity-extensions/.gitkeep \
-  && git add Packages/cat.hisa.hisacat-unity-extensions/.gitkeep \
-  && rm -rf Packages/cat.hisa.hisacat-unity-extensions \
-  && git clone git@github.com:hisacat/HisaCat-Unity-Extensions.git \
-       --branch develop Packages/cat.hisa.hisacat-unity-extensions \
-  && git add Packages/cat.hisa.hisacat-unity-extensions/
+git config --global alias.embed \
+'!f() {
+  if [ $# -lt 2 ]; then
+    echo "Usage: git embed <repo> <path> [--branch <branch>] [other git clone args...]" >&2
+    return 1
+  fi
+
+  repo="$1"
+  path="$2"
+  shift 2
+
+  case "${path}" in ""|"/"|".") echo "[ERR] invalid path: \"$path\"" >&2; return 3;; esac
+
+  if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+    echo "[ERR] not inside a git repository" >&2; return 4
+  fi
+  
+  rm -rf "$path" &&
+  mkdir -p "$path" &&
+  touch "$path/.gitkeep" &&
+  git add -f "$path/.gitkeep" &&
+  rm -rf "$path" &&
+  git clone "$repo" "$path" "$@" &&
+  git add -A "$path"
+}; f'
+```
+
+2. Clone
+```bash
+git embed git@github.com:hisacat/HisaCat-Unity-Extensions.git Packages/cat.hisa.hisacat-unity-extensions --branch develop
 ```
 
 ### Notes
