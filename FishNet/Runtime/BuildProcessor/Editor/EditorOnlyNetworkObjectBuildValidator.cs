@@ -1,4 +1,4 @@
-#if FISHNET
+#if UNITY_EDITOR && FISHNET
 using FishNet.Object;
 using HisaCat.UnityExtensions;
 using System.Collections.Generic;
