@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sample - InputManager: Input management.
 - Sample - WindowSystem: Window system sample.
 
+### Fixed
+- Fix build errors: except Editor-only scripts on build using `#if UNITY_EDITOR` directive.
+
 ### Changed
 
 - Optimizing directory structure.
