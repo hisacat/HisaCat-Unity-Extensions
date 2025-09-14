@@ -85,6 +85,38 @@ git rm -r Packages/HisaCat-Unity-Extensions
 
 ---
 
+## Via Local Clone (Recommended for Maintainers)
+
+For contributors who want to develop this package inside a Unity project without the performance drawbacks of Git Subtree, you can simply **clone the package directly into the `Packages/` folder**.  
+
+This method ensures:
+- **Fast operations**: No heavy subtree history processing on push or pull.  
+- **Seamless development**: The package is included in the Unity project as normal source code, so IDE features (IntelliSense, navigation, etc.) work immediately.  
+- **Transparency for teammates**: When committed, only the source code is included in the game repository. The inner `.git/` directory of the package is ignored automatically, so other contributors see plain source files without needing any extra setup.  
+
+### Procedure
+
+Run the following command in the root of your Unity project repository:
+
+```bash
+rm -rf Packages/cat.hisa.hisacat-unity-extensions \
+  && mkdir -p Packages/cat.hisa.hisacat-unity-extensions \
+  && touch Packages/cat.hisa.hisacat-unity-extensions/.gitkeep \
+  && git add Packages/cat.hisa.hisacat-unity-extensions/.gitkeep \
+  && rm -rf Packages/cat.hisa.hisacat-unity-extensions \
+  && git clone git@github.com:hisacat/HisaCat-Unity-Extensions.git \
+       --branch develop Packages/cat.hisa.hisacat-unity-extensions \
+  && git add Packages/cat.hisa.hisacat-unity-extensions/
+```
+
+### Notes
+- The .gitkeep file is created only once to ensure that Git recognizes the Packages/cat.hisa.hisacat-unity-extensions/ directory as a valid tracked folder before it is replaced by the cloned repository.
+- After the repository is cloned, the .gitkeep file is removed, leaving only the actual package source code.
+- From the game repository root, committing this folder will include only the package source code; the internal .git/ directory of the cloned repository is ignored automatically.
+- To update or push changes to the package repository itself, simply run git pull or git push inside the Packages/cat.hisa.hisacat-unity-extensions/ directory.
+
+---
+
 ## Requirements
 
 - Unity 2020.3 or higher
