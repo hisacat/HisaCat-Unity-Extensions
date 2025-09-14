@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -23,3 +24,4 @@ namespace HisaCat.PropertyAttributes
         }
     }
 }
+#endif

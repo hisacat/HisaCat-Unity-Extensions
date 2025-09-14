@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -123,3 +124,4 @@ namespace HisaCat.Localization
         }
     }
 }
+#endif

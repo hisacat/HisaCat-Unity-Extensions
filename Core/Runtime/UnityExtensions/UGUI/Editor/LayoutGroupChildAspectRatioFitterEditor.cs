@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Linq;
 using System.Reflection.Emit;
 using Unity.VisualScripting;
@@ -110,3 +111,4 @@ namespace HisaCat.UGUI
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
@@ -85,3 +86,4 @@ namespace HisaCat.UnityExtensions.Editors
         }
     }
 }
+#endif

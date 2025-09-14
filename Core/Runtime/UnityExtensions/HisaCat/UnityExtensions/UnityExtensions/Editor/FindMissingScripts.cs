@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -107,3 +108,4 @@ namespace HisaCat.UnityExtensions.Editors
         }
     }
 }
+#endif

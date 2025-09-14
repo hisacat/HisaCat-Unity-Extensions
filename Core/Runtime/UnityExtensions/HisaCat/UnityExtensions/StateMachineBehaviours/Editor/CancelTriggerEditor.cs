@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -74,3 +75,4 @@ namespace HisaCat.StateMachineBehaviours
         }
     }
 }
+#endif

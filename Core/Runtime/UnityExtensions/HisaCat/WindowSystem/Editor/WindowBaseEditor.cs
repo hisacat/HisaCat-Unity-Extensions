@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using HisaCat.UnityExtensions.Editors;
@@ -172,3 +173,4 @@ namespace HisaCat.HUE.UI.Windows
         }
     }
 }
+#endif

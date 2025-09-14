@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using Unity.VisualScripting;
@@ -82,3 +83,4 @@ namespace HisaCat.RealTimeOcclusionCulling
     }
     #endregion Gizmos
 }
+#endif

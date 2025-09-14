@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -83,3 +84,4 @@ public static class ManagedDebugEditor
         return null;
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 //  From Unity wiki: http://wiki.unity3d.com/index.php/Show_Built_In_Resources
 
 using System;
@@ -220,3 +221,4 @@ public class BuiltInResourcesWindow : EditorWindow
         GUIUtility.systemCopyBuffer = text;
     }
 }
+#endif

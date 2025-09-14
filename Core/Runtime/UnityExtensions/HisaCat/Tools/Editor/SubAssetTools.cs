@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -93,3 +94,4 @@ namespace HisaCat.Tools
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using HisaCat.UnityExtensions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -140,3 +141,4 @@ namespace HisaCat.Editors
         }
     }
 }
+#endif
