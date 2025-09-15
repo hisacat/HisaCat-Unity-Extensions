@@ -117,6 +117,12 @@ namespace HisaCat.UnityExtensions
                 GameObject.Destroy(transform.GetChild(i).gameObject);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ResetTransform(this Transform transform)
+        {
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            transform.localScale = Vector3.one;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetLocalScaleX(this Transform transform, float x)
         {
             var val = transform.localScale;
