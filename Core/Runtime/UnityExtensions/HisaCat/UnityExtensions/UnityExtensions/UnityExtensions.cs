@@ -1099,6 +1099,7 @@ namespace HisaCat.UnityExtensions
 
     public static class AnimationExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearAllClips(this Animation animation)
         {
             List<string> names = new();
@@ -1109,8 +1110,10 @@ namespace HisaCat.UnityExtensions
             names.Clear();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Play(this Animation animation, AnimationClip clip, float normalizedTime, float speed)
             => Play(animation, clip, clip.name, normalizedTime, speed);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Play(this Animation animation, AnimationClip clip, string newName, float normalizedTime, float speed)
         {
             var state = Sample(animation, clip, newName, normalizedTime);
@@ -1118,8 +1121,10 @@ namespace HisaCat.UnityExtensions
             animation.Play(newName);
             return state;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Play(this Animation animation, AnimationClip clip, float normalizedTime, float speed, PlayMode playMode)
             => Play(animation, clip, clip.name, normalizedTime, speed, playMode);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Play(this Animation animation, AnimationClip clip, string newName, float normalizedTime, float speed, PlayMode playMode)
         {
             var state = Sample(animation, clip, newName, normalizedTime);
@@ -1128,8 +1133,10 @@ namespace HisaCat.UnityExtensions
             return state;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Sample(this Animation animation, AnimationClip clip, float normalizedTime)
             => Sample(animation, clip, clip.name, normalizedTime);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AnimationState Sample(this Animation animation, AnimationClip clip, string newName, float normalizedTime)
         {
             // Set animation clip.
@@ -1262,10 +1269,12 @@ namespace HisaCat.UnityExtensions
         }
 #pragma warning restore IDE0051
 #endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearAnimatorControllerParameterCache()
         {
             AnimatorControllerParameterCache.Clear();
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Dictionary<int, AnimatorControllerParameter> InitializeParameterCache(Animator animator)
         {
             // Animator가 꺼져있는 상태에서는 정상적으로 Parameter를 가져올 수 없음으로, 아무것도 하지 않습니다.
@@ -1283,6 +1292,7 @@ namespace HisaCat.UnityExtensions
             }
             return parameters;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int GetAnimatorStringHash(string name)
         {
             if (StringHashCache.TryGetValue(name, out var hash) == false)
@@ -1293,6 +1303,7 @@ namespace HisaCat.UnityExtensions
             return hash;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetBool(this Animator animator, int hash, bool value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1306,8 +1317,10 @@ namespace HisaCat.UnityExtensions
             animator.SetBool(hash, value);
             return true;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetBool(this Animator animator, string name, bool value)
             => TrySetBool(animator, GetAnimatorStringHash(name), value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryGetBool(this Animator animator, int hash, out bool value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1323,6 +1336,7 @@ namespace HisaCat.UnityExtensions
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetInteger(this Animator animator, int hash, int value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1336,8 +1350,10 @@ namespace HisaCat.UnityExtensions
             animator.SetInteger(hash, value);
             return true;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetInteger(this Animator animator, string name, int value)
             => TrySetInteger(animator, GetAnimatorStringHash(name), value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryGetInteger(this Animator animator, int hash, out int value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1353,6 +1369,7 @@ namespace HisaCat.UnityExtensions
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetFloat(this Animator animator, int hash, float value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1366,8 +1383,10 @@ namespace HisaCat.UnityExtensions
             animator.SetFloat(hash, value);
             return true;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetFloat(this Animator animator, string name, float value)
             => TrySetFloat(animator, GetAnimatorStringHash(name), value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryGetFloat(this Animator animator, int hash, out float value)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1383,6 +1402,7 @@ namespace HisaCat.UnityExtensions
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetTrigger(this Animator animator, int hash)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1396,8 +1416,10 @@ namespace HisaCat.UnityExtensions
             animator.SetTrigger(hash);
             return true;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TrySetTrigger(this Animator animator, string name)
             => TrySetTrigger(animator, GetAnimatorStringHash(name));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryResetTrigger(this Animator animator, int hash)
         {
             var parameters = InitializeParameterCache(animator);
@@ -1411,16 +1433,19 @@ namespace HisaCat.UnityExtensions
             animator.ResetTrigger(hash);
             return true;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryResetTrigger(this Animator animator, string name)
             => TryResetTrigger(animator, GetAnimatorStringHash(name));
     }
 
     public static class CharacterControllerExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 GetBottomPoint(this CharacterController characterController)
         {
             return characterController.transform.position + characterController.center - characterController.transform.up * ((characterController.height / 2f) - characterController.radius);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 GetTopPoint(this CharacterController characterController)
         {
             return characterController.transform.position + characterController.center + characterController.transform.up * ((characterController.height / 2f) - characterController.radius);
@@ -1429,10 +1454,12 @@ namespace HisaCat.UnityExtensions
 
     public static class ColliderExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 GetBottomPoint(this CapsuleCollider collider)
         {
             return collider.transform.position + collider.center - collider.transform.up * ((collider.height / 2f) - collider.radius);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 GetTopPoint(this CapsuleCollider collider)
         {
             return collider.transform.position + collider.center + collider.transform.up * ((collider.height / 2f) - collider.radius);
