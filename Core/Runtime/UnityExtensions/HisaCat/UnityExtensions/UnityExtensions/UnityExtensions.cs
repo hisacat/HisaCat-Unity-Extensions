@@ -1481,6 +1481,21 @@ namespace HisaCat.UnityExtensions
             rotation = transform.rotation;
         }
 
+        /// <summary>
+        /// Calculates the world-space parameters of a <see cref="CapsuleCollider"/> for overlap/cast operations.
+        /// </summary>
+        /// <param name="capsuleCollider">The capsule collider to evaluate.</param>
+        /// <param name="point0">
+        /// World-space endpoint in the collider's local <c>+direction</c> axis.<br/>
+        /// (+X if <c>direction == 0</c>, +Y if <c>direction == 1</c>, +Z if <c>direction == 2</c>)
+        /// </param>
+        /// <param name="point1">
+        /// World-space endpoint in the collider's local <c>-direction</c> axis.<br/>
+        /// (−X if <c>direction == 0</c>, −Y if <c>direction == 1</c>, −Z if <c>direction == 2</c>)
+        /// </param>
+        /// <param name="radius">
+        /// Effective radius of the capsule in world space (lossy scale applied).
+        /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void GetCapsuleOverlapParams(this CapsuleCollider capsuleCollider, out Vector3 point0, out Vector3 point1, out float radius)
         {
