@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HisaCat.PhysicsExtension
+namespace HisaCat.HUE.PhysicsExtension
 {
     /// <summary>
     /// ReliablePhysicsCallbacks ensures that physics enter/stay/exit events<br/>
