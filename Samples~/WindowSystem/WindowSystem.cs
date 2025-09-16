@@ -15,6 +15,8 @@ namespace HisaCat.HUE.UI.Windows
             // ==============================
             // Load your window prefab here.
             // ==============================
+            // Example:
+            // return Assets.AssetLoader.Addressables.LoadSync<WindowBase>(path);
             return null;
         }
 
@@ -24,7 +26,7 @@ namespace HisaCat.HUE.UI.Windows
             // Load your window prefabs here.
             // ==============================
             // Example:
-            // var op = HisaCat.HUE.Assets.AssetLoader.Addressables.LoadManyOrderedAsync<WindowBase>(paths);
+            // var op = Assets.AssetLoader.Addressables.LoadManyOrderedAsync<WindowBase>(paths);
             // yield return op;
             // onCompleted.Invoke(op.Result);
 
@@ -55,7 +57,7 @@ namespace HisaCat.HUE.UI.Windows
         // Define ui event callbacks here.
         // ==============================
         // Example:
-        // private void OnUINavigateStarted(InputAction.CallbackContext ctx) => base.OnUINavigateStarted();
-        // private void OnCancelStarted(InputAction.CallbackContext ctx) => base.OnBackButton();
+        // private void OnUINavigateStarted(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnUINavigateStarted();
+        // private void OnCancelStarted(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnBackButton();
     }
 }
