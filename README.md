@@ -99,32 +99,53 @@ This method ensures:
 Run the following command in the root of your Unity project repository:
 
 1. Add git embed alias
-2. 
 ```bash
 git config --global alias.embed \
 '!f() {
   if [ $# -lt 2 ]; then
-    echo "Usage: git embed <repo> <path> [--branch <branch>] [other git clone args...]" >&2
+    echo "usage: git embed <repo> <dir> [<git clone options>]" >&2
     return 1
   fi
 
   repo="$1"
-  path="$2"
+  dir="$2"
   shift 2
 
-  case "${path}" in ""|"/"|".") echo "[ERR] invalid path: \"$path\"" >&2; return 3;; esac
+  case "$dir" in ""|"/"|".")
+    echo "[ERR] invalid dir: \"$dir\"" >&2
+    return 1;;
+  esac
 
-  if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
-    echo "[ERR] not inside a git repository" >&2; return 4
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "[ERR] not inside a git repository" >&2
+    return 1
   fi
-  
-  rm -rf "$path" &&
-  mkdir -p "$path" &&
-  touch "$path/.gitkeep" &&
-  git add -f "$path/.gitkeep" &&
-  rm -rf "$path" &&
-  git clone "$repo" "$path" "$@" &&
-  git add -A "$path"
+
+  if [ -e "$dir" ]; then
+    printf "[WARN] \"%s\" already exists. Delete and re-embed (clone) it? [y/N]: " "$dir"
+    IFS= read -r ans
+    case "$ans" in
+      [yY]) echo "[INFO] Proceeding to replace \"$dir\"..." ;;
+      *)    echo "[CANCEL] User canceled. \"$dir\" was not modified."
+            return 1;;
+    esac
+  fi
+
+  rm -rf "$dir" &&
+  mkdir -p "$dir" &&
+  touch "$dir/.gitkeep" &&
+  git add -f "$dir/.gitkeep" &&
+  rm -rf "$dir" &&
+  git clone "$repo" "$dir" "$@" &&
+  git add -A "$dir"
+
+  code=$?
+  if [ $code -eq 0 ]; then
+    echo "[OK] Embedded \"$repo\" into \"$dir\" successfully."
+  else
+    echo "[ERR] Failed to embed \"$repo\" into \"$dir\" (code $code)" >&2
+  fi
+  return $code
 }; f'
 ```
 
