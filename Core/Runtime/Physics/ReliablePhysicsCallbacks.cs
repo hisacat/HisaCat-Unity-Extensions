@@ -1,3 +1,4 @@
+using HisaCat.HUE.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,11 +34,12 @@ namespace HisaCat.HUE.PhysicsExtension
 #endif
 
         private const int ColliderBufferCapacity = 1024;
-
-        private HashSet<Collider> triggerStayingColliders = null;
-        private HashSet<Collider> collisionStayingColliders = null;
-
         private readonly static StaticBuffer<Collider> ColliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
+
+        public IReadOnlyHashSet<Collider> TriggerStayingColliders => this.triggerStayingColliders.AsReadOnly();
+        private HashSet<Collider> triggerStayingColliders = null;
+        public IReadOnlyHashSet<Collider> CollisionStayingColliders => this.collisionStayingColliders.AsReadOnly();
+        private HashSet<Collider> collisionStayingColliders = null;
 
         protected virtual void Awake()
         {
@@ -63,7 +65,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     staying.Remove(stay);
                     onExitCallback(stay);
                 }
-                buffer.ClearBuffer(removeCount);
+                removeBuffer.ClearBuffer(removeCount);
             }
         }
 
@@ -90,7 +92,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     staying.Remove(stay);
                     onExitCallback(stay);
                 }
-                buffer.ClearBuffer(removeCount);
+                removeBuffer.ClearBuffer(removeCount);
             }
         }
 
