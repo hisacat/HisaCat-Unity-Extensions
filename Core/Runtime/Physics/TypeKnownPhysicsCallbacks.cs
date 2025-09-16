@@ -58,9 +58,13 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             base.FixedUpdate();
 
-            OnStayWorks(this.triggerStayingTargets, TargetsBuffer, this.OnTargetTriggerStay, this.OnTargetTriggerExit);
-            OnStayWorks(this.collisionStayingTargets, TargetsBuffer, this.OnTargetCollisionStay, this.OnTargetCollisionExit);
-            static void OnStayWorks(ReadOnlyHashSetValueDictionary staying, StaticBuffer<TTarget> targetBuffer, System.Action<TTarget> onStayCallback, System.Action<TTarget> onExitCallback)
+            OnStayWorks(this.triggerStayingTargets, TargetsBuffer, this.OnTargetTriggerStayCallback, this.OnTargetTriggerExitCallback, this.OnTargetTriggerStayingChangedCallback);
+            OnStayWorks(this.collisionStayingTargets, TargetsBuffer, this.OnTargetCollisionStayCallback, this.OnTargetCollisionExitCallback, this.OnTargetCollisionStayingChangedCallback);
+            static void OnStayWorks(
+                ReadOnlyHashSetValueDictionary staying,
+                StaticBuffer<TTarget> targetBuffer,
+                System.Action<TTarget> onStayCallback, System.Action<TTarget> onExitCallback,
+                System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>>> onStayingChangedCallback)
             {
                 var removeCount = 0;
                 var removeBuffer = targetBuffer;
@@ -77,17 +81,17 @@ namespace HisaCat.HUE.PhysicsExtension
                     // [NOTE] We don't need check invalid colliders because
                     // ReliablePhysicsCallbacks already call Exit events for invalid colliders.
                     // If all colliders are invalid, the target automatically removed from "OnExitWorks".
-                    {
-                        colliders.RemoveWhere(IsInvalidCollider);
-                        static bool IsInvalidCollider(Collider collider)
-                            => collider == null || collider.enabled == false || collider.gameObject.activeInHierarchy == false;
+                    // {
+                    //     colliders.RemoveWhere(IsInvalidCollider);
+                    //     static bool IsInvalidCollider(Collider collider)
+                    //         => collider == null || collider.enabled == false || collider.gameObject.activeInHierarchy == false;
 
-                        if (colliders.Count <= 0)
-                        {
-                            removeBuffer.AddItemSafely(ref removeCount, target);
-                            continue;
-                        }
-                    }
+                    //     if (colliders.Count <= 0)
+                    //     {
+                    //         removeBuffer.AddItemSafely(ref removeCount, target);
+                    //         continue;
+                    //     }
+                    // }
 
                     onStayCallback(target);
                 }
@@ -95,6 +99,9 @@ namespace HisaCat.HUE.PhysicsExtension
                 {
                     var stay = removeBuffer.Buffer[i];
                     staying.Remove(stay);
+                    // Always Fire staying changed callback first.
+                    onStayingChangedCallback(staying.ReadOnlyDictionary);
+                    // And then fire exit callback.
                     onExitCallback(stay);
                 }
                 removeBuffer.ClearBuffer(removeCount);
@@ -103,14 +110,17 @@ namespace HisaCat.HUE.PhysicsExtension
 
         #region Reliable Physics Callbacks
         protected override void OnReliableTriggerEnterCallback(Collider other)
-            => OnEnterWorks(other, this.triggerStayingTargets, this.OnTargetTriggerEnter);
+            => OnEnterWorks(other, this.triggerStayingTargets, this.OnTargetTriggerEnterCallback, this.OnTargetTriggerStayingChangedCallback);
         protected override void OnReliableTriggerExitCallback(Collider other)
-            => OnExitWorks(other, this.triggerStayingTargets, this.OnTargetTriggerExit);
+            => OnExitWorks(other, this.triggerStayingTargets, this.OnTargetTriggerExitCallback, this.OnTargetTriggerStayingChangedCallback);
         protected override void OnReliableCollisionEnterCallback(Collider other)
-            => OnEnterWorks(other, this.collisionStayingTargets, this.OnTargetCollisionEnter);
+            => OnEnterWorks(other, this.collisionStayingTargets, this.OnTargetCollisionEnterCallback, this.OnTargetCollisionStayingChangedCallback);
         protected override void OnReliableCollisionExitCallback(Collider other)
-            => OnExitWorks(other, this.collisionStayingTargets, this.OnTargetCollisionExit);
-        private void OnEnterWorks(Collider other, ReadOnlyHashSetValueDictionary stayTargets, System.Action<TTarget> onEnterCallback)
+            => OnExitWorks(other, this.collisionStayingTargets, this.OnTargetCollisionExitCallback, this.OnTargetCollisionStayingChangedCallback);
+        private void OnEnterWorks(
+            Collider other, ReadOnlyHashSetValueDictionary stayTargets,
+            System.Action<TTarget> onEnterCallback,
+            System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>>> onStayingChangedCallback)
         {
             var target = FindTarget(other);
             if (target == null) return;
@@ -118,6 +128,9 @@ namespace HisaCat.HUE.PhysicsExtension
             if (stayTargets.ContainsKey(target) == false)
             {
                 stayTargets.Add(target, new() { other });
+                // Always Fire staying changed callback first.
+                onStayingChangedCallback(stayTargets.ReadOnlyDictionary);
+                // And then fire enter callback.
                 onEnterCallback(target);
             }
             else
@@ -125,28 +138,37 @@ namespace HisaCat.HUE.PhysicsExtension
                 stayTargets[target].Add(other);
             }
         }
-        private void OnExitWorks(Collider other, ReadOnlyHashSetValueDictionary stayTargets, System.Action<TTarget> onEnterCallback)
+        private void OnExitWorks(
+            Collider other, ReadOnlyHashSetValueDictionary stayTargets,
+            System.Action<TTarget> onEnterCallback,
+            System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>>> onStayingChangedCallback)
         {
             var target = FindTarget(other);
             if (target == null) return;
             if (stayTargets.ContainsKey(target) == false) return;
 
             stayTargets[target].Remove(other);
-            if (stayTargets[target].Count == 0)
+            if (stayTargets[target].Count <= 0)
             {
                 stayTargets.Remove(target);
+                // Always Fire staying changed callback first.
+                onStayingChangedCallback(stayTargets.ReadOnlyDictionary);
+                // And then fire exit callback.
                 onEnterCallback(target);
             }
         }
         #endregion Reliable Physics Callbacks
 
         #region Target Physics Callbacks
-        protected virtual void OnTargetTriggerEnter(TTarget target) { }
-        protected virtual void OnTargetTriggerStay(TTarget target) { }
-        protected virtual void OnTargetTriggerExit(TTarget target) { }
-        protected virtual void OnTargetCollisionStay(TTarget target) { }
-        protected virtual void OnTargetCollisionEnter(TTarget target) { }
-        protected virtual void OnTargetCollisionExit(TTarget target) { }
+        protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStayCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerExitCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>> staying) { }
+
+        protected virtual void OnTargetCollisionStayCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionEnterCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionExitCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>> staying) { }
         #endregion Target Physics Callbacks
 
         #region Debugs
