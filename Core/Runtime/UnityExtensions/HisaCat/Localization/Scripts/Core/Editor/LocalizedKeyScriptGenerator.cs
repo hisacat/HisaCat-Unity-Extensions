@@ -92,7 +92,6 @@ namespace HisaCat.Localization
             }
         }
 
-        public const string ThisScriptPath = "Assets/HisaCat/Localization/Scripts/Core/Editor/LocalizedKeyScriptGenerator.cs";
         public const string TargetJsonPath = "Assets/Resources/Localization/ko_KR.json";
         public const string TargetScriptPath = "Assets/Localization/LocalizedKey.cs";
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -104,7 +103,7 @@ namespace HisaCat.Localization
             }
 
             var changedAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-            if (changedAssets.Contains(ThisScriptPath) || changedAssets.Contains(TargetJsonPath))
+            if (changedAssets.Contains(TargetJsonPath))
             {
                 Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{TargetJsonPath}\".");
                 var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(TargetJsonPath);
