@@ -51,8 +51,8 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnDestroy() => this.ForceExitAll();
         private void ForceExitAll()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableStayingTriggersChangedCallback);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableStayingCollisionsChangedCallback);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayingChanged);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayingChanged);
             static void Process(
                 HashSet<Collider> staying, IReadOnlyHashSet<Collider> readOnlyStaying,
                 StaticBuffer<Collider> buffer,
@@ -79,8 +79,8 @@ namespace HisaCat.HUE.PhysicsExtension
 
         protected virtual void FixedUpdate()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayCallback, this.OnReliableStayingTriggersChangedCallback);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayCallback, this.OnReliableStayingCollisionsChangedCallback);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayCallback, this.OnReliableTriggerStayingChanged);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayCallback, this.OnReliableCollisionStayingChanged);
             static void Process(
                 HashSet<Collider> staying, IReadOnlyHashSet<Collider> readOnlyStaying,
                 StaticBuffer<Collider> buffer,
@@ -172,12 +172,12 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnReliableTriggerEnterCallback(Collider other) { }
         protected virtual void OnReliableTriggerStayCallback(Collider other) { }
         protected virtual void OnReliableTriggerExitCallback(Collider other) { }
-        protected virtual void OnReliableStayingTriggersChangedCallback(IReadOnlyHashSet<Collider> other) { }
+        protected virtual void OnReliableTriggerStayingChanged(IReadOnlyHashSet<Collider> other) { }
 
         protected virtual void OnReliableCollisionEnterCallback(Collider other) { }
         protected virtual void OnReliableCollisionStayCallback(Collider other) { }
         protected virtual void OnReliableCollisionExitCallback(Collider other) { }
-        protected virtual void OnReliableStayingCollisionsChangedCallback(IReadOnlyHashSet<Collider> other) { }
+        protected virtual void OnReliableCollisionStayingChanged(IReadOnlyHashSet<Collider> other) { }
         #endregion Reliable Physics Callbacks
     }
 }
