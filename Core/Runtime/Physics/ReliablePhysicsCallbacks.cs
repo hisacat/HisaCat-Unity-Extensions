@@ -17,6 +17,11 @@ namespace HisaCat.HUE.PhysicsExtension
     /// - Disable/Destroy 시에도 Exit 콜백을 호출하고<br/>
     /// - Staying 집합을 자체 관리하여 일관성 있는 콜백 시퀀스를 제공합니다.<br/>
     /// </para>
+    /// <para>
+    /// 이벤트 호출 순서<br/>
+    /// - On Enter: Enter > StayingChanged<br/>
+    /// - On Exit: StayingChanged > Exit
+    /// </para>
     /// </summary>
     public abstract class ReliablePhysicsCallbacks : MonoBehaviour
     {
@@ -51,8 +56,8 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnDestroy() => this.ForceExitAll();
         private void ForceExitAll()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayingChanged);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayingChanged);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayingChangedCallback);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayingChangedCallback);
             static void Process(
                 HashSet<Collider> staying, IReadOnlyHashSet<Collider> readOnlyStaying,
                 StaticBuffer<Collider> buffer,
@@ -69,9 +74,11 @@ namespace HisaCat.HUE.PhysicsExtension
                     {
                         var stay = removeBuffer.Buffer[i];
                         staying.Remove(stay);
+                        // Always Fire staying changed callback first.
+                        onStayingChangedCallback(readOnlyStaying);
+                        // And then fire exit callback.
                         onExitCallback(stay);
                     }
-                    onStayingChangedCallback(readOnlyStaying);
                 }
                 removeBuffer.ClearBuffer(removeCount);
             }
@@ -79,8 +86,8 @@ namespace HisaCat.HUE.PhysicsExtension
 
         protected virtual void FixedUpdate()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayCallback, this.OnReliableTriggerStayingChanged);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayCallback, this.OnReliableCollisionStayingChanged);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayCallback, this.OnReliableTriggerStayingChangedCallback);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayCallback, this.OnReliableCollisionStayingChangedCallback);
             static void Process(
                 HashSet<Collider> staying, IReadOnlyHashSet<Collider> readOnlyStaying,
                 StaticBuffer<Collider> buffer,
@@ -105,9 +112,11 @@ namespace HisaCat.HUE.PhysicsExtension
                     {
                         var stay = removeBuffer.Buffer[i];
                         staying.Remove(stay);
+                        // Always Fire staying changed callback first.
+                        onStayingChangedCallback(readOnlyStaying);
+                        // And then fire exit callback.
                         onExitCallback(stay);
                     }
-                    onStayingChangedCallback(readOnlyStaying);
                 }
                 removeBuffer.ClearBuffer(removeCount);
             }
@@ -140,22 +149,34 @@ namespace HisaCat.HUE.PhysicsExtension
         private void OnTriggerEnterCallback_Internal(Collider other)
         {
             if (this.triggerStayingColliders.Add(other) == false) return;
+
+            // Always Fire staying changed callback first.
+            this.OnReliableTriggerStayingChangedCallback(this.TriggerStayingColliders);
             this.OnReliableTriggerEnterCallback(other);
         }
         private void OnTriggerExitCallback_Internal(Collider other)
         {
             if (this.triggerStayingColliders.Remove(other) == false) return;
+
+            // Always Fire staying changed callback first.
+            this.OnReliableTriggerStayingChangedCallback(this.TriggerStayingColliders);
             this.OnReliableTriggerExitCallback(other);
         }
 
         private void OnCollisionEnterCallback_Internal(Collision collision)
         {
             if (this.collisionStayingColliders.Add(collision.collider) == false) return;
+
+            // Always Fire staying changed callback first.
+            this.OnReliableCollisionStayingChangedCallback(this.CollisionStayingColliders);
             this.OnReliableCollisionEnterCallback(collision.collider);
         }
         private void OnCollisionExitCallback_Internal(Collision collision)
         {
             if (this.collisionStayingColliders.Remove(collision.collider) == false) return;
+
+            // Always Fire staying changed callback first.
+            this.OnReliableCollisionStayingChangedCallback(this.CollisionStayingColliders);
             this.OnReliableCollisionExitCallback(collision.collider);
         }
         #endregion Internal Physics Callbacks
@@ -172,12 +193,12 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnReliableTriggerEnterCallback(Collider other) { }
         protected virtual void OnReliableTriggerStayCallback(Collider other) { }
         protected virtual void OnReliableTriggerExitCallback(Collider other) { }
-        protected virtual void OnReliableTriggerStayingChanged(IReadOnlyHashSet<Collider> other) { }
+        protected virtual void OnReliableTriggerStayingChangedCallback(IReadOnlyHashSet<Collider> staying) { }
 
         protected virtual void OnReliableCollisionEnterCallback(Collider other) { }
         protected virtual void OnReliableCollisionStayCallback(Collider other) { }
         protected virtual void OnReliableCollisionExitCallback(Collider other) { }
-        protected virtual void OnReliableCollisionStayingChanged(IReadOnlyHashSet<Collider> other) { }
+        protected virtual void OnReliableCollisionStayingChangedCallback(IReadOnlyHashSet<Collider> staying) { }
         #endregion Reliable Physics Callbacks
     }
 }
