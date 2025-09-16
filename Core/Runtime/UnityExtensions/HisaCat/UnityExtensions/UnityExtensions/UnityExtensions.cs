@@ -1455,14 +1455,19 @@ namespace HisaCat.UnityExtensions
     public static class ColliderExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetBottomPoint(this CapsuleCollider collider)
+        public static void GetCapsuleEndPoints(this CapsuleCollider capsuleCollider, out Vector3 positivePoint, out Vector3 negativePoint)
+            => GetCapsuleOverlapParams(capsuleCollider, out positivePoint, out negativePoint, out var _);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 GetPositiveEndPoint(this CapsuleCollider capsuleCollider)
         {
-            return collider.transform.position + collider.center - collider.transform.up * ((collider.height / 2f) - collider.radius);
+            GetCapsuleEndPoints(capsuleCollider, out var positivePoint, out _);
+            return positivePoint;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetTopPoint(this CapsuleCollider collider)
+        public static Vector3 GetNegativeEndPoint(this CapsuleCollider capsuleCollider)
         {
-            return collider.transform.position + collider.center + collider.transform.up * ((collider.height / 2f) - collider.radius);
+            GetCapsuleEndPoints(capsuleCollider, out _, out var negativePoint);
+            return negativePoint;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
