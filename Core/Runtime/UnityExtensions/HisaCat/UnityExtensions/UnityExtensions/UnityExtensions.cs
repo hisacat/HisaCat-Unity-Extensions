@@ -1464,6 +1464,116 @@ namespace HisaCat.UnityExtensions
         {
             return collider.transform.position + collider.center + collider.transform.up * ((collider.height / 2f) - collider.radius);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetBoxOverlapParams(this BoxCollider boxCollider, out Vector3 center, out Vector3 halfExtents, out Quaternion rotation)
+        {
+            var transform = boxCollider.transform;
+            var lossyScale = transform.lossyScale;
+            var size = boxCollider.size;
+
+            center = transform.TransformPoint(boxCollider.center);
+
+            halfExtents = new Vector3(size.x * 0.5f * Mathf.Abs(lossyScale.x),
+                                      size.y * 0.5f * Mathf.Abs(lossyScale.y),
+                                      size.z * 0.5f * Mathf.Abs(lossyScale.z));
+
+            rotation = transform.rotation;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetCapsuleOverlapParams(this CapsuleCollider capsuleCollider, out Vector3 point0, out Vector3 point1, out float radius)
+        {
+            var transform = capsuleCollider.transform;
+            var lossyScale = transform.lossyScale;
+
+            float absX = Mathf.Abs(lossyScale.x);
+            float absY = Mathf.Abs(lossyScale.y);
+            float absZ = Mathf.Abs(lossyScale.z);
+
+            float height;
+            Vector3 localAxis;
+            switch (capsuleCollider.direction)
+            {
+                case 1: // Y
+                    {
+                        localAxis = Vector3.up;
+                        radius = capsuleCollider.radius * Mathf.Max(absX, absZ);
+                        height = capsuleCollider.height * absY;
+                        break;
+                    }
+                case 2: // Z
+                    {
+                        localAxis = Vector3.forward;
+                        radius = capsuleCollider.radius * Mathf.Max(absX, absY);
+                        height = capsuleCollider.height * absZ;
+                        break;
+                    }
+                default: // X
+                    {
+                        localAxis = Vector3.right;
+                        radius = capsuleCollider.radius * Mathf.Max(absY, absZ);
+                        height = capsuleCollider.height * absX;
+                        break;
+                    }
+            }
+
+            Vector3 worldAxis = transform.TransformDirection(localAxis);
+            var center = transform.TransformPoint(capsuleCollider.center);
+            float half = Mathf.Max(0f, (height * 0.5f - radius)); // Half of the cylindrical part (excluding the hemispheres)
+            Vector3 offset = worldAxis * half;
+
+            point0 = center + offset;
+            point1 = center - offset;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetSphereOverlapParams(this SphereCollider sphereCollider, out Vector3 center, out float radius)
+        {
+            var transform = sphereCollider.transform;
+            var lossyScale = transform.lossyScale;
+
+            center = transform.TransformPoint(sphereCollider.center);
+
+            (float absX, float absY, float absZ) = (Mathf.Abs(lossyScale.x), Mathf.Abs(lossyScale.y), Mathf.Abs(lossyScale.z));
+
+            // System.Math.Max is faster than Mathf.Max (no allocation/loops)
+            radius = sphereCollider.radius * System.Math.Max(System.Math.Max(absX, absY), absZ);
+        }
+    }
+
+    public static class Collider2DExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetBox2DOverlapParams(this BoxCollider2D boxCollider, out Vector2 point, out Vector2 size, out float angle)
+        {
+            var transform = boxCollider.transform;
+            var lossyScale = transform.lossyScale;
+
+            var worldCenter = transform.TransformPoint((Vector3)boxCollider.offset);
+            point = new Vector2(worldCenter.x, worldCenter.y);
+
+            var localSize = boxCollider.size;
+            size = new Vector2(
+                Mathf.Abs(localSize.x * lossyScale.x),
+                Mathf.Abs(localSize.y * lossyScale.y));
+
+            angle = transform.eulerAngles.z;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetCircleOverlapParams(this CircleCollider2D circleCollider, out Vector2 point, out float radius)
+        {
+            var transform = circleCollider.transform;
+            var lossyScale = transform.lossyScale;
+
+            var worldCenter = transform.TransformPoint((Vector3)circleCollider.offset);
+            point = new Vector2(worldCenter.x, worldCenter.y);
+
+            (float absX, float absY) = (Mathf.Abs(lossyScale.x), Mathf.Abs(lossyScale.y));
+
+            radius = circleCollider.radius * System.Math.Max(absX, absY);
+        }
     }
 
     public static class MathExtensions
