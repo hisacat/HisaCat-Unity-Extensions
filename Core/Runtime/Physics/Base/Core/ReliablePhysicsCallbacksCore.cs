@@ -29,6 +29,10 @@ namespace HisaCat.HUE.PhysicsExtension
     {
         #region Abstract Methods
         /// <summary>
+        /// Reliable 충돌 이벤트 처리를 위한 브리지를 반환합니다.
+        /// </summary>
+        protected abstract IReliablePhysicsBridge<TCollider, TCollision> AsReliablePhysicsBridge();
+        /// <summary>
         /// 충돌체가 활성화되어 있는지 확인합니다.
         /// </summary>
         /// <param name="collider">충돌체</param>
@@ -53,22 +57,21 @@ namespace HisaCat.HUE.PhysicsExtension
         public IReadOnlyHashSet<TCollider> CollisionStayingColliders { get; private set; } = null;
         private HashSet<TCollider> collisionStayingColliders = null;
 
-        private IReliablePhysicsBridge<TCollider, TCollision> core = null;
+        private IReliablePhysicsBridge<TCollider, TCollision> bridge = null;
         protected virtual void Awake()
         {
             this.TriggerStayingColliders = (this.triggerStayingColliders = new()).AsReadOnly();
             this.CollisionStayingColliders = (this.collisionStayingColliders = new()).AsReadOnly();
 
-            this.core = this.CreateCore();
+            this.bridge = this.AsReliablePhysicsBridge();
         }
-        protected abstract IReliablePhysicsBridge<TCollider, TCollision> CreateCore();
 
         protected virtual void OnDisable() => this.ForceExitAll();
         protected virtual void OnDestroy() => this.ForceExitAll();
         private void ForceExitAll()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.core.OnReliableTriggerExitCallback_Internal, this.core.OnReliableTriggerStayingChangedCallback_Internal);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.core.OnReliableCollisionExitCallback_Internal, this.core.OnReliableCollisionStayingChangedCallback_Internal);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.bridge.OnReliableTriggerExitCallback_Internal, this.bridge.OnReliableTriggerStayingChangedCallback_Internal);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.bridge.OnReliableCollisionExitCallback_Internal, this.bridge.OnReliableCollisionStayingChangedCallback_Internal);
             static void Process(
                 HashSet<TCollider> staying, IReadOnlyHashSet<TCollider> readOnlyStaying,
                 StaticBuffer<TCollider> buffer,
@@ -97,8 +100,8 @@ namespace HisaCat.HUE.PhysicsExtension
 
         protected virtual void FixedUpdate()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.core.OnReliableTriggerExitCallback_Internal, this.core.OnReliableTriggerStayCallback_Internal, this.core.OnReliableTriggerStayingChangedCallback_Internal);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.core.OnReliableCollisionExitCallback_Internal, this.core.OnReliableCollisionStayCallback_Internal, this.core.OnReliableCollisionStayingChangedCallback_Internal);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.bridge.OnReliableTriggerExitCallback_Internal, this.bridge.OnReliableTriggerStayCallback_Internal, this.bridge.OnReliableTriggerStayingChangedCallback_Internal);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.bridge.OnReliableCollisionExitCallback_Internal, this.bridge.OnReliableCollisionStayCallback_Internal, this.bridge.OnReliableCollisionStayingChangedCallback_Internal);
             static void Process(
                 HashSet<TCollider> staying, IReadOnlyHashSet<TCollider> readOnlyStaying,
                 StaticBuffer<TCollider> buffer,
@@ -151,16 +154,16 @@ namespace HisaCat.HUE.PhysicsExtension
             if (this.triggerStayingColliders.Add(other) == false) return;
 
             // Always Fire staying changed callback first.
-            this.core.OnReliableTriggerStayingChangedCallback_Internal(this.TriggerStayingColliders);
-            this.core.OnReliableTriggerEnterCallback_Internal(other);
+            this.bridge.OnReliableTriggerStayingChangedCallback_Internal(this.TriggerStayingColliders);
+            this.bridge.OnReliableTriggerEnterCallback_Internal(other);
         }
         private void OnTriggerExitCallback_Internal(TCollider other)
         {
             if (this.triggerStayingColliders.Remove(other) == false) return;
 
             // Always Fire staying changed callback first.
-            this.core.OnReliableTriggerStayingChangedCallback_Internal(this.TriggerStayingColliders);
-            this.core.OnReliableTriggerExitCallback_Internal(other);
+            this.bridge.OnReliableTriggerStayingChangedCallback_Internal(this.TriggerStayingColliders);
+            this.bridge.OnReliableTriggerExitCallback_Internal(other);
         }
 
         private void OnCollisionEnterCallback_Internal(TCollision collision)
@@ -169,8 +172,8 @@ namespace HisaCat.HUE.PhysicsExtension
             if (this.collisionStayingColliders.Add(collider) == false) return;
 
             // Always Fire staying changed callback first.
-            this.core.OnReliableCollisionStayingChangedCallback_Internal(this.CollisionStayingColliders);
-            this.core.OnReliableCollisionEnterCallback_Internal(collider);
+            this.bridge.OnReliableCollisionStayingChangedCallback_Internal(this.CollisionStayingColliders);
+            this.bridge.OnReliableCollisionEnterCallback_Internal(collider);
         }
         private void OnCollisionExitCallback_Internal(TCollision collision)
         {
@@ -178,8 +181,8 @@ namespace HisaCat.HUE.PhysicsExtension
             if (this.collisionStayingColliders.Remove(collider) == false) return;
 
             // Always Fire staying changed callback first.
-            this.core.OnReliableCollisionStayingChangedCallback_Internal(this.CollisionStayingColliders);
-            this.core.OnReliableCollisionExitCallback_Internal(collider);
+            this.bridge.OnReliableCollisionStayingChangedCallback_Internal(this.CollisionStayingColliders);
+            this.bridge.OnReliableCollisionExitCallback_Internal(collider);
         }
         #endregion Internal Physics Callbacks
     }

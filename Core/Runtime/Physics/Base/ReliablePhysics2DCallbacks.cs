@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    public class ReliablePhysics2DCallbacks :
+    public abstract class ReliablePhysics2DCallbacks :
         ReliablePhysicsCallbacksCore<Collider2D, Collision2D>,
         IReliablePhysicsBridge<Collider2D, Collision2D>
     {
@@ -23,11 +23,12 @@ namespace HisaCat.HUE.PhysicsExtension
         private const int ColliderBufferCapacity = 1024;
         private readonly static StaticBuffer<Collider2D> colliderBuffer = new((_) => new Collider2D[ColliderBufferCapacity]);
 
+        #region Sealed override methods
+        protected sealed override IReliablePhysicsBridge<Collider2D, Collision2D> AsReliablePhysicsBridge() => this;
         protected sealed override StaticBuffer<Collider2D> ColliderBuffer => colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider2D collider) => collider.enabled;
         protected sealed override Collider2D GetCollider(Collision2D collision) => collision.collider;
-
-        protected override IReliablePhysicsBridge<Collider2D, Collision2D> CreateCore() => this;
+        #endregion Sealed override methods
 
         #region Unity Physics Callbacks
         protected virtual void OnTriggerEnter2D(Collider2D other)

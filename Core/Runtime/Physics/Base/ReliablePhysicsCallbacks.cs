@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    public class ReliablePhysicsCallbacks :
+    public abstract class ReliablePhysicsCallbacks :
         ReliablePhysicsCallbacksCore<Collider, Collision>,
         IReliablePhysicsBridge<Collider, Collision>
     {
@@ -23,11 +23,12 @@ namespace HisaCat.HUE.PhysicsExtension
         private const int ColliderBufferCapacity = 1024;
         private readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
 
+        #region Sealed override methods
+        protected sealed override IReliablePhysicsBridge<Collider, Collision> AsReliablePhysicsBridge() => this;
         protected sealed override StaticBuffer<Collider> ColliderBuffer => colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider collider) => collider.enabled;
         protected sealed override Collider GetCollider(Collision collision) => collision.collider;
-
-        protected override IReliablePhysicsBridge<Collider, Collision> CreateCore() => this;
+        #endregion Sealed override methods
 
         #region Unity Physics Callbacks
         protected virtual void OnTriggerEnter(Collider other)
