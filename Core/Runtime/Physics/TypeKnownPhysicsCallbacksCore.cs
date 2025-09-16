@@ -7,7 +7,10 @@ using UnityEngine;
 namespace HisaCat.HUE.PhysicsExtension
 {
     [RequireComponent(typeof(Collider))]
-    public abstract class TypeKnownPhysicsCallbacks<TTarget> : ReliablePhysicsCallbacks where TTarget : Component
+    public abstract class TypeKnownPhysicsCallbacks<TTarget> :
+        ReliablePhysicsCallbacksCore<Collider, Collision>,
+        IReliablePhysicsBridge<Collider, Collision>
+        where TTarget : Component
     {
         /// <summary>
         /// GetComponent를 최소화하기 위한 각 Collider가 가지고 있는 TTarget의 캐시입니다.
@@ -108,15 +111,32 @@ namespace HisaCat.HUE.PhysicsExtension
             }
         }
 
+        #region IReliablePhysicsBridge
+        public void OnReliableTriggerEnterCallback_Internal(Collider other)
+            => this.OnReliableTriggerEnterCallback(other);
+        public void OnReliableTriggerStayCallback_Internal(Collider other) { }
+        public void OnReliableTriggerExitCallback_Internal(Collider other)
+            => this.OnReliableTriggerExitCallback(other);
+        public void OnReliableTriggerStayingChangedCallback_Internal(IReadOnlyHashSet<Collider> staying) { }
+
+        public void OnReliableCollisionEnterCallback_Internal(Collider other)
+            => this.OnReliableCollisionEnterCallback(other);
+        public void OnReliableCollisionStayCallback_Internal(Collider other) { }
+        public void OnReliableCollisionExitCallback_Internal(Collider other)
+            => this.OnReliableCollisionExitCallback(other);
+        public void OnReliableCollisionStayingChangedCallback_Internal(IReadOnlyHashSet<Collider> staying) { }
+        #endregion IReliablePhysicsBridge
+
         #region Reliable Physics Callbacks
-        protected override void OnReliableTriggerEnterCallback(Collider other)
+        protected virtual void OnReliableTriggerEnterCallback(Collider other)
             => OnEnterWorks(other, this.triggerStayingTargets, this.OnTargetTriggerEnterCallback, this.OnTargetTriggerStayingChangedCallback);
-        protected override void OnReliableTriggerExitCallback(Collider other)
+        protected virtual void OnReliableTriggerExitCallback(Collider other)
             => OnExitWorks(other, this.triggerStayingTargets, this.OnTargetTriggerExitCallback, this.OnTargetTriggerStayingChangedCallback);
-        protected override void OnReliableCollisionEnterCallback(Collider other)
+        protected virtual void OnReliableCollisionEnterCallback(Collider other)
             => OnEnterWorks(other, this.collisionStayingTargets, this.OnTargetCollisionEnterCallback, this.OnTargetCollisionStayingChangedCallback);
-        protected override void OnReliableCollisionExitCallback(Collider other)
+        protected virtual void OnReliableCollisionExitCallback(Collider other)
             => OnExitWorks(other, this.collisionStayingTargets, this.OnTargetCollisionExitCallback, this.OnTargetCollisionStayingChangedCallback);
+        #endregion Reliable Physics Callbacks
         private void OnEnterWorks(
             Collider other, ReadOnlyHashSetValueDictionary stayTargets,
             System.Action<TTarget> onEnterCallback,
@@ -157,7 +177,6 @@ namespace HisaCat.HUE.PhysicsExtension
                 onEnterCallback(target);
             }
         }
-        #endregion Reliable Physics Callbacks
 
         #region Target Physics Callbacks
         protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }
