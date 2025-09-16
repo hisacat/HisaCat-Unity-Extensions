@@ -84,6 +84,11 @@ namespace HisaCat
         /// 버퍼 요소를 앞에서부터 주어진 갯수만큼 초기화합니다.
         /// </summary>
         /// <param name="count">초기화할 요소 개수</param>
-        public void ClearBuffer(int count) => System.Array.Clear(this.Buffer, 0, count);
+        public void ClearBuffer(int count)
+        {
+            if (count <= 0) return; // Do nothing.
+            if (count > this.buffer.Length) count = this.buffer.Length; // Clamp.
+            System.Array.Clear(this.Buffer, 0, count);
+        }
     }
 }
