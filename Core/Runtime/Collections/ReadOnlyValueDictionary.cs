@@ -52,9 +52,6 @@ namespace HisaCat.HUE.Collections
             => this.sourceDictionary.ContainsKey(key);
         public bool TryGetValue(K key, out V value)
             => this.sourceDictionary.TryGetValue(key, out value);
-
-        public V this[K key]
-            => this.sourceDictionary[key];
         public IEnumerable<K> Keys
             => this.sourceDictionary.Keys;
         public IEnumerable<V> Values
