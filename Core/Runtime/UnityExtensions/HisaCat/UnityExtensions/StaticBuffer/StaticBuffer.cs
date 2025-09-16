@@ -37,7 +37,8 @@ namespace HisaCat
         /// <summary>
         /// 실제 데이터를 저장하는 배열 버퍼
         /// </summary>
-        public T[] Buffer { get; private set; } = null;
+        public T[] Buffer => buffer;
+        private T[] buffer = null;
 
         /// <summary>
         /// 버퍼 초기화를 담당하는 델리게이트
@@ -57,6 +58,32 @@ namespace HisaCat
         /// <summary>
         /// 버퍼를 초기화합니다. Initializer 델리게이트를 호출하여 새로운 버퍼를 생성합니다.
         /// </summary>
-        public void Initialize() => this.Buffer = this.Initializer(this.Buffer);
+        public void Initialize() => this.buffer = this.Initializer(this.buffer);
+
+        /// <summary>
+        /// 버퍼에 아이템을 추가하고 인덱스를 증가시킵니다.<br/>
+        /// 버퍼 크기가 부족하면 자동으로 크기를 증가합니다.
+        /// </summary>
+        /// <param name="index">추가할 인덱스</param>
+        /// <param name="element">추가할 아이템</param>
+        public void AddItemSafely(ref int index, T element)
+        {
+            if (this.Buffer.Length <= index)
+            {
+                Debug.LogWarning($"[{nameof(StaticBuffer<T>)}]: Buffer capacity reached. Automatically increasing buffer size. This may impact performance.");
+                System.Array.Resize(ref this.buffer, this.buffer.Length * 2);
+            }
+            this.Buffer[index++] = element;
+        }
+
+        /// <summary>
+        /// 전체 버퍼 요소를 초기화합니다.
+        /// </summary>
+        public void ClearBuffer() => this.ClearBuffer(this.Buffer.Length);
+        /// <summary>
+        /// 버퍼 요소를 앞에서부터 주어진 갯수만큼 초기화합니다.
+        /// </summary>
+        /// <param name="count">초기화할 요소 개수</param>
+        public void ClearBuffer(int count) => System.Array.Clear(this.Buffer, 0, count);
     }
 }
