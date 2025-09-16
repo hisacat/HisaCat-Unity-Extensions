@@ -6,31 +6,9 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    internal static class TypeKnownPhysicsCallbacksGlobalBuffers
-    {
-        // Generic class에서는 InitializeOnEnterPlayMode attribute가 작동하지 않음으로,
-        // 타입이 확정된 Buffer는 여기에 작성합니다.
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-        [UnityEditor.InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-        {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-            {
-                ColliderBuffer.Initialize();
-            }
-        }
-#pragma warning restore IDE0051
-#endif
-        private const int ColliderBufferCapacity = 1024;
-        internal readonly static StaticBuffer<Collider> ColliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
-
-    }
     [RequireComponent(typeof(Collider))]
     public abstract class TypeKnownPhysicsCallbacks<TTarget> : ReliablePhysicsCallbacks where TTarget : Component
     {
-        private static StaticBuffer<Collider> ColliderBuffer => TypeKnownPhysicsCallbacksGlobalBuffers.ColliderBuffer;
-
         /// <summary>
         /// GetComponent를 최소화하기 위한 각 Collider가 가지고 있는 TTarget의 캐시입니다.
         /// </summary>
