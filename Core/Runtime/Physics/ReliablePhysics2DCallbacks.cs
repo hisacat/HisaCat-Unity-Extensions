@@ -31,13 +31,13 @@ namespace HisaCat.HUE.PhysicsExtension
 
         #region Unity Physics Callbacks
         protected virtual void OnTriggerEnter2D(Collider2D other)
-            => this.OnUnityTriggerEnter(other);
+            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleTriggerEnter(other);
         protected virtual void OnTriggerExit2D(Collider2D other)
-            => this.OnUnityTriggerExit(other);
+            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleTriggerExit(other);
         protected virtual void OnCollisionEnter2D(Collision2D collision)
-            => this.OnUnityCollisionEnter(collision);
+            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleCollisionEnter(collision);
         protected virtual void OnCollisionExit2D(Collision2D collision)
-            => this.OnUnityCollisionExit(collision);
+            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleCollisionExit(collision);
         #endregion Unity Physics Callbacks
 
         #region IReliablePhysicsBridge

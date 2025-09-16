@@ -23,7 +23,8 @@ namespace HisaCat.HUE.PhysicsExtension
     /// - On Exit: StayingChanged > Exit
     /// </para>
     /// </summary>
-    public abstract class ReliablePhysicsCallbacksCore<TCollider, TCollision> : MonoBehaviour
+    public abstract class ReliablePhysicsCallbacksCore<TCollider, TCollision> :
+        MonoBehaviour, IUnityPhysicsHandler<TCollider, TCollision>
         where TCollider : Component where TCollision : class
     {
         #region Abstract Methods
@@ -133,16 +134,16 @@ namespace HisaCat.HUE.PhysicsExtension
             }
         }
 
-        #region Unity Physics Callbacks
-        protected void OnUnityTriggerEnter(TCollider other)
+        #region IUnityPhysicsHandler
+        void IUnityPhysicsHandler<TCollider, TCollision>.HandleTriggerEnter(TCollider other)
             => this.OnTriggerEnterCallback_Internal(other);
-        protected void OnUnityTriggerExit(TCollider other)
+        void IUnityPhysicsHandler<TCollider, TCollision>.HandleTriggerExit(TCollider other)
             => this.OnTriggerExitCallback_Internal(other);
-        protected void OnUnityCollisionEnter(TCollision collision)
+        void IUnityPhysicsHandler<TCollider, TCollision>.HandleCollisionEnter(TCollision collision)
             => this.OnCollisionEnterCallback_Internal(collision);
-        protected void OnUnityCollisionExit(TCollision collision)
+        void IUnityPhysicsHandler<TCollider, TCollision>.HandleCollisionExit(TCollision collision)
             => this.OnCollisionExitCallback_Internal(collision);
-        #endregion Unity Physics Callbacks
+        #endregion IUnityPhysicsHandler
 
         #region Internal Physics Callbacks
         private void OnTriggerEnterCallback_Internal(TCollider other)
@@ -181,6 +182,15 @@ namespace HisaCat.HUE.PhysicsExtension
             this.core.OnReliableCollisionExitCallback_Internal(collider);
         }
         #endregion Internal Physics Callbacks
+    }
+
+    public interface IUnityPhysicsHandler<TCollider, TCollision>
+        where TCollider : Component where TCollision : class
+    {
+        void HandleTriggerEnter(TCollider other);
+        void HandleTriggerExit(TCollider other);
+        void HandleCollisionEnter(TCollision collision);
+        void HandleCollisionExit(TCollision collision);
     }
     public interface IReliablePhysicsBridge<TCollider, TCollision>
     {
