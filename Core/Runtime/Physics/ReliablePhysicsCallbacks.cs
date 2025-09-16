@@ -51,8 +51,8 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnDestroy() => this.ForceExitAll();
         private void ForceExitAll()
         {
-            Process(this.triggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExit);
-            Process(this.collisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExit);
+            Process(this.triggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback);
+            Process(this.collisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback);
             static void Process(HashSet<Collider> staying, StaticBuffer<Collider> buffer, System.Action<Collider> onExitCallback)
             {
                 var removeCount = 0;
@@ -71,8 +71,8 @@ namespace HisaCat.HUE.PhysicsExtension
 
         protected virtual void FixedUpdate()
         {
-            Process(this.triggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExit, this.OnReliableTriggerStay);
-            Process(this.collisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExit, this.OnReliableCollisionStay);
+            Process(this.triggerStayingColliders, ColliderBuffer, this.OnReliableTriggerExitCallback, this.OnReliableTriggerStayCallback);
+            Process(this.collisionStayingColliders, ColliderBuffer, this.OnReliableCollisionExitCallback, this.OnReliableCollisionStayCallback);
             static void Process(HashSet<Collider> staying, StaticBuffer<Collider> buffer, System.Action<Collider> onExitCallback, System.Action<Collider> onStayCallback)
             {
                 var removeCount = 0;
@@ -99,22 +99,22 @@ namespace HisaCat.HUE.PhysicsExtension
         #region Unity Physics Callbacks
         private void OnTriggerEnter(Collider other)
         {
-            this.OnBaseTriggerEnter(other);
+            this.OnBaseTriggerEnterCallback(other);
             this.OnTriggerEnterCallback_Internal(other);
         }
         private void OnTriggerExit(Collider other)
         {
-            this.OnBaseTriggerExit(other);
+            this.OnBaseTriggerExitCallback(other);
             this.OnTriggerExitCallback_Internal(other);
         }
         private void OnCollisionEnter(Collision collision)
         {
-            this.OnBaseCollisionEnter(collision);
+            this.OnBaseCollisionEnterCallback(collision);
             this.OnCollisionEnterCallback_Internal(collision);
         }
         private void OnCollisionExit(Collision collision)
         {
-            this.OnBaseCollisionExit(collision);
+            this.OnBaseCollisionExitCallback(collision);
             this.OnCollisionExitCallback_Internal(collision);
         }
         #endregion Unity Physics Callbacks
@@ -123,39 +123,39 @@ namespace HisaCat.HUE.PhysicsExtension
         private void OnTriggerEnterCallback_Internal(Collider other)
         {
             if (this.triggerStayingColliders.Add(other) == false) return;
-            this.OnReliableTriggerEnter(other);
+            this.OnReliableTriggerEnterCallback(other);
         }
         private void OnTriggerExitCallback_Internal(Collider other)
         {
             if (this.triggerStayingColliders.Remove(other) == false) return;
-            this.OnReliableTriggerExit(other);
+            this.OnReliableTriggerExitCallback(other);
         }
         private void OnCollisionEnterCallback_Internal(Collision collision)
         {
             if (this.collisionStayingColliders.Add(collision.collider) == false) return;
-            this.OnReliableCollisionEnter(collision.collider);
+            this.OnReliableCollisionEnterCallback(collision.collider);
         }
         private void OnCollisionExitCallback_Internal(Collision collision)
         {
             if (this.collisionStayingColliders.Remove(collision.collider) == false) return;
-            this.OnReliableCollisionExit(collision.collider);
+            this.OnReliableCollisionExitCallback(collision.collider);
         }
         #endregion Internal Physics Callbacks
 
         #region Base Physics Callbacks
-        protected virtual void OnBaseTriggerEnter(Collider other) { }
-        protected virtual void OnBaseTriggerExit(Collider other) { }
-        protected virtual void OnBaseCollisionEnter(Collision collision) { }
-        protected virtual void OnBaseCollisionExit(Collision collision) { }
+        protected virtual void OnBaseTriggerEnterCallback(Collider other) { }
+        protected virtual void OnBaseTriggerExitCallback(Collider other) { }
+        protected virtual void OnBaseCollisionEnterCallback(Collision collision) { }
+        protected virtual void OnBaseCollisionExitCallback(Collision collision) { }
         #endregion Base Physics Callbacks
 
         #region Reliable Physics Callbacks
-        protected virtual void OnReliableTriggerEnter(Collider other) { }
-        protected virtual void OnReliableTriggerStay(Collider other) { }
-        protected virtual void OnReliableTriggerExit(Collider other) { }
-        protected virtual void OnReliableCollisionEnter(Collider other) { }
-        protected virtual void OnReliableCollisionStay(Collider other) { }
-        protected virtual void OnReliableCollisionExit(Collider other) { }
+        protected virtual void OnReliableTriggerEnterCallback(Collider other) { }
+        protected virtual void OnReliableTriggerStayCallback(Collider other) { }
+        protected virtual void OnReliableTriggerExitCallback(Collider other) { }
+        protected virtual void OnReliableCollisionEnterCallback(Collider other) { }
+        protected virtual void OnReliableCollisionStayCallback(Collider other) { }
+        protected virtual void OnReliableCollisionExitCallback(Collider other) { }
         #endregion Reliable Physics Callbacks
     }
 }
