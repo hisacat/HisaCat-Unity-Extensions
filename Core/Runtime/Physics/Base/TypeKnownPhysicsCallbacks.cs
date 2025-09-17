@@ -5,9 +5,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    public abstract class TypeKnownPhysicsCallbacks<TTarget> :
-        TypeKnownPhysicsCallbacksCore<TTarget, Collider, Collision>
-        where TTarget : Component
+    internal static class TypeKnownPhysicsCallbacksBuffer
     {
 #if UNITY_EDITOR
 #pragma warning disable IDE0051
@@ -22,6 +20,14 @@ namespace HisaCat.HUE.PhysicsExtension
 #pragma warning restore IDE0051
 #endif
 
+        private const int ColliderBufferCapacity = 1024;
+        internal readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
+    }
+
+    public abstract class TypeKnownPhysicsCallbacks<TTarget> :
+        TypeKnownPhysicsCallbacksCore<TTarget, Collider, Collision>
+        where TTarget : Component
+    {
         protected override TypeKnownCallbacks DelegateTypeKnownCallbacks()
         {
             return new(
@@ -40,11 +46,8 @@ namespace HisaCat.HUE.PhysicsExtension
             );
         }
 
-        private const int ColliderBufferCapacity = 1024;
-        private readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
-
         #region Sealed override methods
-        protected sealed override StaticBuffer<Collider> ColliderBuffer => colliderBuffer;
+        protected sealed override StaticBuffer<Collider> ColliderBuffer => TypeKnownPhysicsCallbacksBuffer.colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider collider) => collider.enabled;
         protected sealed override Collider GetCollider(Collision collision) => collision.collider;
 
