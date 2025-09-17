@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HisaCat
 {
-    [DefaultExecutionOrder(short.MinValue)]
+    [DefaultExecutionOrder(int.MinValue)]
     public class DestroyChildenOnAwake : MonoBehaviour
     {
         [SerializeField]

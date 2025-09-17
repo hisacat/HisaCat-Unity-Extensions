@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace HisaCat.HUE.UI.Windows
 {
-    [DefaultExecutionOrder(short.MinValue)]
+    [DefaultExecutionOrder(int.MinValue)]
     public abstract class WindowSystemBase : MonoBehaviour
     {
         #region Abstract Methods

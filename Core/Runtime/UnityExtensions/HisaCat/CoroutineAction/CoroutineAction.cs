@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 namespace HisaCat
 {
-    [DefaultExecutionOrder(short.MinValue)]
+    [DefaultExecutionOrder(int.MinValue)]
     public class CoroutineAction : MonoBehaviour
     {
 #if UNITY_EDITOR
