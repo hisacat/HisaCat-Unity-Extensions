@@ -33,7 +33,6 @@ internal static class PhysicsCallbackCache
         {
             if (buffers.TryGetValue(capacity, out var buffer) == false)
             {
-                UnityEngine.Debug.Log($"New buffer created {typeof(TType).Name}:{capacity}");
                 buffer = new StaticBuffer<TType>(_ => new TType[capacity]);
                 buffers.Add(capacity, buffer);
             }
@@ -56,7 +55,6 @@ internal static class PhysicsCallbackCache
         {
             if (dictionaries.TryGetValue(capacity, out var dict) == false)
             {
-                UnityEngine.Debug.Log($"New dictionary created {typeof(TKey).Name}/{typeof(TValue).Name}:{capacity}");
                 dict = new Dictionary<TKey, TValue>(capacity);
                 dictionaries.Add(capacity, dict);
             }
