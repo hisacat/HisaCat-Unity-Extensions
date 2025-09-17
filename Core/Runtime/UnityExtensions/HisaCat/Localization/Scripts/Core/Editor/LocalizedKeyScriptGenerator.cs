@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using HisaCat.IO;
+using HisaCat.UnityExtensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -94,21 +95,21 @@ namespace HisaCat.Localization
         }
 
         public readonly static string ThisScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
-        public const string TargetJsonPath = "Assets/Resources/Localization/ko_KR.json";
-        public const string TargetScriptPath = "Assets/Localization/LocalizedKey.cs";
+        public const string SourceJsonPath = "Assets/Resources/Localization/ko_KR.json";
+        public const string DestScriptPath = "Assets/Localization/LocalizedKey.cs";
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            if (File.Exists(TargetJsonPath) == false)
+            if (File.Exists(SourceJsonPath) == false)
             {
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json not found at \"{TargetJsonPath}\".");
+                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Source json not found at \"{SourceJsonPath}\".");
                 return;
             }
 
             var changedAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-            if (changedAssets.Contains(ThisScriptPath) || changedAssets.Contains(TargetJsonPath))
+            if (changedAssets.ContainsAny(StringComparison.OrdinalIgnoreCase, ThisScriptPath, SourceJsonPath))
             {
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{TargetJsonPath}\".");
-                var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(TargetJsonPath);
+                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{SourceJsonPath}\".");
+                var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(SourceJsonPath);
                 var json = jsonAsset == null ? "{}" : jsonAsset.text;
 
                 Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Generate...");
@@ -116,8 +117,8 @@ namespace HisaCat.Localization
 
 
                 Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Write script...");
-                File.WriteAllText(TargetScriptPath, script);
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Script generated at \"{TargetScriptPath}\".");
+                File.WriteAllText(DestScriptPath, script);
+                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Script generated at \"{DestScriptPath}\".");
 
                 AssetDatabase.Refresh();
                 Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] AssetDatabase refreshed.");

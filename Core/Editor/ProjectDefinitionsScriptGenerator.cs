@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
+using HisaCat.IO;
+using HisaCat.UnityExtensions;
+using System.IO;
 
 namespace HisaCat.HUE
 {
@@ -13,19 +16,21 @@ namespace HisaCat.HUE
             GenerateProjectDefinitionsScriptIfDirty();
         }
 
+        public readonly static string ThisScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
         private const string EditorBuildSettingsPath = "ProjectSettings/EditorBuildSettings.asset";
         private const string TagManagerPath = "ProjectSettings/TagManager.asset";
-        private const string ProjectDefinitionsScriptPath = "Assets/HisaCat/HUE/ProjectDefinitions.cs";
+        private const string DestScriptPath = "Assets/HisaCat/HUE/ProjectDefinitions.cs";
 
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            var allAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-            var needGenerate = allAssets.Any(path =>
-                path == EditorBuildSettingsPath ||
-                path == TagManagerPath
-            );
+            if (File.Exists(EditorBuildSettingsPath) == false)
+                Debug.LogError($"[{nameof(ProjectDefinitionsScriptGenerator)}] EditorBuildSettings not found at \"{EditorBuildSettingsPath}\".");
+            if (File.Exists(TagManagerPath) == false)
+                Debug.LogError($"[{nameof(ProjectDefinitionsScriptGenerator)}] TagManager not found at \"{TagManagerPath}\".");
 
-            if (needGenerate) GenerateProjectDefinitionsScriptIfDirty();
+            var changedAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
+            if (changedAssets.ContainsAny(System.StringComparison.OrdinalIgnoreCase, ThisScriptPath, EditorBuildSettingsPath, TagManagerPath))
+                GenerateProjectDefinitionsScriptIfDirty();
         }
 
         [MenuItem("HisaCat/HUE/Generate Project Definitions Script")]
@@ -213,18 +218,18 @@ namespace HisaCat.HUE
 
             string script = scriptBuilder.ToString();
 
-            string directory = System.IO.Path.GetDirectoryName(ProjectDefinitionsScriptPath);
+            string directory = System.IO.Path.GetDirectoryName(DestScriptPath);
             if (System.IO.Directory.Exists(directory) == false)
                 System.IO.Directory.CreateDirectory(directory);
 
-            if (System.IO.File.Exists(ProjectDefinitionsScriptPath))
+            if (System.IO.File.Exists(DestScriptPath))
             {
-                var existingScript = System.IO.File.ReadAllText(ProjectDefinitionsScriptPath);
+                var existingScript = System.IO.File.ReadAllText(DestScriptPath);
                 if (existingScript == script)
                     return;
             }
 
-            System.IO.File.WriteAllText(ProjectDefinitionsScriptPath, script);
+            System.IO.File.WriteAllText(DestScriptPath, script);
             AssetDatabase.Refresh();
         }
 
