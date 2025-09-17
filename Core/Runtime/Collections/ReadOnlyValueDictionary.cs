@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace HisaCat.HUE.Collections
 {
-    public abstract class ReadOnlyValueDictionary<K, V, RV> : IEnumerable<KeyValuePair<K, V>>
+    public abstract class ReadOnlyValueDictionary<TKey, TValue, TReadOnlyValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
-        public abstract RV ToReadOnlyValue(V value);
+        public abstract TReadOnlyValue ToReadOnlyValue(TValue value);
 
-        public Dictionary<K, RV> ReadOnlyDictionary { get; private set; } = null;
-        private Dictionary<K, V> sourceDictionary = null;
+        public Dictionary<TKey, TReadOnlyValue> ReadOnlyDictionary { get; private set; } = null;
+        private readonly Dictionary<TKey, TValue> sourceDictionary = null;
 
         public ReadOnlyValueDictionary()
         {
@@ -17,14 +17,14 @@ namespace HisaCat.HUE.Collections
         }
 
         #region IEnumerable
-        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
             => this.sourceDictionary.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
         #endregion
 
         #region Dictionary wrapper
-        public V this[K key]
+        public TValue this[TKey key]
         {
             get => this.sourceDictionary[key];
             set
@@ -33,12 +33,12 @@ namespace HisaCat.HUE.Collections
                 this.ReadOnlyDictionary[key] = this.ToReadOnlyValue(value);
             }
         }
-        public void Add(K key, V value)
+        public void Add(TKey key, TValue value)
         {
             this.sourceDictionary.Add(key, value);
             this.ReadOnlyDictionary.Add(key, this.ToReadOnlyValue(value));
         }
-        public void Remove(K key)
+        public void Remove(TKey key)
         {
             this.sourceDictionary.Remove(key);
             this.ReadOnlyDictionary.Remove(key);
@@ -48,13 +48,13 @@ namespace HisaCat.HUE.Collections
             this.sourceDictionary.Clear();
             this.ReadOnlyDictionary.Clear();
         }
-        public bool ContainsKey(K key)
+        public bool ContainsKey(TKey key)
             => this.sourceDictionary.ContainsKey(key);
-        public bool TryGetValue(K key, out V value)
+        public bool TryGetValue(TKey key, out TValue value)
             => this.sourceDictionary.TryGetValue(key, out value);
-        public IEnumerable<K> Keys
+        public IEnumerable<TKey> Keys
             => this.sourceDictionary.Keys;
-        public IEnumerable<V> Values
+        public IEnumerable<TValue> Values
             => this.sourceDictionary.Values;
         public int Count
             => this.sourceDictionary.Count;
