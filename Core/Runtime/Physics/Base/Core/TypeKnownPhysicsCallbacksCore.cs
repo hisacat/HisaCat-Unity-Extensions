@@ -192,7 +192,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     var stay = removeBuffer.Buffer[i];
                     staying.Remove(stay);
 
-                    // Always Fire staying changed callback first.
+                    // Callback order: OnStayingChanged -> OnExit
                     callbacks.OnStayingChanged(staying.ReadOnlyDictionary);
                     callbacks.OnExit(stay);
                 }
@@ -227,9 +227,9 @@ namespace HisaCat.HUE.PhysicsExtension
             {
                 stayTargets.Add(target, new() { other });
 
-                // Always Fire staying changed callback first.
-                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                // Callback order: OnEnter -> OnStayingChanged
                 callbacks.OnEnter(target);
+                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
             }
             else
             {
@@ -252,7 +252,7 @@ namespace HisaCat.HUE.PhysicsExtension
             {
                 stayTargets.Remove(target);
 
-                // Always Fire staying changed callback first.
+                // Callback order: OnStayingChanged -> OnExit
                 callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
                 callbacks.OnExit(target);
             }

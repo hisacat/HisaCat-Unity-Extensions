@@ -118,7 +118,7 @@ namespace HisaCat.HUE.PhysicsExtension
                         var stay = removeBuffer.Buffer[i];
                         staying.Remove(stay);
 
-                        // Always Fire staying changed callback first.
+                        // Callback order: OnStayingChanged -> OnExit
                         callbacks.OnStayingChanged(readOnlyStaying);
                         callbacks.OnExit(stay);
                     }
@@ -156,7 +156,7 @@ namespace HisaCat.HUE.PhysicsExtension
                         var stay = removeBuffer.Buffer[i];
                         staying.Remove(stay);
 
-                        // Always Fire staying changed callback first.
+                        // Callback order: OnStayingChanged -> OnExit
                         callbacks.OnStayingChanged(readOnlyStaying);
                         callbacks.OnExit(stay);
                     }
@@ -181,15 +181,15 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             if (this.triggerStayingColliders.Add(other) == false) return;
 
-            // Always Fire staying changed callback first.
-            this.reliableCallbacks.Trigger.OnStayingChanged(this.TriggerStayingColliders);
+            // Callback order: OnEnter -> OnStayingChanged
             this.reliableCallbacks.Trigger.OnEnter(other);
+            this.reliableCallbacks.Trigger.OnStayingChanged(this.TriggerStayingColliders);
         }
         private void OnTriggerExitCallback_Internal(TCollider other)
         {
             if (this.triggerStayingColliders.Remove(other) == false) return;
 
-            // Always Fire staying changed callback first.
+            // Callback order: OnStayingChanged -> OnExit
             this.reliableCallbacks.Trigger.OnStayingChanged(this.TriggerStayingColliders);
             this.reliableCallbacks.Trigger.OnExit(other);
         }
@@ -199,16 +199,16 @@ namespace HisaCat.HUE.PhysicsExtension
             var collider = this.GetCollider(collision);
             if (this.collisionStayingColliders.Add(collider) == false) return;
 
-            // Always Fire staying changed callback first.
-            this.reliableCallbacks.Collision.OnStayingChanged(this.CollisionStayingColliders);
+            // Callback order: OnEnter -> OnStayingChanged
             this.reliableCallbacks.Collision.OnEnter(collider);
+            this.reliableCallbacks.Collision.OnStayingChanged(this.CollisionStayingColliders);
         }
         private void OnCollisionExitCallback_Internal(TCollision collision)
         {
             var collider = this.GetCollider(collision);
             if (this.collisionStayingColliders.Remove(collider) == false) return;
 
-            // Always Fire staying changed callback first.
+            // Callback order: OnStayingChanged -> OnExit
             this.reliableCallbacks.Collision.OnStayingChanged(this.CollisionStayingColliders);
             this.reliableCallbacks.Collision.OnExit(collider);
         }
