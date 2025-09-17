@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
+    [DefaultExecutionOrder(int.MinValue)]
     public class ReliablePhysicsCallbacksTrigger : ReliablePhysicsCallbacks
     {
         [System.Serializable] public class ReliableTriggerEvent : UnityEngine.Events.UnityEvent<Collider> { }

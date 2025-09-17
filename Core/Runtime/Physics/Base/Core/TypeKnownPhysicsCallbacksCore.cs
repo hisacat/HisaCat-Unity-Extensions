@@ -18,7 +18,6 @@ namespace HisaCat.HUE.PhysicsExtension
     /// - On Exit: StayingChanged → Exit
     /// </para>
     /// </summary>
-    [DefaultExecutionOrder(int.MinValue)]
     public abstract class TypeKnownPhysicsCallbacksCore<TTarget, TCollider, TCollision> :
         ReliablePhysicsCallbacksCore<TCollider, TCollision>
         where TTarget : Component
