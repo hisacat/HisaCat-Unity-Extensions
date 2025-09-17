@@ -34,12 +34,34 @@ namespace HisaCat.HUE.PhysicsExtension
         #endregion Sealed override methods
 
         #region Handle Unity Physics Callbacks
-        protected virtual void OnTriggerEnter(Collider other) => this.HandleUnityTriggerEnter(other);
-        protected virtual void OnTriggerExit(Collider other) => this.HandleUnityTriggerExit(other);
-        protected virtual void OnCollisionEnter(Collision collision) => this.HandleUnityCollisionEnter(collision);
-        protected virtual void OnCollisionExit(Collision collision) => this.HandleUnityCollisionExit(collision);
+        private void OnTriggerEnter(Collider other)
+        {
+            this.HandleUnityTriggerEnter(other);
+            this.OnUnityTriggerEnter(other);
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            this.HandleUnityTriggerExit(other);
+            this.OnUnityTriggerExit(other);
+        }
+        private void OnCollisionEnter(Collision collision)
+        {
+            this.HandleUnityCollisionEnter(collision);
+            this.OnUnityCollisionEnter(collision);
+        }
+        private void OnCollisionExit(Collision collision)
+        {
+            this.HandleUnityCollisionExit(collision);
+            this.OnUnityCollisionExit(collision);
+        }
         #endregion Handle Unity Physics Callbacks
 
+        #region Unity Physics Callbacks
+        protected virtual void OnUnityTriggerEnter(Collider other) { }
+        protected virtual void OnUnityTriggerExit(Collider other) { }
+        protected virtual void OnUnityCollisionEnter(Collision collision) { }
+        protected virtual void OnUnityCollisionExit(Collision collision) { }
+        #endregion Unity Physics Callbacks
 
         #region Target Physics Callbacks
         protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }

@@ -34,12 +34,34 @@ namespace HisaCat.HUE.PhysicsExtension
         #endregion Sealed override methods
 
         #region Handle Unity Physics Callbacks
-        protected virtual void OnTriggerEnter2D(Collider2D other) => this.HandleUnityTriggerEnter(other);
-        protected virtual void OnTriggerExit2D(Collider2D other) => this.HandleUnityTriggerExit(other);
-        protected virtual void OnCollisionEnter2D(Collision2D collision) => this.HandleUnityCollisionEnter(collision);
-        protected virtual void OnCollisionExit2D(Collision2D collision) => this.HandleUnityCollisionExit(collision);
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            this.HandleUnityTriggerEnter(other);
+            this.OnUnityTriggerEnter2D(other);
+        }
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            this.HandleUnityTriggerExit(other);
+            this.OnUnityTriggerExit2D(other);
+        }
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            this.HandleUnityCollisionEnter(collision);
+            this.OnUnityCollisionEnter2D(collision);
+        }
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            this.HandleUnityCollisionExit(collision);
+            this.OnUnityCollisionExit2D(collision);
+        }
         #endregion Handle Unity Physics Callbacks
 
+        #region Unity Physics Callbacks
+        protected virtual void OnUnityTriggerEnter2D(Collider2D other) { }
+        protected virtual void OnUnityTriggerExit2D(Collider2D other) { }
+        protected virtual void OnUnityCollisionEnter2D(Collision2D collision) { }
+        protected virtual void OnUnityCollisionExit2D(Collision2D collision) { }
+        #endregion Unity Physics Callbacks
 
         #region Target Physics Callbacks
         protected virtual void OnTargetTriggerEnter2DCallback(TTarget target) { }
