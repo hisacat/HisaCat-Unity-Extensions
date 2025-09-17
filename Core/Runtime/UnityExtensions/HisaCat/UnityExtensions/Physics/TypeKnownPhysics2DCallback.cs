@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.PhysicsExtension
 {
+    [System.Obsolete("Use TypeKnownPhysics2DCallbacks instead.")]
     public class TypeKnownPhysics2DCallback<TType> : MonoBehaviour where TType : Component
     {
         private List<TType> targets = null;
@@ -60,7 +61,7 @@ namespace HisaCat.PhysicsExtension
         {
             if (isEnter)
             {
-                if(collision.TryGetComponent(out target))
+                if (collision.TryGetComponent(out target))
                 {
                     cache.TryAdd(collision, target);
                     return true;
