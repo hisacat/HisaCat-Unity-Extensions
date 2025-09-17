@@ -36,26 +36,21 @@ namespace HisaCat.HUE.PhysicsExtension
         /// Extracts the gameobject from the given collider.
         /// </summary>
         protected abstract GameObject GetColliderGameObject(TCollider collider);
-        /// <summary>
-        /// Gets the static targets buffer.<br/>
-        /// <remarks>
-        /// Generic classes cannot use the InitializeOnEnterPlayMode attribute,<br/>
-        /// this static field must be defined in derived classes to support environments<br/>
-        /// where domain reload is disabled.
-        /// </remarks>
-        /// </summary>
-        protected abstract StaticBuffer<TTarget> TargetsBuffer { get; }
-        /// <summary>
-        /// Gets the static dictionary that pairs colliders with their targets.<br/>
-        /// This caches the component retrieved from each collider to minimize GetComponent calls.
-        /// <remarks>
-        /// Generic classes cannot use the InitializeOnEnterPlayMode attribute,<br/>
-        /// this static field must be defined in derived classes to support environments<br/>
-        /// where domain reload is disabled.
-        /// </remarks>
-        /// </summary>
-        protected abstract Dictionary<TCollider, TTarget> CachedKnownTargetColliders { get; }
         #endregion Abstract Methods
+
+        #region Caches
+        /// <summary>
+        /// Targets buffer for optimization.
+        /// </summary>
+        private readonly StaticBuffer<TTarget> targetsBuffer
+            = PhysicsCallbackCache.GetStaticBuffer<TTarget>(1024);
+        /// <summary>
+        /// Collider's target cache for optimization.
+        /// This caches the component retrieved from each collider to minimize GetComponent calls.
+        /// </summary>
+        private readonly Dictionary<TCollider, TTarget> colliderTargetCache
+            = PhysicsCallbackCache.GetStaticDictionary<TCollider, TTarget>(1024);
+        #endregion Caches
 
         protected sealed override ReliableCallbacks DelegateReliableCallbacks()
         {
@@ -130,7 +125,7 @@ namespace HisaCat.HUE.PhysicsExtension
 
         private TTarget FindTarget(TCollider collider)
         {
-            if (this.CachedKnownTargetColliders.TryGetValue(collider, out var existingTarget))
+            if (this.colliderTargetCache.TryGetValue(collider, out var existingTarget))
             {
                 if (IsValidColllider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
                     return existingTarget;
@@ -150,7 +145,7 @@ namespace HisaCat.HUE.PhysicsExtension
             var target = colliderGameObject.GetComponentInParent<TTarget>();
             if (target == null) return null;
 
-            this.CachedKnownTargetColliders.Add(collider, target);
+            this.colliderTargetCache.Add(collider, target);
             return target;
         }
 
@@ -158,8 +153,8 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             base.FixedUpdate();
 
-            OnStayWorks(this.triggerStayingTargets, TargetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Trigger);
-            OnStayWorks(this.collisionStayingTargets, TargetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Collision);
+            OnStayWorks(this.triggerStayingTargets, targetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Trigger);
+            OnStayWorks(this.collisionStayingTargets, targetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Collision);
             static void OnStayWorks(
                 ReadOnlyHashSetValueDictionary staying,
                 StaticBuffer<TTarget> targetBuffer,
@@ -255,15 +250,17 @@ namespace HisaCat.HUE.PhysicsExtension
             TTarget target;
             if (other == null)
             {
-                target = FindTargetWithDestroyedCollider(stayTargets, other, this.CachedKnownTargetColliders);
-                static TTarget FindTargetWithDestroyedCollider(ReadOnlyHashSetValueDictionary stayTargets, TCollider collider, Dictionary<TCollider, TTarget> cachedKnownTargetColliders)
+                target = FindTargetWithDestroyedCollider(stayTargets, other, this.colliderTargetCache);
+                static TTarget FindTargetWithDestroyedCollider(
+                    ReadOnlyHashSetValueDictionary stayTargets, TCollider colliderTargetCache,
+                    Dictionary<TCollider, TTarget> cache)
                 {
-                    if (cachedKnownTargetColliders.ContainsKey(collider))
+                    if (cache.ContainsKey(colliderTargetCache))
                     {
-                        var target = cachedKnownTargetColliders[collider];
+                        var target = cache[colliderTargetCache];
 
                         // Remove destroyed collider from cache.
-                        cachedKnownTargetColliders.Remove(collider);
+                        cache.Remove(colliderTargetCache);
                         return target;
                     }
                     else
@@ -279,7 +276,7 @@ namespace HisaCat.HUE.PhysicsExtension
                             while (enumerator.MoveNext())
                             {
                                 var colliders = enumerator.Current.Value;
-                                if (colliders.Contains(collider))
+                                if (colliders.Contains(colliderTargetCache))
                                     return enumerator.Current.Key;
                             }
                         }

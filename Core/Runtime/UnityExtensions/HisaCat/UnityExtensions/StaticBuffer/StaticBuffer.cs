@@ -32,7 +32,7 @@ namespace HisaCat
     /// </code>
     /// </para>
     /// </remarks>
-    public class StaticBuffer<T>
+    public class StaticBuffer<T> : IStaticBuffer
     {
         /// <summary>
         /// 실제 데이터를 저장하는 배열 버퍼
@@ -90,5 +90,12 @@ namespace HisaCat
             if (count > this.buffer.Length) count = this.buffer.Length; // Clamp.
             System.Array.Clear(this.Buffer, 0, count);
         }
+    }
+
+    public interface IStaticBuffer
+    {
+        void Initialize();
+        void ClearBuffer();
+        void ClearBuffer(int count);
     }
 }

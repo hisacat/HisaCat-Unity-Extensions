@@ -5,28 +5,7 @@ namespace HisaCat.HUE.PhysicsExtension
 {
     public class ComponentPhysicsCallbacksTrigger : TypeKnownPhysicsCallbacks<Component>
     {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-        [UnityEditor.InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-        {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-            {
-                targetsBuffer.Initialize();
-                cachedKnownTargetColliders.Clear();
-            }
-        }
-#pragma warning restore IDE0051
-#endif
-        public override LayerMask TargetLayerMask => Physics.AllLayers;
-        private const int TargetsBufferCapacity = 1024;
-
-        #region Sealed override methods
-        private readonly static StaticBuffer<Component> targetsBuffer = new((_) => new Component[TargetsBufferCapacity]);
-        protected sealed override StaticBuffer<Component> TargetsBuffer => targetsBuffer;
-        private readonly static Dictionary<Collider, Component> cachedKnownTargetColliders = new();
-        protected sealed override Dictionary<Collider, Component> CachedKnownTargetColliders => cachedKnownTargetColliders;
-        #endregion Sealed override methods
+        public sealed override LayerMask TargetLayerMask => Physics.AllLayers;
 
         [System.Serializable] public class ComponentTriggerEvent : UnityEngine.Events.UnityEvent<Component> { }
         public ComponentTriggerEvent OnComponentTriggerEnter { get => this.m_OnComponentTriggerEnter; set => this.m_OnComponentTriggerEnter = value; }

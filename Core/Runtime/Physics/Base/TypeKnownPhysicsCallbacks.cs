@@ -5,25 +5,6 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    internal static class TypeKnownPhysicsCallbacksBuffer
-    {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-        [UnityEditor.InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-        {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-            {
-                colliderBuffer.Initialize();
-            }
-        }
-#pragma warning restore IDE0051
-#endif
-
-        private const int ColliderBufferCapacity = 1024;
-        internal readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
-    }
-
     public abstract class TypeKnownPhysicsCallbacks<TTarget> :
         TypeKnownPhysicsCallbacksCore<TTarget, Collider, Collision>
         where TTarget : Component
@@ -47,10 +28,8 @@ namespace HisaCat.HUE.PhysicsExtension
         }
 
         #region Sealed override methods
-        protected sealed override StaticBuffer<Collider> ColliderBuffer => TypeKnownPhysicsCallbacksBuffer.colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider collider) => collider.enabled;
         protected sealed override Collider GetCollider(Collision collision) => collision.collider;
-
         protected sealed override GameObject GetColliderGameObject(Collider collider) => collider.gameObject;
         #endregion Sealed override methods
 

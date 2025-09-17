@@ -6,21 +6,6 @@ namespace HisaCat.HUE.PhysicsExtension
 {
     public abstract class ReliablePhysicsCallbacks : ReliablePhysicsCallbacksCore<Collider, Collision>
     {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-        [UnityEditor.InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-        {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-            {
-                colliderBuffer.Initialize();
-            }
-        }
-#pragma warning restore IDE0051
-#endif
-        private const int ColliderBufferCapacity = 1024;
-        private readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
-
         protected sealed override ReliableCallbacks DelegateReliableCallbacks()
         {
             return new(
@@ -40,7 +25,6 @@ namespace HisaCat.HUE.PhysicsExtension
         }
 
         #region Sealed override methods
-        protected sealed override StaticBuffer<Collider> ColliderBuffer => colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider collider) => collider.enabled;
         protected sealed override Collider GetCollider(Collision collision) => collision.collider;
         #endregion Sealed override methods

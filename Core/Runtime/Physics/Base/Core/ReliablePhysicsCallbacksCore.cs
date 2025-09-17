@@ -41,16 +41,15 @@ namespace HisaCat.HUE.PhysicsExtension
         /// Extracts the collider from the given collision.
         /// </summary>
         protected abstract TCollider GetCollider(TCollision collision);
-        /// <summary>
-        /// Gets the static collider buffer.
-        /// <remarks>
-        /// Generic classes cannot use the InitializeOnEnterPlayMode attribute,<br/>
-        /// this static field must be defined in derived classes to support environments<br/>
-        /// where domain reload is disabled.
-        /// </remarks>
-        /// </summary>
-        protected abstract StaticBuffer<TCollider> ColliderBuffer { get; }
         #endregion Abstract Methods
+
+        #region Caches
+        /// <summary>
+        /// Collider buffer for optimization.
+        /// </summary>
+        private readonly StaticBuffer<TCollider> colliderBuffer
+            = PhysicsCallbackCache.GetStaticBuffer<TCollider>(1024);
+        #endregion Caches
 
         public IReadOnlyHashSet<TCollider> TriggerStayingColliders { get; private set; } = null;
         private HashSet<TCollider> triggerStayingColliders = null;
@@ -102,8 +101,8 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnDestroy() => this.ForceExitAll();
         private void ForceExitAll()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.reliableCallbacks.Trigger);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.reliableCallbacks.Collision);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, colliderBuffer, this.reliableCallbacks.Trigger);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, colliderBuffer, this.reliableCallbacks.Collision);
             static void Process(
                 HashSet<TCollider> staying, IReadOnlyHashSet<TCollider> readOnlyStaying,
                 StaticBuffer<TCollider> buffer, ReliableCallbacks.Callbacks callbacks)
@@ -130,8 +129,8 @@ namespace HisaCat.HUE.PhysicsExtension
 
         protected virtual void FixedUpdate()
         {
-            Process(this.triggerStayingColliders, this.TriggerStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.reliableCallbacks.Trigger);
-            Process(this.collisionStayingColliders, this.CollisionStayingColliders, ColliderBuffer, this.IsColliderEnabled, this.reliableCallbacks.Collision);
+            Process(this.triggerStayingColliders, this.TriggerStayingColliders, colliderBuffer, this.IsColliderEnabled, this.reliableCallbacks.Trigger);
+            Process(this.collisionStayingColliders, this.CollisionStayingColliders, colliderBuffer, this.IsColliderEnabled, this.reliableCallbacks.Collision);
             static void Process(
                 HashSet<TCollider> staying, IReadOnlyHashSet<TCollider> readOnlyStaying,
                 StaticBuffer<TCollider> buffer,
