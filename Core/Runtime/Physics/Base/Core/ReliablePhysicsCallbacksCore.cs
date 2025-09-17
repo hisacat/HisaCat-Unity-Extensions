@@ -25,6 +25,7 @@ namespace HisaCat.HUE.PhysicsExtension
     /// - On Exit: StayingChanged → Exit
     /// </para>
     /// </summary>
+    [DefaultExecutionOrder(int.MinValue)]
     public abstract class ReliablePhysicsCallbacksCore<TCollider, TCollision> : MonoBehaviour
         where TCollider : Component where TCollision : class
     {
@@ -78,7 +79,6 @@ namespace HisaCat.HUE.PhysicsExtension
                 public readonly ColliderDelegate OnStay;
                 public readonly ColliderDelegate OnExit;
                 public readonly ReadOnlyCollidersDelegate OnStayingChanged;
-
                 public Callbacks(
                     ColliderDelegate onEnter, ColliderDelegate onStay, ColliderDelegate onExit,
                     ReadOnlyCollidersDelegate onStayingChanged)
