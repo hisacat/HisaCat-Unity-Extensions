@@ -13,16 +13,16 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             return new(
                 trigger: new(
-                    onEnter: this.OnTargetTriggerEnterCallback,
-                    onStay: this.OnTargetTriggerStayCallback,
-                    onExit: this.OnTargetTriggerExitCallback,
-                    onStayingChanged: this.OnTargetTriggerStayingChangedCallback
+                    onEnter: this.OnTargetTriggerEnter2DCallback,
+                    onStay: this.OnTargetTriggerStay2DCallback,
+                    onExit: this.OnTargetTriggerExit2DCallback,
+                    onStayingChanged: this.OnTargetTriggerStayingChanged2DCallback
                 ),
                 collision: new(
-                    onEnter: this.OnTargetCollisionEnterCallback,
-                    onStay: this.OnTargetCollisionStayCallback,
-                    onExit: this.OnTargetCollisionExitCallback,
-                    onStayingChanged: this.OnTargetCollisionStayingChangedCallback
+                    onEnter: this.OnTargetCollisionEnter2DCallback,
+                    onStay: this.OnTargetCollisionStay2DCallback,
+                    onExit: this.OnTargetCollisionExit2DCallback,
+                    onStayingChanged: this.OnTargetCollisionStayingChanged2DCallback
                 )
             );
         }
@@ -42,15 +42,15 @@ namespace HisaCat.HUE.PhysicsExtension
 
 
         #region Target Physics Callbacks
-        protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }
-        protected virtual void OnTargetTriggerStayCallback(TTarget target) { }
-        protected virtual void OnTargetTriggerExitCallback(TTarget target) { }
-        protected virtual void OnTargetTriggerStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
+        protected virtual void OnTargetTriggerEnter2DCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStay2DCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerExit2DCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStayingChanged2DCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
 
-        protected virtual void OnTargetCollisionStayCallback(TTarget target) { }
-        protected virtual void OnTargetCollisionEnterCallback(TTarget target) { }
-        protected virtual void OnTargetCollisionExitCallback(TTarget target) { }
-        protected virtual void OnTargetCollisionStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
+        protected virtual void OnTargetCollisionStay2DCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionEnter2DCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionExit2DCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionStayingChanged2DCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
         #endregion Target Physics Callbacks
     }
 }
