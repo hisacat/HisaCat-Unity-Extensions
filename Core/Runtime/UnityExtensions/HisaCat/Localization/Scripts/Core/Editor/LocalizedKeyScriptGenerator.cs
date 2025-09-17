@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using HisaCat.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,7 @@ namespace HisaCat.Localization
             }
         }
 
+        public readonly static string ThisScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
         public const string TargetJsonPath = "Assets/Resources/Localization/ko_KR.json";
         public const string TargetScriptPath = "Assets/Localization/LocalizedKey.cs";
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -103,7 +105,7 @@ namespace HisaCat.Localization
             }
 
             var changedAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-            if (changedAssets.Contains(TargetJsonPath))
+            if (changedAssets.Contains(ThisScriptPath) || changedAssets.Contains(TargetJsonPath))
             {
                 Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{TargetJsonPath}\".");
                 var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(TargetJsonPath);
