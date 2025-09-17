@@ -6,6 +6,18 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
+    /// <summary>
+    /// Provides reliable, type-aware physics callbacks for the target component type <typeparamref name="TTarget"/>.
+    /// Ensures that physics enter/stay/exit events<br/>
+    /// are invoked consistently, even when Unity would normally skip them.<br/>
+    /// It also manages the collection of currently colliding objects.
+    /// <para>
+    /// Guaranteed callback invocation order:<br/>
+    /// Always StayingChanged callback fire first.
+    /// - On Enter: StayingChanged → Enter<br/>
+    /// - On Exit: StayingChanged → Exit
+    /// </para>
+    /// </summary>
     public abstract class TypeKnownPhysicsCallbacksCore<TTarget, TCollider, TCollision> :
         ReliablePhysicsCallbacksCore<TCollider, TCollision>
         where TTarget : Component
@@ -13,7 +25,7 @@ namespace HisaCat.HUE.PhysicsExtension
     {
         #region Abstract Methods
         /// <summary>
-        /// Gets the target layer mask. (Use <see cref="Physics.AllLayers"/> to match all layers.)
+        /// Gets the target layer mask. Use <see cref="Physics.AllLayers"/> to match all layers.
         /// </summary>
         public abstract LayerMask TargetLayerMask { get; }
         /// <summary>
@@ -192,7 +204,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     var stay = removeBuffer.Buffer[i];
                     staying.Remove(stay);
 
-                    // Callback order: OnStayingChanged -> OnExit
+                    // Always Fire staying changed callback first.
                     callbacks.OnStayingChanged(staying.ReadOnlyDictionary);
                     callbacks.OnExit(stay);
                 }
@@ -227,9 +239,9 @@ namespace HisaCat.HUE.PhysicsExtension
             {
                 stayTargets.Add(target, new() { other });
 
-                // Callback order: OnEnter -> OnStayingChanged
-                callbacks.OnEnter(target);
+                // Always Fire staying changed callback first.
                 callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                callbacks.OnEnter(target);
             }
             else
             {
@@ -252,7 +264,7 @@ namespace HisaCat.HUE.PhysicsExtension
             {
                 stayTargets.Remove(target);
 
-                // Callback order: OnStayingChanged -> OnExit
+                // Always Fire staying changed callback first.
                 callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
                 callbacks.OnExit(target);
             }
