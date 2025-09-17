@@ -135,12 +135,8 @@ namespace HisaCat.HUE.PhysicsExtension
                 if (IsValidColllider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
                     return existingTarget;
 
-                // Remove cached collider if it is not valid anymore.
-                this.CachedKnownTargetColliders.Remove(collider);
-
                 static bool IsValidColllider(TCollider collider, TTarget target, LayerMask layerMask, System.Func<TCollider, GameObject> getColliderGameObject)
                 {
-                    if (target == null) return false;
                     if (layerMask.IsLayerInMask(target.gameObject.layer) == false) return false;
                     var colliderGameObject = getColliderGameObject(collider);
                     if ((colliderGameObject == target.gameObject || colliderGameObject.transform.IsChildOf(target.transform)) == false) return false;
@@ -255,8 +251,48 @@ namespace HisaCat.HUE.PhysicsExtension
             TCollider other, ReadOnlyHashSetValueDictionary stayTargets,
             TypeKnownCallbacks.Callbacks callbacks)
         {
-            var target = FindTarget(other);
-            if (target == null) return;
+            // Handle callbacks from destroyed collider.
+            TTarget target;
+            if (other == null)
+            {
+                target = FindTargetWithDestroyedCollider(stayTargets, other, this.CachedKnownTargetColliders);
+                static TTarget FindTargetWithDestroyedCollider(ReadOnlyHashSetValueDictionary stayTargets, TCollider collider, Dictionary<TCollider, TTarget> cachedKnownTargetColliders)
+                {
+                    if (cachedKnownTargetColliders.ContainsKey(collider))
+                    {
+                        var target = cachedKnownTargetColliders[collider];
+
+                        // Remove destroyed collider from cache.
+                        cachedKnownTargetColliders.Remove(collider);
+                        return target;
+                    }
+                    else
+                    {
+                        ManagedDebug.LogWarning(
+                            $"[{nameof(TypeKnownPhysicsCallbacksCore<TTarget, TCollider, TCollision>)}] "
+                            + "\r\nFailed to find destroyed collider from caching. "
+                            + "Trying to find from staying dictionary values. "
+                            + "This may cause performance issue.");
+
+                        using (var enumerator = stayTargets.GetEnumerator())
+                        {
+                            while (enumerator.MoveNext())
+                            {
+                                var colliders = enumerator.Current.Value;
+                                if (colliders.Contains(collider))
+                                    return enumerator.Current.Key;
+                            }
+                        }
+                    }
+                    return null;
+                }
+            }
+            else
+            {
+                target = FindTarget(other);
+                if (target.IsActuallyNull()) return;
+            }
+
             if (stayTargets.ContainsKey(target) == false) return;
 
             stayTargets[target].Remove(other);
@@ -268,6 +304,7 @@ namespace HisaCat.HUE.PhysicsExtension
                 callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
                 callbacks.OnExit(target);
             }
+
         }
 
         #region Debugs
