@@ -1,11 +1,19 @@
 using System;
+using UnityEngine;
 
 using Path = System.IO.Path;
 
 namespace HisaCat.IO
 {
-    public class UniPath
+    public static class UniPath
     {
+        public static string GetProjectRootPath()
+        {
+            var dataPath = NormalizePath(Application.dataPath);
+            var projectRoot = dataPath.Substring(0, dataPath.Length - "Assets".Length);
+            return projectRoot;
+        }
+
         public static string Combine(string path1, string path2, string path3, string path4)
             => NormalizePath(Path.Combine(path1, path2, path3, path4));
         public static string Combine(params string[] paths)
