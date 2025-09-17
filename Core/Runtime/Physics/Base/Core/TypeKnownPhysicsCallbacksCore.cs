@@ -7,33 +7,61 @@ using UnityEngine;
 namespace HisaCat.HUE.PhysicsExtension
 {
     public abstract class TypeKnownPhysicsCallbacksCore<TTarget, TCollider, TCollision> :
-        ReliablePhysicsCallbacksCore<TCollider, TCollision>,
-        IReliablePhysicsBridge<TCollider, TCollision>
+        ReliablePhysicsCallbacksCore<TCollider, TCollision>
         where TTarget : Component
         where TCollider : Component where TCollision : class
     {
         #region Abstract Methods
         /// <summary>
-        /// Type-Known 충돌 이벤트 처리를 위한 브리지를 반환합니다.
+        /// Gets the target layer mask. (Use <see cref="Physics.AllLayers"/> to match all layers.)
         /// </summary>
-        protected abstract ITypeKnownReliablePhysicsBridge<TTarget, TCollider> AsTypeKnownReliablePhysicsBridge();
+        public abstract LayerMask TargetLayerMask { get; }
         /// <summary>
-        /// 충돌체에서 TTarget을 찾기 위한 게임 오브젝트를 반환합니다.
+        /// Provides the delegated callbacks used by Type-Known Physics Callbacks.
         /// </summary>
-        /// <param name="collider">충돌체</param>
-        /// <returns>게임 오브젝트</returns>
+        protected abstract TypeKnownCallbacks DelegateTypeKnownCallbacks();
+        /// <summary>
+        /// Extracts the gameobject from the given collider.
+        /// </summary>
         protected abstract GameObject GetColliderGameObject(TCollider collider);
-        #endregion Abstract Methods
-
-        #region Sealed override methods
-        protected sealed override IReliablePhysicsBridge<TCollider, TCollision> AsReliablePhysicsBridge() => this;
-        #endregion Sealed override methods
-
         /// <summary>
-        /// GetComponent를 최소화하기 위한 각 Collider가 가지고 있는 TTarget의 캐시입니다.
+        /// Gets the static targets buffer.<br/>
+        /// <remarks>
+        /// Generic classes cannot use the InitializeOnEnterPlayMode attribute,<br/>
+        /// this static field must be defined in derived classes to support environments<br/>
+        /// where domain reload is disabled.
+        /// </remarks>
+        /// </summary>
+        protected abstract StaticBuffer<TTarget> TargetsBuffer { get; }
+        /// <summary>
+        /// Gets the static dictionary that pairs colliders with their targets.<br/>
+        /// This caches the component retrieved from each collider to minimize GetComponent calls.
+        /// <remarks>
+        /// Generic classes cannot use the InitializeOnEnterPlayMode attribute,<br/>
+        /// this static field must be defined in derived classes to support environments<br/>
+        /// where domain reload is disabled.
+        /// </remarks>
         /// </summary>
         protected abstract Dictionary<TCollider, TTarget> CachedKnownTargetColliders { get; }
-        protected abstract StaticBuffer<TTarget> TargetsBuffer { get; }
+        #endregion Abstract Methods
+
+        protected sealed override ReliableCallbacks DelegateReliableCallbacks()
+        {
+            return new(
+                trigger: new(
+                    onEnter: this.OnReliableTriggerEnterCallback,
+                    onStay: this.OnReliableTriggerStayCallback,
+                    onExit: this.OnReliableTriggerExitCallback,
+                    onStayingChanged: this.OnReliableTriggerStayingChangedCallback
+                ),
+                collision: new(
+                    onEnter: this.OnReliableCollisionEnterCallback,
+                    onStay: this.OnReliableCollisionStayCallback,
+                    onExit: this.OnReliableCollisionExitCallback,
+                    onStayingChanged: this.OnReliableCollisionStayingChangedCallback
+                )
+            );
+        }
 
         protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> TriggerStayingTargets => this.triggerStayingTargets.ReadOnlyDictionary;
         private ReadOnlyHashSetValueDictionary triggerStayingTargets = null;
@@ -45,14 +73,44 @@ namespace HisaCat.HUE.PhysicsExtension
                 => value.AsReadOnly();
         }
 
-        public abstract LayerMask TargetLayerMask { get; }
-
-        private ITypeKnownReliablePhysicsBridge<TTarget, TCollider> bridge = null;
+        private TypeKnownCallbacks typeKnownCallbacks = null;
         protected override void Awake()
         {
             base.Awake();
 
-            this.bridge = this.AsTypeKnownReliablePhysicsBridge();
+            this.typeKnownCallbacks = this.DelegateTypeKnownCallbacks();
+        }
+
+        public class TypeKnownCallbacks
+        {
+            public delegate void TargetDelegate(TTarget other);
+            public delegate void ReadOnlyTargetsDelegate(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> staying);
+
+            public readonly Callbacks Trigger;
+            public readonly Callbacks Collision;
+            public class Callbacks
+            {
+                public readonly TargetDelegate OnEnter;
+                public readonly TargetDelegate OnStay;
+                public readonly TargetDelegate OnExit;
+                public readonly ReadOnlyTargetsDelegate OnStayingChanged;
+
+                public Callbacks(
+                    TargetDelegate onEnter, TargetDelegate onStay, TargetDelegate onExit,
+                    ReadOnlyTargetsDelegate onStayingChanged)
+                {
+                    this.OnEnter = onEnter;
+                    this.OnStay = onStay;
+                    this.OnExit = onExit;
+                    this.OnStayingChanged = onStayingChanged;
+                }
+            }
+
+            public TypeKnownCallbacks(Callbacks trigger, Callbacks collision)
+            {
+                this.Trigger = trigger;
+                this.Collision = collision;
+            }
         }
 
         private TTarget FindTarget(TCollider collider)
@@ -89,13 +147,13 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             base.FixedUpdate();
 
-            OnStayWorks(this.triggerStayingTargets, TargetsBuffer, this.bridge.OnTargetTriggerStayCallback_Internal, this.bridge.OnTargetTriggerExitCallback_Internal, this.bridge.OnTargetTriggerStayingChangedCallback_Internal);
-            OnStayWorks(this.collisionStayingTargets, TargetsBuffer, this.bridge.OnTargetCollisionStayCallback_Internal, this.bridge.OnTargetCollisionExitCallback_Internal, this.bridge.OnTargetCollisionStayingChangedCallback_Internal);
+            OnStayWorks(this.triggerStayingTargets, TargetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Trigger);
+            OnStayWorks(this.collisionStayingTargets, TargetsBuffer, this.IsColliderEnabled, this.typeKnownCallbacks.Collision);
             static void OnStayWorks(
                 ReadOnlyHashSetValueDictionary staying,
                 StaticBuffer<TTarget> targetBuffer,
-                System.Action<TTarget> onStayCallback, System.Action<TTarget> onExitCallback,
-                System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>>> onStayingChangedCallback)
+                System.Func<TCollider, bool> isColliderEnabled,
+                TypeKnownCallbacks.Callbacks callbacks)
             {
                 var removeCount = 0;
                 var removeBuffer = targetBuffer;
@@ -114,8 +172,8 @@ namespace HisaCat.HUE.PhysicsExtension
                     // If all colliders are invalid, the target automatically removed from "OnExitWorks".
                     // {
                     //     colliders.RemoveWhere(IsInvalidCollider);
-                    //     static bool IsInvalidCollider(Collider collider)
-                    //         => collider == null || collider.enabled == false || collider.gameObject.activeInHierarchy == false;
+                    //     bool IsInvalidCollider(TCollider collider)
+                    //         => collider == null || isColliderEnabled(collider) == false || collider.gameObject.activeInHierarchy == false;
 
                     //     if (colliders.Count <= 0)
                     //     {
@@ -124,51 +182,40 @@ namespace HisaCat.HUE.PhysicsExtension
                     //     }
                     // }
 
-                    onStayCallback(target);
+                    callbacks.OnStay(target);
                 }
                 for (int i = 0; i < removeCount; i++)
                 {
                     var stay = removeBuffer.Buffer[i];
                     staying.Remove(stay);
+
                     // Always Fire staying changed callback first.
-                    onStayingChangedCallback(staying.ReadOnlyDictionary);
-                    // And then fire exit callback.
-                    onExitCallback(stay);
+                    callbacks.OnStayingChanged(staying.ReadOnlyDictionary);
+                    callbacks.OnExit(stay);
                 }
                 removeBuffer.ClearBuffer(removeCount);
             }
         }
 
-        #region IReliablePhysicsBridge
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableTriggerEnterCallback_Internal(TCollider other)
-            => this.OnReliableTriggerEnterCallback(other);
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableTriggerStayCallback_Internal(TCollider other) { }
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableTriggerExitCallback_Internal(TCollider other)
-            => this.OnReliableTriggerExitCallback(other);
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableTriggerStayingChangedCallback_Internal(IReadOnlyHashSet<TCollider> staying) { }
-
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableCollisionEnterCallback_Internal(TCollider other)
-            => this.OnReliableCollisionEnterCallback(other);
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableCollisionStayCallback_Internal(TCollider other) { }
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableCollisionExitCallback_Internal(TCollider other)
-            => this.OnReliableCollisionExitCallback(other);
-        void IReliablePhysicsBridge<TCollider, TCollision>.OnReliableCollisionStayingChangedCallback_Internal(IReadOnlyHashSet<TCollider> staying) { }
-        #endregion IReliablePhysicsBridge
-
         #region Reliable Physics Callbacks
-        protected virtual void OnReliableTriggerEnterCallback(TCollider other)
-            => OnEnterWorks(other, this.triggerStayingTargets, this.bridge.OnTargetTriggerEnterCallback_Internal, this.bridge.OnTargetTriggerStayingChangedCallback_Internal);
-        protected virtual void OnReliableTriggerExitCallback(TCollider other)
-            => OnExitWorks(other, this.triggerStayingTargets, this.bridge.OnTargetTriggerExitCallback_Internal, this.bridge.OnTargetTriggerStayingChangedCallback_Internal);
-        protected virtual void OnReliableCollisionEnterCallback(TCollider other)
-            => OnEnterWorks(other, this.collisionStayingTargets, this.bridge.OnTargetCollisionEnterCallback_Internal, this.bridge.OnTargetCollisionStayingChangedCallback_Internal);
-        protected virtual void OnReliableCollisionExitCallback(TCollider other)
-            => OnExitWorks(other, this.collisionStayingTargets, this.bridge.OnTargetCollisionExitCallback_Internal, this.bridge.OnTargetCollisionStayingChangedCallback_Internal);
+        private void OnReliableTriggerEnterCallback(TCollider other)
+            => OnEnterWorks(other, this.triggerStayingTargets, this.typeKnownCallbacks.Trigger);
+        private void OnReliableTriggerStayCallback(TCollider other) { }
+        private void OnReliableTriggerExitCallback(TCollider other)
+            => OnExitWorks(other, this.triggerStayingTargets, this.typeKnownCallbacks.Trigger);
+        private void OnReliableTriggerStayingChangedCallback(IReadOnlyHashSet<TCollider> staying) { }
+
+        private void OnReliableCollisionEnterCallback(TCollider other)
+            => OnEnterWorks(other, this.collisionStayingTargets, this.typeKnownCallbacks.Collision);
+        private void OnReliableCollisionStayCallback(TCollider other) { }
+        private void OnReliableCollisionExitCallback(TCollider other)
+            => OnExitWorks(other, this.collisionStayingTargets, this.typeKnownCallbacks.Collision);
+        private void OnReliableCollisionStayingChangedCallback(IReadOnlyHashSet<TCollider> staying) { }
         #endregion Reliable Physics Callbacks
+        
         private void OnEnterWorks(
             TCollider other, ReadOnlyHashSetValueDictionary stayTargets,
-            System.Action<TTarget> onEnterCallback,
-            System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>>> onStayingChangedCallback)
+            TypeKnownCallbacks.Callbacks callbacks)
         {
             var target = FindTarget(other);
             if (target == null) return;
@@ -176,20 +223,22 @@ namespace HisaCat.HUE.PhysicsExtension
             if (stayTargets.ContainsKey(target) == false)
             {
                 stayTargets.Add(target, new() { other });
+
                 // Always Fire staying changed callback first.
-                onStayingChangedCallback(stayTargets.ReadOnlyDictionary);
-                // And then fire enter callback.
-                onEnterCallback(target);
+                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                callbacks.OnEnter(target);
             }
             else
             {
+                // Target is already in the staying dictionary (entered by another collider).
+                // Don't fire Enter callback again or modify the staying dictionary.
+                // Just add this additional collider to the target's colliders HashSet.
                 stayTargets[target].Add(other);
             }
         }
         private void OnExitWorks(
             TCollider other, ReadOnlyHashSetValueDictionary stayTargets,
-            System.Action<TTarget> onEnterCallback,
-            System.Action<IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>>> onStayingChangedCallback)
+            TypeKnownCallbacks.Callbacks callbacks)
         {
             var target = FindTarget(other);
             if (target == null) return;
@@ -199,24 +248,12 @@ namespace HisaCat.HUE.PhysicsExtension
             if (stayTargets[target].Count <= 0)
             {
                 stayTargets.Remove(target);
+
                 // Always Fire staying changed callback first.
-                onStayingChangedCallback(stayTargets.ReadOnlyDictionary);
-                // And then fire exit callback.
-                onEnterCallback(target);
+                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                callbacks.OnExit(target);
             }
         }
-
-        // #region Target Physics Callbacks
-        // protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }
-        // protected virtual void OnTargetTriggerStayCallback(TTarget target) { }
-        // protected virtual void OnTargetTriggerExitCallback(TTarget target) { }
-        // protected virtual void OnTargetTriggerStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>> staying) { }
-
-        // protected virtual void OnTargetCollisionStayCallback(TTarget target) { }
-        // protected virtual void OnTargetCollisionEnterCallback(TTarget target) { }
-        // protected virtual void OnTargetCollisionExitCallback(TTarget target) { }
-        // protected virtual void OnTargetCollisionStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider>> staying) { }
-        // #endregion Target Physics Callbacks
 
         #region Debugs
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -232,17 +269,5 @@ namespace HisaCat.HUE.PhysicsExtension
         protected void LogWarning(string message, UnityEngine.Object context)
             => Debug.LogWarning($"[{this.GetType().Name}] {message}", context);
         #endregion
-    }
-    public interface ITypeKnownReliablePhysicsBridge<TTarget, TCollider>
-    {
-        void OnTargetTriggerEnterCallback_Internal(TTarget other);
-        void OnTargetTriggerStayCallback_Internal(TTarget other);
-        void OnTargetTriggerExitCallback_Internal(TTarget other);
-        void OnTargetTriggerStayingChangedCallback_Internal(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> staying);
-
-        void OnTargetCollisionEnterCallback_Internal(TTarget other);
-        void OnTargetCollisionStayCallback_Internal(TTarget other);
-        void OnTargetCollisionExitCallback_Internal(TTarget other);
-        void OnTargetCollisionStayingChangedCallback_Internal(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> staying);
     }
 }

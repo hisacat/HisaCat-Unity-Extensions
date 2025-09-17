@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    public abstract class ReliablePhysics2DCallbacks :
-        ReliablePhysicsCallbacksCore<Collider2D, Collision2D>,
-        IReliablePhysicsBridge<Collider2D, Collision2D>
+    public abstract class ReliablePhysics2DCallbacks : ReliablePhysicsCallbacksCore<Collider2D, Collision2D>
     {
 #if UNITY_EDITOR
 #pragma warning disable IDE0051
@@ -23,43 +21,36 @@ namespace HisaCat.HUE.PhysicsExtension
         private const int ColliderBufferCapacity = 1024;
         private readonly static StaticBuffer<Collider2D> colliderBuffer = new((_) => new Collider2D[ColliderBufferCapacity]);
 
+        protected sealed override ReliableCallbacks DelegateReliableCallbacks()
+        {
+            return new(
+                trigger: new(
+                    onEnter: this.OnReliableTrigger2DEnterCallback,
+                    onStay: this.OnReliableTrigger2DStayCallback,
+                    onExit: this.OnReliableTrigger2DExitCallback,
+                    onStayingChanged: this.OnReliableTrigger2DStayingChangedCallback
+                ),
+                collision: new(
+                    onEnter: this.OnReliableCollision2DEnterCallback,
+                    onStay: this.OnReliableCollision2DStayCallback,
+                    onExit: this.OnReliableCollision2DExitCallback,
+                    onStayingChanged: this.OnReliableCollision2DStayingChangedCallback
+                )
+            );
+        }
+
         #region Sealed override methods
-        protected sealed override IReliablePhysicsBridge<Collider2D, Collision2D> AsReliablePhysicsBridge() => this;
         protected sealed override StaticBuffer<Collider2D> ColliderBuffer => colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider2D collider) => collider.enabled;
         protected sealed override Collider2D GetCollider(Collision2D collision) => collision.collider;
         #endregion Sealed override methods
 
         #region Unity Physics Callbacks
-        protected virtual void OnTriggerEnter2D(Collider2D other)
-            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleTriggerEnter(other);
-        protected virtual void OnTriggerExit2D(Collider2D other)
-            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleTriggerExit(other);
-        protected virtual void OnCollisionEnter2D(Collision2D collision)
-            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleCollisionEnter(collision);
-        protected virtual void OnCollisionExit2D(Collision2D collision)
-            => ((IUnityPhysicsHandler<Collider2D, Collision2D>)this).HandleCollisionExit(collision);
+        protected virtual void OnTriggerEnter2D(Collider2D other) => this.HandleUnityTriggerEnter(other);
+        protected virtual void OnTriggerExit2D(Collider2D other) => this.HandleUnityTriggerExit(other);
+        protected virtual void OnCollisionEnter2D(Collision2D collision) => this.HandleUnityCollisionEnter(collision);
+        protected virtual void OnCollisionExit2D(Collision2D collision) => this.HandleUnityCollisionExit(collision);
         #endregion Unity Physics Callbacks
-
-        #region IReliablePhysicsBridge
-        public void OnReliableTriggerEnterCallback_Internal(Collider2D other)
-            => this.OnReliableTrigger2DEnterCallback(other);
-        public void OnReliableTriggerStayCallback_Internal(Collider2D other)
-            => this.OnReliableTrigger2DStayCallback(other);
-        public void OnReliableTriggerExitCallback_Internal(Collider2D other)
-            => this.OnReliableTrigger2DExitCallback(other);
-        public void OnReliableTriggerStayingChangedCallback_Internal(IReadOnlyHashSet<Collider2D> staying)
-            => this.OnReliableTrigger2DStayingChangedCallback(staying);
-
-        public void OnReliableCollisionEnterCallback_Internal(Collider2D other)
-            => this.OnReliableCollision2DEnterCallback(other);
-        public void OnReliableCollisionStayCallback_Internal(Collider2D other)
-            => this.OnReliableCollision2DStayCallback(other);
-        public void OnReliableCollisionExitCallback_Internal(Collider2D other)
-            => this.OnReliableCollision2DExitCallback(other);
-        public void OnReliableCollisionStayingChangedCallback_Internal(IReadOnlyHashSet<Collider2D> staying)
-            => this.OnReliableCollision2DStayingChangedCallback(staying);
-        #endregion IReliablePhysicsBridge
 
         #region Reliable Physics Callbacks
         protected virtual void OnReliableTrigger2DEnterCallback(Collider2D other) { }

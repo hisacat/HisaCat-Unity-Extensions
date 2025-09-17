@@ -1,3 +1,4 @@
+
 using HisaCat.HUE.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,93 +6,69 @@ using UnityEngine;
 namespace HisaCat.HUE.PhysicsExtension
 {
     public abstract class TypeKnownPhysics2DCallbacks<TTarget> :
-        TypeKnownPhysicsCallbacksCore<TTarget, Collider2D, Collision2D>,
-        IReliablePhysicsBridge<Collider2D, Collision2D>,
-        ITypeKnownReliablePhysicsBridge<TTarget, Collider2D>
+        TypeKnownPhysicsCallbacksCore<TTarget, Collider2D, Collision2D>
         where TTarget : Component
     {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
+        [UnityEditor.InitializeOnEnterPlayMode]
+        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
+        {
+            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                colliderBuffer.Initialize();
+            }
+        }
+#pragma warning restore IDE0051
+#endif
+
+        protected override TypeKnownCallbacks DelegateTypeKnownCallbacks()
+        {
+            return new(
+                trigger: new(
+                    onEnter: this.OnTargetTriggerEnterCallback,
+                    onStay: this.OnTargetTriggerStayCallback,
+                    onExit: this.OnTargetTriggerExitCallback,
+                    onStayingChanged: this.OnTargetTriggerStayingChangedCallback
+                ),
+                collision: new(
+                    onEnter: this.OnTargetCollisionEnterCallback,
+                    onStay: this.OnTargetCollisionStayCallback,
+                    onExit: this.OnTargetCollisionExitCallback,
+                    onStayingChanged: this.OnTargetCollisionStayingChangedCallback
+                )
+            );
+        }
+
+        private const int ColliderBufferCapacity = 1024;
+        private readonly static StaticBuffer<Collider2D> colliderBuffer = new((_) => new Collider2D[ColliderBufferCapacity]);
+
         #region Sealed override methods
-        protected sealed override ITypeKnownReliablePhysicsBridge<TTarget, Collider2D> AsTypeKnownReliablePhysicsBridge() => this;
+        protected sealed override StaticBuffer<Collider2D> ColliderBuffer => colliderBuffer;
+        protected sealed override bool IsColliderEnabled(Collider2D collider) => collider.enabled;
+        protected sealed override Collider2D GetCollider(Collision2D collision) => collision.collider;
+
+        protected sealed override GameObject GetColliderGameObject(Collider2D collider) => collider.gameObject;
         #endregion Sealed override methods
 
-        public void OnReliableCollisionEnterCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
+        #region Handle Unity Physics Callbacks
+        protected virtual void OnTriggerEnter(Collider2D other) => this.HandleUnityTriggerEnter(other);
+        protected virtual void OnTriggerExit(Collider2D other) => this.HandleUnityTriggerExit(other);
+        protected virtual void OnCollisionEnter(Collision2D collision) => this.HandleUnityCollisionEnter(collision);
+        protected virtual void OnCollisionExit(Collision2D collision) => this.HandleUnityCollisionExit(collision);
+        #endregion Handle Unity Physics Callbacks
 
-        public void OnReliableCollisionExitCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public void OnReliableCollisionStayCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
+        #region Target Physics Callbacks
+        protected virtual void OnTargetTriggerEnterCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStayCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerExitCallback(TTarget target) { }
+        protected virtual void OnTargetTriggerStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
 
-        public void OnReliableCollisionStayingChangedCallback_Internal(IReadOnlyHashSet<Collider2D> staying)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnReliableTriggerEnterCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnReliableTriggerExitCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnReliableTriggerStayCallback_Internal(Collider2D other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnReliableTriggerStayingChangedCallback_Internal(IReadOnlyHashSet<Collider2D> staying)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetTriggerEnterCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetTriggerStayCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetTriggerExitCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetTriggerStayingChangedCallback_Internal(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetCollisionEnterCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetCollisionStayCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetCollisionExitCallback_Internal(TTarget other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnTargetCollisionStayingChangedCallback_Internal(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying)
-        {
-            throw new System.NotImplementedException();
-        }
+        protected virtual void OnTargetCollisionStayCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionEnterCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionExitCallback(TTarget target) { }
+        protected virtual void OnTargetCollisionStayingChangedCallback(IReadOnlyDictionary<TTarget, IReadOnlyHashSet<Collider2D>> staying) { }
+        #endregion Target Physics Callbacks
     }
 }

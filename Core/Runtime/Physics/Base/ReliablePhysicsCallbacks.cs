@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
 {
-    public abstract class ReliablePhysicsCallbacks :
-        ReliablePhysicsCallbacksCore<Collider, Collision>,
-        IReliablePhysicsBridge<Collider, Collision>
+    public abstract class ReliablePhysicsCallbacks : ReliablePhysicsCallbacksCore<Collider, Collision>
     {
 #if UNITY_EDITOR
 #pragma warning disable IDE0051
@@ -23,43 +21,36 @@ namespace HisaCat.HUE.PhysicsExtension
         private const int ColliderBufferCapacity = 1024;
         private readonly static StaticBuffer<Collider> colliderBuffer = new((_) => new Collider[ColliderBufferCapacity]);
 
+        protected sealed override ReliableCallbacks DelegateReliableCallbacks()
+        {
+            return new(
+                trigger: new(
+                    onEnter: this.OnReliableTriggerEnterCallback,
+                    onStay: this.OnReliableTriggerStayCallback,
+                    onExit: this.OnReliableTriggerExitCallback,
+                    onStayingChanged: this.OnReliableTriggerStayingChangedCallback
+                ),
+                collision: new(
+                    onEnter: this.OnReliableCollisionEnterCallback,
+                    onStay: this.OnReliableCollisionStayCallback,
+                    onExit: this.OnReliableCollisionExitCallback,
+                    onStayingChanged: this.OnReliableCollisionStayingChangedCallback
+                )
+            );
+        }
+
         #region Sealed override methods
-        protected sealed override IReliablePhysicsBridge<Collider, Collision> AsReliablePhysicsBridge() => this;
         protected sealed override StaticBuffer<Collider> ColliderBuffer => colliderBuffer;
         protected sealed override bool IsColliderEnabled(Collider collider) => collider.enabled;
         protected sealed override Collider GetCollider(Collision collision) => collision.collider;
         #endregion Sealed override methods
 
-        #region Unity Physics Callbacks
-        protected virtual void OnTriggerEnter(Collider other)
-            => ((IUnityPhysicsHandler<Collider, Collision>)this).HandleTriggerEnter(other);
-        protected virtual void OnTriggerExit(Collider other)
-            => ((IUnityPhysicsHandler<Collider, Collision>)this).HandleTriggerExit(other);
-        protected virtual void OnCollisionEnter(Collision collision)
-            => ((IUnityPhysicsHandler<Collider, Collision>)this).HandleCollisionEnter(collision);
-        protected virtual void OnCollisionExit(Collision collision)
-            => ((IUnityPhysicsHandler<Collider, Collision>)this).HandleCollisionExit(collision);
-        #endregion Unity Physics Callbacks
-
-        #region IReliablePhysicsBridge
-        public void OnReliableTriggerEnterCallback_Internal(Collider other)
-            => this.OnReliableTriggerEnterCallback(other);
-        public void OnReliableTriggerStayCallback_Internal(Collider other)
-            => this.OnReliableTriggerStayCallback(other);
-        public void OnReliableTriggerExitCallback_Internal(Collider other)
-            => this.OnReliableTriggerExitCallback(other);
-        public void OnReliableTriggerStayingChangedCallback_Internal(IReadOnlyHashSet<Collider> staying)
-            => this.OnReliableTriggerStayingChangedCallback(staying);
-
-        public void OnReliableCollisionEnterCallback_Internal(Collider other)
-            => this.OnReliableCollisionEnterCallback(other);
-        public void OnReliableCollisionStayCallback_Internal(Collider other)
-            => this.OnReliableCollisionStayCallback(other);
-        public void OnReliableCollisionExitCallback_Internal(Collider other)
-            => this.OnReliableCollisionExitCallback(other);
-        public void OnReliableCollisionStayingChangedCallback_Internal(IReadOnlyHashSet<Collider> staying)
-            => this.OnReliableCollisionStayingChangedCallback(staying);
-        #endregion IReliablePhysicsBridge
+        #region Handle Unity Physics Callbacks
+        protected virtual void OnTriggerEnter(Collider other) => this.HandleUnityTriggerEnter(other);
+        protected virtual void OnTriggerExit(Collider other) => this.HandleUnityTriggerExit(other);
+        protected virtual void OnCollisionEnter(Collision collision) => this.HandleUnityCollisionEnter(collision);
+        protected virtual void OnCollisionExit(Collision collision) => this.HandleUnityCollisionExit(collision);
+        #endregion Handle Unity Physics Callbacks
 
         #region Reliable Physics Callbacks
         protected virtual void OnReliableTriggerEnterCallback(Collider other) { }
