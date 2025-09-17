@@ -128,10 +128,10 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             if (this.colliderTargetCache.TryGetValue(collider, out var existingTarget))
             {
-                if (IsValidColllider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
+                if (IsValidCollider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
                     return existingTarget;
 
-                static bool IsValidColllider(TCollider collider, TTarget target, LayerMask layerMask, System.Func<TCollider, GameObject> getColliderGameObject)
+                static bool IsValidCollider(TCollider collider, TTarget target, LayerMask layerMask, System.Func<TCollider, GameObject> getColliderGameObject)
                 {
                     if (layerMask.IsLayerInMask(target.gameObject.layer) == false) return false;
                     var colliderGameObject = getColliderGameObject(collider);
