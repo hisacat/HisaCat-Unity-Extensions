@@ -1,5 +1,4 @@
 using HisaCat.HUE.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension
