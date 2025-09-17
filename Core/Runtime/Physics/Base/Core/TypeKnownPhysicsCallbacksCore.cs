@@ -78,6 +78,9 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             base.Awake();
 
+            this.triggerStayingTargets = new();
+            this.collisionStayingTargets = new();
+
             this.typeKnownCallbacks = this.DelegateTypeKnownCallbacks();
         }
 
@@ -212,7 +215,7 @@ namespace HisaCat.HUE.PhysicsExtension
             => OnExitWorks(other, this.collisionStayingTargets, this.typeKnownCallbacks.Collision);
         private void OnReliableCollisionStayingChangedCallback(IReadOnlyHashSet<TCollider> staying) { }
         #endregion Reliable Physics Callbacks
-        
+
         private void OnEnterWorks(
             TCollider other, ReadOnlyHashSetValueDictionary stayTargets,
             TypeKnownCallbacks.Callbacks callbacks)
