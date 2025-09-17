@@ -991,6 +991,115 @@ namespace HisaCat.UnityExtensions
         }
     }
 
+    public static class IEnumerableExtensions
+    {
+        /// <summary>
+        /// Returns true if the source contains all of the items.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            // Check source type for optimization.
+            switch (source)
+            {
+                // Array optimization.
+                case T[] array:
+                    foreach (var item in items)
+                    {
+                        if (System.Array.IndexOf(array, item) < 0)
+                            return false;
+                    }
+                    return true;
+
+                // IList optimization.
+                case IList<T> list:
+                    foreach (var item in items)
+                    {
+                        if (list.IndexOf(item) < 0)
+                            return false;
+                    }
+                    return true;
+
+                // ISet optimization.
+                case ISet<T> set:
+                    return set.IsSupersetOf(items);
+                default:
+                    foreach (var item in items)
+                    {
+                        if (source.Contains(item) == false)
+                            return false;
+                    }
+                    return true;
+            }
+        }
+        /// <summary>
+        /// Returns true if the source contains all of the items with <see cref="System.StringComparison"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAll(this IEnumerable<string> source, IEnumerable<string> items, System.StringComparison comparisonType)
+        {
+            foreach (var item in items)
+            {
+                if (source.Contains(item, System.StringComparer.FromComparison(comparisonType)) == false)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns true if the source contains any of the items.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            // Check source type for optimization.
+            switch (source)
+            {
+                // Array optimization.
+                case T[] array:
+                    foreach (var item in items)
+                    {
+                        if (System.Array.IndexOf(array, item) >= 0)
+                            return true;
+                    }
+                    return false;
+
+                // IList optimization.
+                case IList<T> list:
+                    foreach (var item in items)
+                    {
+                        if (list.IndexOf(item) >= 0)
+                            return true;
+                    }
+                    return false;
+
+                // ISet optimization.
+                case ISet<T> set:
+                    return set.Overlaps(items);
+                default:
+                    foreach (var item in items)
+                    {
+                        if (source.Contains(item))
+                            return true;
+                    }
+                    return false;
+            }
+        }
+        /// <summary>
+        /// Returns true if the source contains any of the items with <see cref="System.StringComparison"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAny(this IEnumerable<string> source, IEnumerable<string> items, System.StringComparison comparisonType)
+        {
+            foreach (var item in items)
+            {
+                if (source.Contains(item, System.StringComparer.FromComparison(comparisonType)))
+                    return true;
+            }
+            return false;
+        }
+    }
+
     public static class PhysicsExtensions
     {
         private static RaycastHitComparer raycastHitComparer = new();
