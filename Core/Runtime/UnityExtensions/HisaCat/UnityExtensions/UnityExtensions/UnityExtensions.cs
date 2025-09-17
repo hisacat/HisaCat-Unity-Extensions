@@ -1045,6 +1045,18 @@ namespace HisaCat.UnityExtensions
             }
             return true;
         }
+        /// <summary>
+        /// Returns true if the source contains all of the items.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAll<T>(this IEnumerable<T> source, params T[] items)
+            => ContainsAll(source, (IEnumerable<T>)items);
+        /// <summary>
+        /// Returns true if the source contains all of the items with <see cref="System.StringComparison"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAll(this IEnumerable<string> source, System.StringComparison comparisonType, params string[] items)
+            => ContainsAll(source, (IEnumerable<string>)items, comparisonType);
 
         /// <summary>
         /// Returns true if the source contains any of the items.
@@ -1098,6 +1110,18 @@ namespace HisaCat.UnityExtensions
             }
             return false;
         }
+        /// <summary>
+        /// Returns true if the source contains any of the items.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAny(this IEnumerable<string> source, params string[] items)
+            => ContainsAny(source, (IEnumerable<string>)items);
+        /// <summary>
+        /// Returns true if the source contains any of the items with <see cref="System.StringComparison"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ContainsAny(this IEnumerable<string> source, System.StringComparison comparisonType, params string[] items)
+            => ContainsAny(source, (IEnumerable<string>)items, comparisonType);
     }
 
     public static class PhysicsExtensions
