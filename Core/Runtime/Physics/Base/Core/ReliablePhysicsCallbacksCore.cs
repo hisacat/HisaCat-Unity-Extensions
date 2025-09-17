@@ -29,6 +29,8 @@ namespace HisaCat.HUE.PhysicsExtension
     public abstract class ReliablePhysicsCallbacksCore<TCollider, TCollision> : MonoBehaviour
         where TCollider : Component where TCollision : class
     {
+        public const int DEFAULT_COLLIDER_BUFFER_SIZE = 1024;
+
         #region Abstract Methods
         /// <summary>
         /// Provides the delegated callbacks used by Reliable Physics Callbacks.
@@ -49,7 +51,7 @@ namespace HisaCat.HUE.PhysicsExtension
         /// Collider buffer for optimization.
         /// </summary>
         private readonly StaticBuffer<TCollider> colliderBuffer
-            = PhysicsCallbackCache.GetStaticBuffer<TCollider>(1024);
+            = PhysicsCallbackCache.GetStaticBuffer<TCollider>(DEFAULT_COLLIDER_BUFFER_SIZE);
         #endregion Caches
 
         public IReadOnlyHashSet<TCollider> TriggerStayingColliders { get; private set; } = null;

@@ -24,6 +24,9 @@ namespace HisaCat.HUE.PhysicsExtension
         where TTarget : Component
         where TCollider : Component where TCollision : class
     {
+        public const int DEFAULT_TARGETS_BUFFER_SIZE = 1024;
+        public const int DEFAULT_COLLIDER_TARGET_CACHE_SIZE = 1024;
+
         #region Abstract Methods
         /// <summary>
         /// Gets the target layer mask. Use <see cref="Physics.AllLayers"/> to match all layers.
@@ -44,13 +47,13 @@ namespace HisaCat.HUE.PhysicsExtension
         /// Targets buffer for optimization.
         /// </summary>
         private readonly StaticBuffer<TTarget> targetsBuffer
-            = PhysicsCallbackCache.GetStaticBuffer<TTarget>(1024);
+            = PhysicsCallbackCache.GetStaticBuffer<TTarget>(DEFAULT_TARGETS_BUFFER_SIZE);
         /// <summary>
         /// Collider's target cache for optimization.
         /// This caches the component retrieved from each collider to minimize GetComponent calls.
         /// </summary>
         private readonly Dictionary<TCollider, TTarget> colliderTargetCache
-            = PhysicsCallbackCache.GetStaticDictionary<TCollider, TTarget>(1024);
+            = PhysicsCallbackCache.GetStaticDictionary<TCollider, TTarget>(DEFAULT_COLLIDER_TARGET_CACHE_SIZE);
         #endregion Caches
 
         protected sealed override ReliableCallbacks DelegateReliableCallbacks()
