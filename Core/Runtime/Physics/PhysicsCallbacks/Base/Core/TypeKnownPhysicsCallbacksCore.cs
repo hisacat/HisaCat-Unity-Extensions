@@ -73,9 +73,9 @@ namespace HisaCat.HUE.PhysicsExtension
             );
         }
 
-        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> TriggerStayingTargets => this.triggerStayingTargets.ReadOnlyDictionary;
+        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> TriggerStayingTargets => this.triggerStayingTargets.ReadOnly;
         private ReadOnlyHashSetValueDictionary triggerStayingTargets = null;
-        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> CollisionStayingTargets => this.collisionStayingTargets.ReadOnlyDictionary;
+        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> CollisionStayingTargets => this.collisionStayingTargets.ReadOnly;
         private ReadOnlyHashSetValueDictionary collisionStayingTargets = null;
         private class ReadOnlyHashSetValueDictionary : ReadOnlyValueDictionary<TTarget, HashSet<TCollider>, IReadOnlyHashSet<TCollider>>
         {
@@ -199,7 +199,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     staying.Remove(stay);
 
                     // Always Fire staying changed callback first.
-                    callbacks.OnStayingChanged(staying.ReadOnlyDictionary);
+                    callbacks.OnStayingChanged(staying.ReadOnly);
                     callbacks.OnExit(stay);
                 }
                 removeBuffer.ClearBuffer(removeCount);
@@ -234,7 +234,7 @@ namespace HisaCat.HUE.PhysicsExtension
                 stayTargets.Add(target, new() { other });
 
                 // Always Fire staying changed callback first.
-                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                callbacks.OnStayingChanged(stayTargets.ReadOnly);
                 callbacks.OnEnter(target);
             }
             else
@@ -301,7 +301,7 @@ namespace HisaCat.HUE.PhysicsExtension
                 stayTargets.Remove(target);
 
                 // Always Fire staying changed callback first.
-                callbacks.OnStayingChanged(stayTargets.ReadOnlyDictionary);
+                callbacks.OnStayingChanged(stayTargets.ReadOnly);
                 callbacks.OnExit(target);
             }
 

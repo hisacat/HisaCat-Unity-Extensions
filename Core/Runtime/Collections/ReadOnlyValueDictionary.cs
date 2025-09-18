@@ -7,13 +7,13 @@ namespace HisaCat.HUE.Collections
     {
         public abstract TReadOnlyValue ToReadOnlyValue(TValue value);
 
-        public Dictionary<TKey, TReadOnlyValue> ReadOnlyDictionary { get; private set; } = null;
+        public Dictionary<TKey, TReadOnlyValue> ReadOnly { get; private set; } = null;
         private readonly Dictionary<TKey, TValue> sourceDictionary = null;
 
         public ReadOnlyValueDictionary()
         {
             this.sourceDictionary = new();
-            this.ReadOnlyDictionary = new();
+            this.ReadOnly = new();
         }
 
         #region IEnumerable
@@ -30,23 +30,23 @@ namespace HisaCat.HUE.Collections
             set
             {
                 this.sourceDictionary[key] = value;
-                this.ReadOnlyDictionary[key] = this.ToReadOnlyValue(value);
+                this.ReadOnly[key] = this.ToReadOnlyValue(value);
             }
         }
         public void Add(TKey key, TValue value)
         {
             this.sourceDictionary.Add(key, value);
-            this.ReadOnlyDictionary.Add(key, this.ToReadOnlyValue(value));
+            this.ReadOnly.Add(key, this.ToReadOnlyValue(value));
         }
         public void Remove(TKey key)
         {
             this.sourceDictionary.Remove(key);
-            this.ReadOnlyDictionary.Remove(key);
+            this.ReadOnly.Remove(key);
         }
         public void Clear()
         {
             this.sourceDictionary.Clear();
-            this.ReadOnlyDictionary.Clear();
+            this.ReadOnly.Clear();
         }
         public bool ContainsKey(TKey key)
             => this.sourceDictionary.ContainsKey(key);
