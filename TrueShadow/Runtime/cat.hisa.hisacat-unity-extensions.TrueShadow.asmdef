@@ -1,0 +1,21 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.TrueShadow",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:e4da545f547033e4eae6a21b9fb98196",
+        "GUID:7ab3663edede26740845931880bf22af",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "LETAI_TRUESHADOW"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
