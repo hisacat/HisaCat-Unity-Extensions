@@ -19,7 +19,9 @@ namespace HisaCat.RealTimeOcclusionCulling
             this.m_ShowBounds = this.serializedObject.FindProperty(nameof(this.m_ShowBounds));
         }
 
+#pragma warning disable CS0414
         private static bool overrlappedCellsToggle = false; // TODO DISPLAY WITH TOGGLE
+#pragma warning restore CS0414
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();
