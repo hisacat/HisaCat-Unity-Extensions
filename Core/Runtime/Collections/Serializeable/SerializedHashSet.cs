@@ -59,12 +59,14 @@ namespace HisaCat.HUE.Collections
             this._items = new(this.hashSet);
         }
 
+        private HashSet<T> uniqueCache = new();
         public void ValidateList()
         {
-            var unique = new HashSet<T>(this._items);
-            this._items.Clear();
+            this.uniqueCache.Clear();
+            this.uniqueCache.AddRange(this._items);
 
-            foreach (var item in unique) this._items.Add(item);
+            this._items.Clear();
+            foreach (var item in this.uniqueCache) this._items.Add(item);
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
