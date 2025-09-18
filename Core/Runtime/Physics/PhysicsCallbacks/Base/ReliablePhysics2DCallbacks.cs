@@ -12,13 +12,13 @@ namespace HisaCat.HUE.PhysicsExtension
                     onEnter: this.OnReliableTrigger2DEnterCallback,
                     onStay: this.OnReliableTrigger2DStayCallback,
                     onExit: this.OnReliableTrigger2DExitCallback,
-                    onStayingChanged: this.OnReliableTrigger2DStayingChangedCallback
+                    onStayingChanged: this.OnReliableTriggerStayingChanged2DCallback
                 ),
                 collision: new(
                     onEnter: this.OnReliableCollision2DEnterCallback,
                     onStay: this.OnReliableCollision2DStayCallback,
                     onExit: this.OnReliableCollision2DExitCallback,
-                    onStayingChanged: this.OnReliableCollision2DStayingChangedCallback
+                    onStayingChanged: this.OnReliableCollisionStayingChanged2DCallback
                 )
             );
         }
@@ -39,12 +39,12 @@ namespace HisaCat.HUE.PhysicsExtension
         protected virtual void OnReliableTrigger2DEnterCallback(Collider2D other) { }
         protected virtual void OnReliableTrigger2DStayCallback(Collider2D other) { }
         protected virtual void OnReliableTrigger2DExitCallback(Collider2D other) { }
-        protected virtual void OnReliableTrigger2DStayingChangedCallback(IReadOnlyHashSet<Collider2D> staying) { }
+        protected virtual void OnReliableTriggerStayingChanged2DCallback(IReadOnlyHashSet<Collider2D> staying) { }
 
         protected virtual void OnReliableCollision2DEnterCallback(Collider2D other) { }
         protected virtual void OnReliableCollision2DStayCallback(Collider2D other) { }
         protected virtual void OnReliableCollision2DExitCallback(Collider2D other) { }
-        protected virtual void OnReliableCollision2DStayingChangedCallback(IReadOnlyHashSet<Collider2D> staying) { }
+        protected virtual void OnReliableCollisionStayingChanged2DCallback(IReadOnlyHashSet<Collider2D> staying) { }
         #endregion Reliable Physics Callbacks
     }
 }
