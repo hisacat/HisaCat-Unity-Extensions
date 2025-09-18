@@ -15,9 +15,49 @@ namespace HisaCat.HUE.Collections
     {
         // Direct inheritance from HashSet causes persistent NullReferenceExceptions 
         // in components after script modifications, so we use composition instead.
-        [SerializeField] private List<T> _items = new();
-
+        [SerializeField] private List<T> _items = null;
         [NonSerialized] private HashSet<T> hashSet = null;
+
+        private ReadOnlyHashSet<T> _readOnlyHashSet = null;
+        public IReadOnlyHashSet<T> ReadOnlyHashSet => this._readOnlyHashSet ??= this.hashSet.AsReadOnly();
+
+        #region Constructors
+        public SerializedHashSet()
+        {
+            this.hashSet = new();
+            Initialize();
+        }
+        public SerializedHashSet(IEnumerable<T> collection)
+        {
+            this.hashSet = new(collection);
+            Initialize();
+        }
+        public SerializedHashSet(IEqualityComparer<T> comparer)
+        {
+            this.hashSet = new(comparer);
+            Initialize();
+        }
+        public SerializedHashSet(int capacity)
+        {
+            this.hashSet = new(capacity);
+            Initialize();
+        }
+        public SerializedHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
+        {
+            this.hashSet = new(collection, comparer);
+            Initialize();
+        }
+        public SerializedHashSet(int capacity, IEqualityComparer<T> comparer)
+        {
+            this.hashSet = new(capacity, comparer);
+            Initialize();
+        }
+        #endregion Constructors
+
+        private void Initialize()
+        {
+            this._items = new(this.hashSet);
+        }
 
         public void ValidateList()
         {
