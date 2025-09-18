@@ -17,7 +17,10 @@ namespace HisaCat.HUE
         private HashSet<TMP_SubMeshUI> knownSubMeshes = new();
 
 #if UNITY_EDITOR
-        private void OnValidate()
+        private void OnValidate() => TryInitializeOnEditor();
+        private void Reset() => TryInitializeOnEditor();
+
+        private void TryInitializeOnEditor()
         {
             if (Application.isPlaying) return;
 
@@ -27,6 +30,9 @@ namespace HisaCat.HUE
 #endif
         private void Awake()
         {
+#if UNITY_EDITOR
+            TryInitializeOnEditor();
+#endif
             this.m_TextMeshProUGUIEx.OnPostPopulateMesh -= OnPostPopulateMesh;
             this.m_TextMeshProUGUIEx.OnPostPopulateMesh += OnPostPopulateMesh;
 
