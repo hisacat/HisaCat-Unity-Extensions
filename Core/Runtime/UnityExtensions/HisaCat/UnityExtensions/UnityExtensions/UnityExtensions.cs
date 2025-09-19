@@ -1867,6 +1867,14 @@ namespace HisaCat.UnityExtensions
         {
             return x > min && x < max;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float NormalizeAngle(float angle)
+        {
+            angle %= 360f;
+            if (angle < 0f) angle += 360f;
+            return angle;
+        }
     }
 
     public static class HashSetExtensions
