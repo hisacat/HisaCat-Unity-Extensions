@@ -135,7 +135,7 @@ namespace HisaCat.HUE.PhysicsExtension
             if (this.colliderTargetCache.TryGetValue(collider, out var existingTarget))
             {
                 if (IsValidCollider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
-                    return this.ShouldProcessTarget(existingTarget, collider) ? existingTarget : null;
+                    return existingTarget;
 
                 static bool IsValidCollider(TCollider collider, TTarget target, LayerMask layerMask, System.Func<TCollider, GameObject> getColliderGameObject)
                 {
@@ -153,8 +153,7 @@ namespace HisaCat.HUE.PhysicsExtension
             if (target == null) return null;
 
             this.colliderTargetCache.Add(collider, target);
-
-            return this.ShouldProcessTarget(target, collider) ? target : null;
+            return target;
         }
 
         protected override void FixedUpdate()
@@ -233,6 +232,10 @@ namespace HisaCat.HUE.PhysicsExtension
         {
             var target = FindTarget(other);
             if (target == null) return;
+
+            // Note: Objects that have already entered must call exit afterwards.
+            // Therefore, should process validation is only checked/applied during enter events.
+            if (this.ShouldProcessTarget(target, other) == false) return;
 
             if (stayTargets.ContainsKey(target) == false)
             {
