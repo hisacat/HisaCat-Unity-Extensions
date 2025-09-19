@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using HisaCat.Collections;
+using HisaCat.SimpleObjectPool;
 using HisaCat.Utilities;
 using UnityEngine;
 
@@ -91,6 +93,13 @@ namespace HisaCat.Sounds
                 }
                 return _instance;
             }
+        }
+
+        public const int ManagedSEAudioSourceCacheCount = 64;
+        private void Awake()
+        {
+            // var audioSource = new GameObject("[Managed Sound Effect]").AddComponent<AudioSource>();
+            // SimpleObjectPoolManager.AddPool<AudioSource>(audioSource, ManagedSEAudioSourceCacheCount);
         }
         private void OnDestroy()
         {
