@@ -44,7 +44,7 @@ namespace HisaCat.HUE.PhysicsExtension
         #region Virtual Methods
         /// <summary>
         /// Returns whether the specified target should be processed.<br/>
-        /// It only works on enter events.
+        /// This validation only occurs during enter events
         /// </summary>
         protected virtual bool ShouldProcessTarget(TTarget target, TCollider collider) => true;
         #endregion Virtual Methods
