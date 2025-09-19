@@ -17,8 +17,14 @@ namespace HisaCat
 
         private IEnumerator DestroyRoutine()
         {
-            yield return HisaCat.CachedYieldInstruction.WaitForEndOfFrame();
-            while (this.m_Animation.isPlaying) yield return HisaCat.CachedYieldInstruction.WaitForEndOfFrame();
+            // Wait until animation starts
+            yield return new WaitUntil(IsAnimationPlaying);
+            bool IsAnimationPlaying() => this.m_Animation.isPlaying;
+
+            // Wait until animation finishes
+            yield return new WaitUntil(IsAnimationFinished);
+            bool IsAnimationFinished() => this.m_Animation.isPlaying == false;
+
             Destroy(this.gameObject);
             yield break;
         }
