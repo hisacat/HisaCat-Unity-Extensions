@@ -205,8 +205,18 @@ namespace HisaCat.UnityExtensions
 
     public static class CameraExtensions
     {
+        /// <summary>
+        /// Returns a ray going through a viewport point, starting from the camera's actual <see cref="Transform.position"/>.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="Camera.ViewportPointToRay"/>, which returns a ray whose origin is located on the near clipping plane,
+        /// this method forces the ray origin to be the camera's world position.
+        /// </remarks>
+        /// <param name="cam">The source camera.</param>
+        /// <param name="uv">Viewport coordinates in [0,1] range.</param>
+        /// <returns>A <see cref="Ray"/> starting from the camera position towards the given viewport point.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Ray ViewportPointToRayIgnoreNearPlane(this Camera camera, Vector2 viewportPoint)
+        public static Ray ViewportPointToRayFromCamera(this Camera camera, Vector2 viewportPoint)
         {
             var ray = camera.ViewportPointToRay(viewportPoint);
             ray.origin = camera.transform.position;
