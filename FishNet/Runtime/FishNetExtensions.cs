@@ -7,6 +7,13 @@ namespace HisaCat.FishNet
     public static class FishNetExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidSyncVarOnChageEvent(this NetworkBehaviour networkBehaviour, bool asServer)
+        {
+            if (networkBehaviour.IsServerStarted && asServer == false) return false;
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotServerWithLogError(this NetworkBehaviour networkBehaviour, string functionName)
         {
             if (networkBehaviour.IsServerStarted == false)
