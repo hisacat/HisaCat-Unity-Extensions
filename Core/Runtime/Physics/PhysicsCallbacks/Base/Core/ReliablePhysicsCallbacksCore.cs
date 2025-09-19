@@ -1,4 +1,5 @@
 using HisaCat.HUE.Collections;
+using HisaCat.UnityExtensions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +47,11 @@ namespace HisaCat.HUE.PhysicsExtension
         #endregion Abstract Methods
 
         #region Virtual Methods
+        /// <summary>
+        /// Gets the collider layer mask. Default: <see cref="Physics.AllLayers"/> to match all layers.
+        /// This validation only occurs during enter events
+        /// </summary>
+        public virtual LayerMask ColliderLayerMask { get; } = Physics.AllLayers;
         /// <summary>
         /// Returns whether should be processed.<br/>
         /// This validation only occurs during enter events
@@ -196,6 +202,7 @@ namespace HisaCat.HUE.PhysicsExtension
             // Note: Objects that have already entered must call exit afterwards.
             // Therefore, should process validation is only checked/applied during enter events.
             if (this.ShouldProcess() == false || this.ShouldProcessCollider(other) == false) return;
+            if (this.ColliderLayerMask.IsLayerInMask(other.gameObject.layer) == false) return;
 
             if (this.triggerStayingColliders.Add(other) == false) return;
 
@@ -208,6 +215,7 @@ namespace HisaCat.HUE.PhysicsExtension
             // Note: Objects that have already entered must call exit afterwards.
             // Therefore, should process validation is only checked/applied during enter events.
             if (this.ShouldProcess() == false || this.ShouldProcessCollider(other) == false) return;
+            if (this.ColliderLayerMask.IsLayerInMask(other.gameObject.layer) == false) return;
 
             if (this.triggerStayingColliders.Remove(other) == false) return;
 
