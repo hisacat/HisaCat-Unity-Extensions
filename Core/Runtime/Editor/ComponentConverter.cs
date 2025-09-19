@@ -1,5 +1,5 @@
+#if UNITY_EDITOR
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
 using UnityEditorInternal;
 
@@ -196,3 +196,4 @@ namespace HisaCat.HUE
         }
     }
 }
+#endif
