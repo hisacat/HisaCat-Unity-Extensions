@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+
 using Conditional = System.Diagnostics.ConditionalAttribute;
 
 namespace HisaCat.UnityExtensions
