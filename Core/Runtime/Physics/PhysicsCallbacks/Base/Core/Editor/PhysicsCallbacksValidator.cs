@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -30,6 +31,8 @@ namespace HisaCat.HUE.PhysicsExtension
         }
 
         private static readonly Type TargetBaseType = typeof(ReliablePhysicsCallbacksCore<,>);
+
+        [MenuItem("HisaCat/HUE/PhysicsExtension/Validate Physics Callbacks Scripts")]
         public static void ValidatePhysicsCallbacksScripts()
         {
             var allMonoScripts = MonoImporter.GetAllRuntimeMonoScripts();
@@ -48,13 +51,22 @@ namespace HisaCat.HUE.PhysicsExtension
                     continue;
 
                 // Check if the type has the DefaultExecutionOrder attribute
-                if (Attribute.IsDefined(type, typeof(DefaultExecutionOrder)) == false)
+                if (IsAttributeDefined(type, typeof(DefaultExecutionOrder)) == false)
                 {
                     Debug.LogWarning(
                         $"\"{type.Name}\" is derived from \"{TargetBaseType.Name}\" but {nameof(DefaultExecutionOrder)} attribute is not set." +
                         $"\r\nIt recommended to set {nameof(DefaultExecutionOrder)} attribute with a sufficiently small value." +
                         $"\r\n e.g.: [DefaultExecutionOrder(int.MinValue)]",
                         monoScript);
+                }
+
+                static bool IsAttributeDefined(Type element, Type attributeType)
+                {
+                    // Note: Attribute.IsDefined() returns true even when the attribute is not directly declared in the source code.
+                    // This might be due to .NET's reflection API behavior with inherited attributes or Unity's internal processing.
+                    // We need to use GetCustomAttribute() with inherit=false to check if the attribute is explicitly declared in the specific class.
+                    // return Attribute.IsDefined(element, attributeType);
+                    return element.GetCustomAttribute(attributeType, inherit: false) != null;
                 }
             }
         }
