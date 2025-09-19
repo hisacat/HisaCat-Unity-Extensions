@@ -203,6 +203,17 @@ namespace HisaCat.UnityExtensions
         public static T[] SafeGetComponentsInChildren<T>(this Component component, bool includeInactive = false) where T : Component => component == null ? null : component.GetComponentsInChildren<T>(includeInactive);
     }
 
+    public static class CameraExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Ray ViewportPointToRayIgnoreNearPlane(this Camera camera, Vector2 viewportPoint)
+        {
+            var ray = camera.ViewportPointToRay(viewportPoint);
+            ray.origin = camera.transform.position;
+            return ray;
+        }
+    }
+
     public static class Vector3Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
