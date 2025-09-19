@@ -45,6 +45,19 @@ namespace HisaCat.HUE.PhysicsExtension
         protected abstract TCollider GetCollider(TCollision collision);
         #endregion Abstract Methods
 
+        #region Virtual Methods
+        /// <summary>
+        /// Returns whether should be processed.<br/>
+        /// It only works on enter events.
+        /// </summary>
+        protected virtual bool ShouldProcess() => true;
+        /// <summary>
+        /// Returns whether the specified collider should be processed.<br/>
+        /// It only works on enter events.
+        /// </summary>
+        protected virtual bool ShouldProcessCollider(TCollider collider) => true;
+        #endregion Virtual Methods
+
         #region Caches
         /// <summary>
         /// Collider buffer for optimization.
@@ -168,26 +181,34 @@ namespace HisaCat.HUE.PhysicsExtension
 
         #region Unity Physics Callbacks Handler
         protected void HandleUnityTriggerEnter(TCollider other)
-            => this.OnTriggerEnterCallback_Internal(other);
+            => this.OnUnityTriggerEnterCallback_Internal(other);
         protected void HandleUnityTriggerExit(TCollider other)
-            => this.OnTriggerExitCallback_Internal(other);
+            => this.OnUnityTriggerExitCallback_Internal(other);
         protected void HandleUnityCollisionEnter(TCollision collision)
-            => this.OnCollisionEnterCallback_Internal(collision);
+            => this.OnUnityCollisionEnterCallback_Internal(collision);
         protected void HandleUnityCollisionExit(TCollision collision)
-            => this.OnCollisionExitCallback_Internal(collision);
+            => this.OnUnityCollisionExitCallback_Internal(collision);
         #endregion Unity Physics Callbacks Handler
 
         #region Internal Physics Callbacks
-        private void OnTriggerEnterCallback_Internal(TCollider other)
+        private void OnUnityTriggerEnterCallback_Internal(TCollider other)
         {
+            // Note: Objects that have already entered must call exit afterwards.
+            // Therefore, should process validation is only checked/applied during enter events.
+            if (this.ShouldProcess() == false || this.ShouldProcessCollider(other) == false) return;
+
             if (this.triggerStayingColliders.Add(other) == false) return;
 
             // Always Fire staying changed callback first.
             this.reliableCallbacks.Trigger.OnStayingChanged(this.TriggerStayingColliders);
             this.reliableCallbacks.Trigger.OnEnter(other);
         }
-        private void OnTriggerExitCallback_Internal(TCollider other)
+        private void OnUnityTriggerExitCallback_Internal(TCollider other)
         {
+            // Note: Objects that have already entered must call exit afterwards.
+            // Therefore, should process validation is only checked/applied during enter events.
+            if (this.ShouldProcess() == false || this.ShouldProcessCollider(other) == false) return;
+
             if (this.triggerStayingColliders.Remove(other) == false) return;
 
             // Always Fire staying changed callback first.
@@ -195,7 +216,7 @@ namespace HisaCat.HUE.PhysicsExtension
             this.reliableCallbacks.Trigger.OnExit(other);
         }
 
-        private void OnCollisionEnterCallback_Internal(TCollision collision)
+        private void OnUnityCollisionEnterCallback_Internal(TCollision collision)
         {
             var collider = this.GetCollider(collision);
             if (this.collisionStayingColliders.Add(collider) == false) return;
@@ -204,7 +225,7 @@ namespace HisaCat.HUE.PhysicsExtension
             this.reliableCallbacks.Collision.OnStayingChanged(this.CollisionStayingColliders);
             this.reliableCallbacks.Collision.OnEnter(collider);
         }
-        private void OnCollisionExitCallback_Internal(TCollision collision)
+        private void OnUnityCollisionExitCallback_Internal(TCollision collision)
         {
             var collider = this.GetCollider(collision);
             if (this.collisionStayingColliders.Remove(collider) == false) return;
