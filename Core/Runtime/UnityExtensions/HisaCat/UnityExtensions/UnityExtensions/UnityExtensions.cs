@@ -425,16 +425,26 @@ namespace HisaCat.UnityExtensions
                 posA = posB;
             }
             Gizmos.DrawLine(posA, initialPos);
+
+            static float GetAnglesFromDir(bool useY, Vector3 position, Vector3 dir)
+            {
+                var forwardLimitPos = position + dir;
+                var srcAngles = useY ?
+                    Mathf.Rad2Deg * Mathf.Atan2(forwardLimitPos.y - position.y, forwardLimitPos.x - position.x) :
+                    Mathf.Rad2Deg * Mathf.Atan2(forwardLimitPos.z - position.z, forwardLimitPos.x - position.x);
+
+                return srcAngles;
+            }
         }
 
-        private static float GetAnglesFromDir(bool useY, Vector3 position, Vector3 dir)
+        [Conditional("UNITY_EDITOR")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DrawWireCircle(Color color, Vector3 position, Vector3 dir, float radius)
         {
-            var forwardLimitPos = position + dir;
-            var srcAngles = useY ?
-                Mathf.Rad2Deg * Mathf.Atan2(forwardLimitPos.y - position.y, forwardLimitPos.x - position.x) :
-                Mathf.Rad2Deg * Mathf.Atan2(forwardLimitPos.z - position.z, forwardLimitPos.x - position.x);
-
-            return srcAngles;
+#if UNITY_EDITOR
+            UnityEditor.Handles.color = color;
+            UnityEditor.Handles.DrawWireDisc(position, dir, radius);
+#endif
         }
 
         public static class DrawArrow
