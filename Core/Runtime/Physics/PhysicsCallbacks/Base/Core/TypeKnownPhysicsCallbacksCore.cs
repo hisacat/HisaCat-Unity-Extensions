@@ -41,6 +41,10 @@ namespace HisaCat.HUE.PhysicsExtension
         protected abstract GameObject GetColliderGameObject(TCollider collider);
         #endregion Abstract Methods
 
+        #region Virtual Methods
+        protected virtual bool ShouldProcessTarget(TTarget target, TCollider collider) => true;
+        #endregion Virtual Methods
+
         #region Caches
         /// <summary>
         /// Targets buffer for optimization.
@@ -131,7 +135,7 @@ namespace HisaCat.HUE.PhysicsExtension
             if (this.colliderTargetCache.TryGetValue(collider, out var existingTarget))
             {
                 if (IsValidCollider(collider, existingTarget, this.TargetLayerMask, this.GetColliderGameObject))
-                    return existingTarget;
+                    return this.ShouldProcessTarget(existingTarget, collider) ? existingTarget : null;
 
                 static bool IsValidCollider(TCollider collider, TTarget target, LayerMask layerMask, System.Func<TCollider, GameObject> getColliderGameObject)
                 {
@@ -149,7 +153,8 @@ namespace HisaCat.HUE.PhysicsExtension
             if (target == null) return null;
 
             this.colliderTargetCache.Add(collider, target);
-            return target;
+
+            return this.ShouldProcessTarget(target, collider) ? target : null;
         }
 
         protected override void FixedUpdate()
