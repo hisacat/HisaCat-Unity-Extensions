@@ -73,9 +73,9 @@ namespace HisaCat.HUE.PhysicsExtension
             );
         }
 
-        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> TriggerStayingTargets => this.triggerStayingTargets.ReadOnly;
+        public IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> TriggerStayingTargets => this.triggerStayingTargets.ReadOnly;
         private ReadOnlyHashSetValueDictionary triggerStayingTargets = null;
-        protected IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> CollisionStayingTargets => this.collisionStayingTargets.ReadOnly;
+        public IReadOnlyDictionary<TTarget, IReadOnlyHashSet<TCollider>> CollisionStayingTargets => this.collisionStayingTargets.ReadOnly;
         private ReadOnlyHashSetValueDictionary collisionStayingTargets = null;
         private class ReadOnlyHashSetValueDictionary : ReadOnlyValueDictionary<TTarget, HashSet<TCollider>, IReadOnlyHashSet<TCollider>>
         {
