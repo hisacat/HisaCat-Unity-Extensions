@@ -42,6 +42,45 @@ namespace HisaCat.UnityExtensions
 
     public static class ObjectExtensions
     {
+        #region ConditionLogs
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogError(this Object _, bool condition, string message)
+        {
+            if (condition) { Debug.LogError(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogError(this Object _, bool condition, string message, Object context)
+        {
+            if (condition) { Debug.LogError(message, context); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLog(this Object _, bool condition, string message)
+        {
+            if (condition) { Debug.Log(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLog(this Object _, bool condition, string message, Object context)
+        {
+            if (condition) { Debug.Log(message, context); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogWarning(this Object _, bool condition, string message)
+        {
+            if (condition) { Debug.LogWarning(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogWarning(this Object _, bool condition, string message, Object context)
+        {
+            if (condition) { Debug.LogWarning(message, context); return true; }
+            return false;
+        }
+        #endregion
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetSafeName(this Object obj) => obj == null ? "null" : obj.name;
 
