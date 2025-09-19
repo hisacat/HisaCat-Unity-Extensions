@@ -7,7 +7,7 @@ namespace HisaCat.FishNet
     public static class FishNetExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsValidSyncVarOnChageEvent(this NetworkBehaviour networkBehaviour, bool asServer)
+        public static bool IsValidSyncVarOnChangedEvent(this NetworkBehaviour networkBehaviour, bool asServer)
         {
             // In Host mode, the OnChange event can only be trusted when "asServer" is true.
             // See: https://gitea.nas.hisa.cat/DopamineBank/HappyDoor/issues/87
