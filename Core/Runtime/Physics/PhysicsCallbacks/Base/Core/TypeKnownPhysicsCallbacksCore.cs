@@ -28,10 +28,6 @@ namespace HisaCat.HUE.PhysicsExtension
 
         #region Abstract Methods
         /// <summary>
-        /// Gets the target layer mask. Use <see cref="Physics.AllLayers"/> to match all layers.
-        /// </summary>
-        public abstract LayerMask TargetLayerMask { get; }
-        /// <summary>
         /// Provides the delegated callbacks used by Type-Known Physics Callbacks.
         /// </summary>
         protected abstract TypeKnownCallbacks DelegateTypeKnownCallbacks();
@@ -42,6 +38,10 @@ namespace HisaCat.HUE.PhysicsExtension
         #endregion Abstract Methods
 
         #region Virtual Methods
+        /// <summary>
+        /// Gets the target layer mask. Default: <see cref="Physics.AllLayers"/> to match all layers.
+        /// </summary>
+        public virtual LayerMask TargetLayerMask { get; } = Physics.AllLayers;
         /// <summary>
         /// Returns whether the specified target should be processed.<br/>
         /// This validation only occurs during enter events
