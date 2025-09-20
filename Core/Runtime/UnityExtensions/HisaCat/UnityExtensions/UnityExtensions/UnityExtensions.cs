@@ -41,6 +41,25 @@ namespace HisaCat.UnityExtensions
         }
     }
 
+    public static class ComponentEditorExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ValidateLayerOnEditor(this Component component, int layer)
+        {
+            if (Application.isPlaying) return;
+
+            if (component.gameObject.layer != layer)
+            {
+                UnityEditor.EditorUtility.DisplayDialog("Warning",
+                    $"'{component.name}'s Layer is not set as '{nameof(layer)}' (current: '{LayerMask.LayerToName(component.gameObject.layer)}')."
+                    + $"\r\nIt will be change automatically'.",
+                    "OK");
+                component.gameObject.SetLayerRecursive(layer);
+                UnityEditor.EditorUtility.SetDirty(component.gameObject);
+            }
+        }
+    }
+
     public static class ObjectExtensions
     {
         #region ConditionLog
@@ -280,6 +299,16 @@ namespace HisaCat.UnityExtensions
         public static T SafeGetComponentInChildren<T>(this Component component, bool includeInactive = false) where T : Component => component == null ? null : component.GetComponentInChildren<T>(includeInactive);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] SafeGetComponentsInChildren<T>(this Component component, bool includeInactive = false) where T : Component => component == null ? null : component.GetComponentsInChildren<T>(includeInactive);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ForceSetLayerRecursive(this Component component, int layer, System.Func<GameObject, RecursiveGameObjectUtil.RecursiveIgnoreState> shouldIgnore = null, bool printErrorLog = true)
+        {
+            if (component.gameObject.layer != layer)
+            {
+                if (printErrorLog) Debug.LogError($"'{component.name}'s Layer is not set as {nameof(layer)}! It will be change automatically.");
+                component.gameObject.SetLayerRecursive(layer, shouldIgnore);
+            }
+        }
     }
 
     public static class CameraExtensions
