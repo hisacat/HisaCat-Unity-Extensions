@@ -1294,7 +1294,7 @@ namespace HisaCat.UnityExtensions
     public static class DebugExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LogCondition(bool condition, string message, LogType logType)
+        public static bool ConditionLog(bool condition, string message, LogType logType)
         {
             if (condition)
             {
@@ -1310,7 +1310,7 @@ namespace HisaCat.UnityExtensions
                         Debug.LogError(message);
                         break;
                     default:
-                        Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(LogCondition)}: Dose not supports log type \"{logType}\"");
+                        Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ConditionLog)}: Dose not supports log type \"{logType}\"");
                         break;
                 }
                 return true;
@@ -1318,7 +1318,7 @@ namespace HisaCat.UnityExtensions
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ManagedLogCondition(bool condition, string message, LogType logType)
+        public static bool ManagedConditionLog(bool condition, string message, LogType logType)
         {
             if (condition)
             {
@@ -1334,7 +1334,7 @@ namespace HisaCat.UnityExtensions
                         ManagedDebug.LogError(message);
                         break;
                     default:
-                        Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedLogCondition)}: Dose not supports log type \"{logType}\"");
+                        Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedConditionLog)}: Dose not supports log type \"{logType}\"");
                         break;
                 }
                 return true;
