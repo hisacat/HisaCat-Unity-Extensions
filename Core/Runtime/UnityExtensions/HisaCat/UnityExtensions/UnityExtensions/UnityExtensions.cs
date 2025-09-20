@@ -43,117 +43,83 @@ namespace HisaCat.UnityExtensions
 
     public static class ObjectExtensions
     {
-        #region Log & ManagedLog Conditions
+        #region ConditionLog
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LogCondition(this Object _, bool condition, string message, LogType logType)
-        {
-            if (condition)
-            {
-                switch (logType)
-                {
-                    case LogType.Log: Debug.Log(message); break;
-                    case LogType.Warning: Debug.LogWarning(message); break;
-                    case LogType.Error: Debug.LogError(message); break;
-                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(LogCondition)}: Dose not supports log type \"{logType}\""); break;
-                }
-                return true;
-            }
-            return false;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LogCondition(this Object _, bool condition, string message, LogType logType, Object context)
-        {
-            if (condition)
-            {
-                switch (logType)
-                {
-                    case LogType.Log: Debug.Log(message, context); break;
-                    case LogType.Warning: Debug.LogWarning(message, context); break;
-                    case LogType.Error: Debug.LogError(message, context); break;
-                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(LogCondition)}: Dose not supports log type \"{logType}\"", context); break;
-                }
-                return true;
-            }
-            return false;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ManagedLogCondition(this Object _, bool condition, string message, LogType logType)
-        {
-            if (condition)
-            {
-                switch (logType)
-                {
-                    case LogType.Log: ManagedDebug.Log(message); break;
-                    case LogType.Warning: ManagedDebug.LogWarning(message); break;
-                    case LogType.Error: ManagedDebug.LogError(message); break;
-                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedLogCondition)}: Dose not supports log type \"{logType}\""); break;
-                }
-                return true;
-            }
-            return false;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ManagedLogCondition(this Object _, bool condition, string message, LogType logType, Object context)
-        {
-            if (condition)
-            {
-                switch (logType)
-                {
-                    case LogType.Log: ManagedDebug.Log(message, context); break;
-                    case LogType.Warning: ManagedDebug.LogWarning(message); break;
-                    case LogType.Error: ManagedDebug.LogError(message, context); break;
-                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedLogCondition)}: Dose not supports log type \"{logType}\"", context); break;
-                }
-                return true;
-            }
-            return false;
-        }
-        #endregion Log & ManagedLog Conditions
-
-        #region ConditionLogs        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLogError(this Object _, bool condition, string message)
-        {
-            if (condition) { Debug.LogError(message); return true; }
-            return false;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLogError(this Object _, bool condition, string message, Object context)
-        {
-            if (condition) { Debug.LogError(message, context); return true; }
-            return false;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLog(this Object _, bool condition, string message)
+        public static bool ConditionLog(this Object _, bool condition, string message, LogType logType)
         {
             if (condition) { Debug.Log(message); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLog(this Object _, bool condition, string message, Object context)
+        public static bool ConditionLog(this Object _, bool condition, string message, LogType logType, Object context)
         {
             if (condition) { Debug.Log(message, context); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLogWarning(this Object _, bool condition, string message)
+        public static bool ConditionLogWarning(this Object _, bool condition, string message, LogType logType)
         {
             if (condition) { Debug.LogWarning(message); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Obsolete("Use LogCondition instead.")]
-        public static bool ConditionLogWarning(this Object _, bool condition, string message, Object context)
+        public static bool ConditionLogWarning(this Object _, bool condition, string message, LogType logType, Object context)
         {
             if (condition) { Debug.LogWarning(message, context); return true; }
             return false;
         }
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogError(this Object _, bool condition, string message, LogType logType)
+        {
+            if (condition) { Debug.LogError(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ConditionLogError(this Object _, bool condition, string message, LogType logType, Object context)
+        {
+            if (condition) { Debug.LogError(message, context); return true; }
+            return false;
+        }
+        #endregion ConditionLog
+
+        #region ManagedConditionLog
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLog(this Object _, bool condition, string message, LogType logType)
+        {
+            if (condition) { ManagedDebug.Log(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLog(this Object _, bool condition, string message, LogType logType, Object context)
+        {
+            if (condition) { ManagedDebug.Log(message, context); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLogWarning(this Object _, bool condition, string message, LogType logType)
+        {
+            if (condition) { ManagedDebug.LogWarning(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLogWarning(this Object _, bool condition, string message, LogType logType, Object context)
+        {
+            if (condition) { ManagedDebug.LogWarning(message, context); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLogError(this Object _, bool condition, string message, LogType logType)
+        {
+            if (condition) { ManagedDebug.LogError(message); return true; }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedConditionLogError(this Object _, bool condition, string message, LogType logType, Object context)
+        {
+            if (condition) { ManagedDebug.LogError(message, context); return true; }
+            return false;
+        }
+        #endregion ManagedConditionLog
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetSafeName(this Object obj) => obj == null ? "null" : obj.name;
