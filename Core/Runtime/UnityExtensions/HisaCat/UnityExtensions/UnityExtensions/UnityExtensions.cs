@@ -45,7 +45,7 @@ namespace HisaCat.UnityExtensions
     {
         #region Log & ManagedLog Conditions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LogCondition(bool condition, string message, LogType logType)
+        public static bool LogCondition(this Object _, bool condition, string message, LogType logType)
         {
             if (condition)
             {
@@ -61,7 +61,7 @@ namespace HisaCat.UnityExtensions
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LogCondition(bool condition, string message, LogType logType, Object context)
+        public static bool LogCondition(this Object _, bool condition, string message, LogType logType, Object context)
         {
             if (condition)
             {
@@ -77,7 +77,7 @@ namespace HisaCat.UnityExtensions
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ManagedLogCondition(bool condition, string message, LogType logType)
+        public static bool ManagedLogCondition(this Object _, bool condition, string message, LogType logType)
         {
             if (condition)
             {
@@ -93,7 +93,7 @@ namespace HisaCat.UnityExtensions
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ManagedLogCondition(bool condition, string message, LogType logType, Object context)
+        public static bool ManagedLogCondition(this Object _, bool condition, string message, LogType logType, Object context)
         {
             if (condition)
             {
