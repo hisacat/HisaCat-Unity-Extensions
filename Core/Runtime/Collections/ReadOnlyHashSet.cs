@@ -48,7 +48,7 @@ namespace HisaCat.HUE.Collections
         #endregion IEnumerable
     }
 
-    public interface IReadOnlyHashSet<T> : IReadOnlyCollection<T>, ISet<T> { }
+    public interface IReadOnlyHashSet<T> : ISet<T> { }
 
     public class ReadOnlyableHashSet<T> : HashSet<T>, IReadOnlyHashSet<T> { }
 
