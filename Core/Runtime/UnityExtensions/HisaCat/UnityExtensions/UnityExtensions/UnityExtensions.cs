@@ -41,25 +41,6 @@ namespace HisaCat.UnityExtensions
         }
     }
 
-    public static class ComponentEditorExtensions
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ValidateLayerOnEditor(this Component component, int layer)
-        {
-            if (Application.isPlaying) return;
-
-            if (component.gameObject.layer != layer)
-            {
-                UnityEditor.EditorUtility.DisplayDialog("Warning",
-                    $"'{component.name}'s Layer is not set as '{nameof(layer)}' (current: '{LayerMask.LayerToName(component.gameObject.layer)}')."
-                    + $"\r\nIt will be change automatically'.",
-                    "OK");
-                component.gameObject.SetLayerRecursive(layer);
-                UnityEditor.EditorUtility.SetDirty(component.gameObject);
-            }
-        }
-    }
-
     public static class ObjectExtensions
     {
         #region ConditionLog
@@ -305,11 +286,32 @@ namespace HisaCat.UnityExtensions
         {
             if (component.gameObject.layer != layer)
             {
-                if (printErrorLog) Debug.LogError($"'{component.name}'s Layer is not set as {nameof(layer)}! It will be change automatically.");
+                if (printErrorLog) Debug.LogError($"'{component.name}'s Layer is not set as {LayerMask.LayerToName(layer)}! It will be change automatically.");
                 component.gameObject.SetLayerRecursive(layer, shouldIgnore);
             }
         }
     }
+
+#if UNITY_EDITOR
+    public static class ComponentEditorExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ValidateLayerOnEditor(this Component component, int layer)
+        {
+            if (Application.isPlaying) return;
+
+            if (component.gameObject.layer != layer)
+            {
+                UnityEditor.EditorUtility.DisplayDialog("Warning",
+                    $"'{component.name}'s Layer is not set as '{LayerMask.LayerToName(layer)}' (current: '{LayerMask.LayerToName(component.gameObject.layer)}')."
+                    + $"\r\nIt will be change automatically'.",
+                    "OK");
+                component.gameObject.SetLayerRecursive(layer);
+                UnityEditor.EditorUtility.SetDirty(component.gameObject);
+            }
+        }
+    }
+#endif
 
     public static class CameraExtensions
     {
