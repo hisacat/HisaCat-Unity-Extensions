@@ -43,38 +43,111 @@ namespace HisaCat.UnityExtensions
 
     public static class ObjectExtensions
     {
-        #region ConditionLogs
+        #region Log & ManagedLog Conditions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LogCondition(bool condition, string message, LogType logType)
+        {
+            if (condition)
+            {
+                switch (logType)
+                {
+                    case LogType.Log: Debug.Log(message); break;
+                    case LogType.Warning: Debug.LogWarning(message); break;
+                    case LogType.Error: Debug.LogError(message); break;
+                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(LogCondition)}: Dose not supports log type \"{logType}\""); break;
+                }
+                return true;
+            }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LogCondition(bool condition, string message, LogType logType, Object context)
+        {
+            if (condition)
+            {
+                switch (logType)
+                {
+                    case LogType.Log: Debug.Log(message, context); break;
+                    case LogType.Warning: Debug.LogWarning(message, context); break;
+                    case LogType.Error: Debug.LogError(message, context); break;
+                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(LogCondition)}: Dose not supports log type \"{logType}\"", context); break;
+                }
+                return true;
+            }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedLogCondition(bool condition, string message, LogType logType)
+        {
+            if (condition)
+            {
+                switch (logType)
+                {
+                    case LogType.Log: ManagedDebug.Log(message); break;
+                    case LogType.Warning: ManagedDebug.LogWarning(message); break;
+                    case LogType.Error: ManagedDebug.LogError(message); break;
+                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedLogCondition)}: Dose not supports log type \"{logType}\""); break;
+                }
+                return true;
+            }
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ManagedLogCondition(bool condition, string message, LogType logType, Object context)
+        {
+            if (condition)
+            {
+                switch (logType)
+                {
+                    case LogType.Log: ManagedDebug.Log(message, context); break;
+                    case LogType.Warning: ManagedDebug.LogWarning(message); break;
+                    case LogType.Error: ManagedDebug.LogError(message, context); break;
+                    default: Debug.LogError($"[{nameof(DebugExtensions)}] {nameof(ManagedLogCondition)}: Dose not supports log type \"{logType}\"", context); break;
+                }
+                return true;
+            }
+            return false;
+        }
+        #endregion Log & ManagedLog Conditions
+
+        #region ConditionLogs        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLogError(this Object _, bool condition, string message)
         {
             if (condition) { Debug.LogError(message); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLogError(this Object _, bool condition, string message, Object context)
         {
             if (condition) { Debug.LogError(message, context); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLog(this Object _, bool condition, string message)
         {
             if (condition) { Debug.Log(message); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLog(this Object _, bool condition, string message, Object context)
         {
             if (condition) { Debug.Log(message, context); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLogWarning(this Object _, bool condition, string message)
         {
             if (condition) { Debug.LogWarning(message); return true; }
             return false;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Obsolete("Use LogCondition instead.")]
         public static bool ConditionLogWarning(this Object _, bool condition, string message, Object context)
         {
             if (condition) { Debug.LogWarning(message, context); return true; }
@@ -777,7 +850,7 @@ namespace HisaCat.UnityExtensions
             result = array[index];
             return true;
         }
-    
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsIndexInRange<T>(this T[] array, int index) => index >= 0 && index < array.Length;
     }
