@@ -777,6 +777,9 @@ namespace HisaCat.UnityExtensions
             result = array[index];
             return true;
         }
+    
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsIndexInRange<T>(this T[] array, int index) => index >= 0 && index < array.Length;
     }
 
     public static class ListExtension
