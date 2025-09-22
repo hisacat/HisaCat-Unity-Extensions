@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HisaCat.HUE.Settings
@@ -14,11 +15,63 @@ namespace HisaCat.HUE.Settings
             return new(RootPath, UnityEditor.SettingsScope.Project)
             {
                 label = "HUE: HisaCat's Unity Extensions",
-                guiHandler = (searchContext) =>
-                {
-                },
+                guiHandler = OnGUI,
                 keywords = new HashSet<string> { "HisaCat", "HUE" }
             };
+        }
+
+        private static void OnGUI(string searchContext)
+        {
+
+            EditorGUI.BeginChangeCheck();
+            var settings = HueSettings.Instance;
+            {
+                var originalLabelWidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = 250f;
+                {
+                    var gizmosSettings = settings.GizmosSettings;
+                    EditorGUILayout.LabelField("Gizmos", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    {
+                        EditorGUILayout.LabelField("Mesh Collider", EditorStyles.boldLabel);
+                        EditorGUI.indentLevel++;
+                        var meshColliderSettings = gizmosSettings.MeshColliderSettings;
+                        {
+                            meshColliderSettings.ShowNonConvexWithRenderer
+                                = EditorGUILayout.Toggle("Show Non-Convex with Renderer",
+                                    meshColliderSettings.ShowNonConvexWithRenderer);
+
+                            EditorGUI.BeginDisabledGroup(meshColliderSettings.ShowNonConvexWithRenderer == false);
+                            {
+                                meshColliderSettings.NonConvexWithRendererColor
+                                    = EditorGUILayout.ColorField("Non-Convex with Renderer Color",
+                                        meshColliderSettings.NonConvexWithRendererColor);
+
+                                if (IndentGUILayoutButton("Reset to Default"))
+                                {
+                                    meshColliderSettings.NonConvexWithRendererColor
+                                        = HueSettings.GizmosSettingsData.MeshColliderSettingsData.DefaultNonConvexWithRendererColor;
+                                }
+                            }
+                            EditorGUI.EndDisabledGroup();
+                        }
+                        EditorGUI.indentLevel--;
+                    }
+                    EditorGUI.indentLevel--;
+                }
+                EditorGUIUtility.labelWidth = originalLabelWidth;
+            }
+            if (EditorGUI.EndChangeCheck())
+                HueSettings.Save();
+
+            static bool IndentGUILayoutButton(string text, params GUILayoutOption[] options)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15f);
+                var result = GUILayout.Button(text, options);
+                EditorGUILayout.EndHorizontal();
+                return result;
+            }
         }
     }
 }
