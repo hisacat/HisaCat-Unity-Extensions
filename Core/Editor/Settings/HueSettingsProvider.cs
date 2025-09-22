@@ -7,12 +7,12 @@ namespace HisaCat.HUE.Settings
     internal class HueSettingsProvider : MonoBehaviour
     {
         internal const string RootPath = "Project/HisaCat/HUE";
-        [UnityEditor.SettingsProvider]
-        internal static UnityEditor.SettingsProvider CreateSettingsProvider()
+        [SettingsProvider]
+        internal static SettingsProvider CreateSettingsProvider()
         {
             // SettingsScope.Project: Project Settings
             // SettingsScope.Project: Preferences
-            return new(RootPath, UnityEditor.SettingsScope.Project)
+            return new(RootPath, SettingsScope.Project)
             {
                 label = "HUE: HisaCat's Unity Extensions",
                 guiHandler = OnGUI,
