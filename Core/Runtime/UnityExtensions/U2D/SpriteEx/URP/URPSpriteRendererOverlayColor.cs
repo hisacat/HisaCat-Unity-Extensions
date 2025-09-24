@@ -8,17 +8,26 @@ namespace HisaCat.Shaders.URP.U2D
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteRendererOverlayColor : MonoBehaviour
     {
-        public const string ShaderName = "HisaCat/URP/Sprite-Lit-OverlayColor-Default";
         public const string DefaultMaterialGUID = "72df459c977e5ea4195159f6046d0663";
 
         [ReadOnly][SerializeField] private SpriteRenderer m_SpriteRenderer = null;
+        public Color OverlayColor
+        {
+            get => this.m_OverlayColor;
+            set
+            {
+                this.m_OverlayColor = value;
+                ApplyColorIfDirty();
+            }
+        }
         [SerializeField] private Color m_OverlayColor = new(1, 1, 1, 0);
 
         private Color lastAppliedColor = new(1, 1, 1, 0);
-        private static readonly int OverlayColorId = Shader.PropertyToID("_OverlayColor");
+        private const string OverlayColorPropertyName = "_OverlayColor";
+        private static readonly int OverlayColorId = Shader.PropertyToID(OverlayColorPropertyName);
         private MaterialPropertyBlock mpb = null;
 
-        private void Awake()
+        private void Reset()
         {
 #if UNITY_EDITOR
             if (this.m_SpriteRenderer == null)
@@ -26,15 +35,9 @@ namespace HisaCat.Shaders.URP.U2D
                 this.m_SpriteRenderer = GetComponent<SpriteRenderer>();
                 UnityEditor.EditorUtility.SetDirty(this);
             }
-#endif
-
-            if (IsValidShader() == false)
-            {
-                Debug.Log($"[{nameof(SpriteRendererOverlayColor)}] Material shader must be \"{ShaderName}\".");
-                return;
-            }
 
             this.ApplyColor();
+#endif
         }
 
 #if UNITY_EDITOR
@@ -43,7 +46,7 @@ namespace HisaCat.Shaders.URP.U2D
             if (IsValidShader() == false)
             {
                 var material = UnityEditor.AssetDatabase.LoadAssetByGUID<Material>(new UnityEditor.GUID(DefaultMaterialGUID));
-                Debug.Log($"[{nameof(SpriteRendererOverlayColor)}] Update material to {material.name} automatically.");
+                Log($"Update material to {material.name} automatically.");
                 this.m_SpriteRenderer.sharedMaterial = material;
             }
 
@@ -51,23 +54,20 @@ namespace HisaCat.Shaders.URP.U2D
         }
 #endif
 
-        private bool IsValidShader()
+        private void Awake()
         {
-            if (this.m_SpriteRenderer.sharedMaterial == null) return false;
-            if (this.m_SpriteRenderer.sharedMaterial.shader == null) return false;
-            if (this.m_SpriteRenderer.sharedMaterial.shader.name != ShaderName) return false;
-            return true;
-        }
+#if UNITY_EDITOR
+            if (Application.isPlaying == false) return;
+#endif
 
-        private void OnPreRender()
-        {
-            if (IsValidShader() == false) return;
-
-            if (this.lastAppliedColor != this.m_OverlayColor)
+            if (IsValidShader() == false)
             {
-                this.ApplyColor();
-                this.lastAppliedColor = this.m_OverlayColor;
+                Log($"Current shader doesn't have \"{OverlayColorPropertyName}\" property." +
+                    $"\r\nPlease set valid shader.");
+                return;
             }
+
+            this.ApplyColor();
         }
 
         private void OnDestroy()
@@ -75,8 +75,31 @@ namespace HisaCat.Shaders.URP.U2D
             if (IsValidShader() == false) return;
 
             this.m_OverlayColor = new(1, 1, 1, 0);
-            this.lastAppliedColor = this.m_OverlayColor;
-            this.ApplyColor();
+            ApplyColorIfDirty();
+        }
+
+        private void OnDidApplyAnimationProperties()
+        {
+            if (IsValidShader() == false) return;
+
+            ApplyColorIfDirty();
+        }
+
+        private bool IsValidShader()
+        {
+            if (this.m_SpriteRenderer.sharedMaterial == null) return false;
+            if (this.m_SpriteRenderer.sharedMaterial.shader == null) return false;
+            if (this.m_SpriteRenderer.sharedMaterial.shader.FindPropertyIndex(OverlayColorPropertyName) <= 0) return false;
+            return true;
+        }
+
+        private void ApplyColorIfDirty()
+        {
+            if (this.lastAppliedColor != this.m_OverlayColor)
+            {
+                this.ApplyColor();
+                this.lastAppliedColor = this.m_OverlayColor;
+            }
         }
 
         private void ApplyColor()
@@ -87,5 +110,9 @@ namespace HisaCat.Shaders.URP.U2D
             this.mpb.SetColor(OverlayColorId, this.m_OverlayColor);
             this.m_SpriteRenderer.SetPropertyBlock(this.mpb);
         }
+
+        #region Logs
+        private static void Log(string message) => Debug.Log($"[{nameof(SpriteRendererOverlayColor)}] {message}");
+        #endregion Logs
     }
 }
