@@ -101,7 +101,7 @@ namespace HisaCat.Localization
         {
             if (File.Exists(SourceJsonPath) == false)
             {
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Source json not found at \"{SourceJsonPath}\".");
+                // Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Source json not found at \"{SourceJsonPath}\".");
                 return;
             }
 
