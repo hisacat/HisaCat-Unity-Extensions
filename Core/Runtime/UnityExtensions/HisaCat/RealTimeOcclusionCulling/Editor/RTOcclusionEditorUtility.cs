@@ -161,7 +161,7 @@ namespace HisaCat.RealTimeOcclusionCulling
                 for (int i = 0; i < cells; i++)
                 {
                     var cell = CellsBuffer.Buffer[i];
-                    Gizmos.color = Color.cyan.SetAlpha(0.125f);
+                    Gizmos.color = Color.cyan.WithAlpha(0.125f);
                     var center = new Vector3(cell.x, cell.y, cell.z) * RTOcclusionManager.CellSize;
                     center += (Vector3.one * RTOcclusionManager.CellSize) * 0.5f; // Center offset.
                     var size = new Vector3(RTOcclusionManager.CellSize, RTOcclusionManager.CellSize, RTOcclusionManager.CellSize);

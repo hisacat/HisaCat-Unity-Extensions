@@ -73,7 +73,7 @@ namespace HisaCat.RealTimeOcclusionCulling
                 foreach (var facePortal in target.FacePortals)
                 {
                     if (facePortal == null) continue;
-                    Gizmos.color = facePortal.IsEnabled ? Color.cyan.SetAlpha(0.25f) : Color.gray.SetAlpha(0.25f);
+                    Gizmos.color = facePortal.IsEnabled ? Color.cyan.WithAlpha(0.25f) : Color.gray.WithAlpha(0.25f);
                     var bounds = facePortal.GetBounds(target);
                     Gizmos.DrawCube(bounds.center, bounds.size);
                 }

@@ -436,6 +436,7 @@ namespace HisaCat.UnityExtensions
             /// Update value. It normally called from Update function of Behaviour.
             /// </summary>
             /// <param name="value"></param>
+            /// [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Update(T value)
             {
                 if (this.updateValueManually == false)
@@ -443,6 +444,7 @@ namespace HisaCat.UnityExtensions
 
                 UpdateInternal(value);
             }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void UpdateInternal(T value)
             {
                 this.stackedValues.Add(new KeyValuePair<float, T>(Time.time, value));
@@ -455,10 +457,18 @@ namespace HisaCat.UnityExtensions
             /// Clear captured values.
             /// </summary>
             /// <param name="startValue"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Reset(T startValue)
             {
                 this.stackedValues.Clear();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PlayOrRestartCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator)
+        {
+            if (coroutine != null) { monoBehaviour.StopCoroutine(coroutine); coroutine = null; }
+            coroutine = monoBehaviour.StartCoroutine(enumerator);
         }
     }
 
@@ -1052,24 +1062,24 @@ namespace HisaCat.UnityExtensions
     public static class ColorExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color SetAlpha(this Color color, float alpha) => new(color.r, color.g, color.b, alpha);
+        public static Color WithAlpha(this Color color, float alpha) => new(color.r, color.g, color.b, alpha);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color32 SetAlpha(this Color32 color, byte alpha) => new(color.r, color.g, color.b, alpha);
+        public static Color32 WithAlpha(this Color32 color, byte alpha) => new(color.r, color.g, color.b, alpha);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color SetRed(this Color color, float red) => new(red, color.g, color.b, color.a);
+        public static Color WithRed(this Color color, float red) => new(red, color.g, color.b, color.a);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color32 SetRed(this Color32 color, byte red) => new(red, color.g, color.b, color.a);
+        public static Color32 WithRed(this Color32 color, byte red) => new(red, color.g, color.b, color.a);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color SetGreen(this Color color, float green) => new(color.r, green, color.b, color.a);
+        public static Color WithGreen(this Color color, float green) => new(color.r, green, color.b, color.a);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color32 SetGreen(this Color32 color, byte green) => new(color.r, green, color.b, color.a);
+        public static Color32 WithGreen(this Color32 color, byte green) => new(color.r, green, color.b, color.a);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color SetBlue(this Color color, float blue) => new(color.r, color.g, blue, color.a);
+        public static Color WithBlue(this Color color, float blue) => new(color.r, color.g, blue, color.a);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color32 SetBlue(this Color32 color, byte blue) => new(color.r, color.g, blue, color.a);
+        public static Color32 WithBlue(this Color32 color, byte blue) => new(color.r, color.g, blue, color.a);
     }
 
     public static class StringExtensions
