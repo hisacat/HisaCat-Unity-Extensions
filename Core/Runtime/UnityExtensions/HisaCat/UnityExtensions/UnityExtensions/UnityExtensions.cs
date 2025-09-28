@@ -1320,6 +1320,37 @@ namespace HisaCat.UnityExtensions
                 out direction, out distance);
         }
 
+
+        #region Ignore Mass
+        /// <summary>
+        /// Apply a force to the rigidbody. It ignores the mass of the rigidbody.
+        /// </summary>
+        /// <param name="force">Force vector in world coordinates.</param>
+        /// <param name="mode">Type of force to apply.</param>
+        public static void AddForceIgnoreMass(this Rigidbody rigidbody, Vector3 force, ForceMode mode = ForceMode.Force)
+            => rigidbody.AddForce(force * rigidbody.mass, mode);
+
+        /// <summary>
+        /// Adds a force to the rigidbody relative to its coordinate system.<br/>
+        /// It ignores the mass of the rigidbody.
+        /// </summary>
+        /// <param name="relativeForce">Force vector in local coordinates.</param>
+        /// <param name="mode">Type of force to apply.</param>
+        public static void AddRelativeForceIgnoreMass(this Rigidbody rigidbody, Vector2 relativeForce, ForceMode mode = ForceMode.Force)
+            => rigidbody.AddRelativeForce(relativeForce * rigidbody.mass, mode);
+
+        /// <summary>
+        /// Applies force at position. As a result this will apply a torque and force on the object.<br/>
+        /// It ignores the mass of the rigidbody.
+        /// </summary>
+        /// <param name="force">Force vector in world coordinates.</param>
+        /// <param name="position">Position in world coordinates.</param>
+        /// <param name="mode">Type of force to apply.</param>
+        public static void AddForceAtPositionIgnoreMass(this Rigidbody rigidbody, Vector2 force, Vector2 position, ForceMode mode = ForceMode.Force)
+            => rigidbody.AddForceAtPosition(force * rigidbody.mass, position, mode);
+        #endregion Ignore Mass
+    }
+
     public static class Physics2DExtensions
     {
         #region Ignore Mass
