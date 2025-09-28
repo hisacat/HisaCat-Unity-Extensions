@@ -1322,13 +1322,32 @@ namespace HisaCat.UnityExtensions
 
 
         #region Ignore Mass
+        public enum ForceModeIgnoreMass
+        {
+            /// <summary>Add a continuous force to the rigidbody, ignoring its mass.</summary>
+            Force = 0,
+            /// <summary>Add an instant force impulse to the rigidbody, ignoring its mass.</summary>
+            Impulse = 1
+
+            // "Acceleration" and "VelocityChange" are already ignoring mass so they are not included.
+        }
+        private static ForceMode ToForceMode(this ForceModeIgnoreMass mode)
+        {
+            return mode switch
+            {
+                ForceModeIgnoreMass.Force => ForceMode.Force,
+                ForceModeIgnoreMass.Impulse => ForceMode.Impulse,
+                _ => throw new System.ArgumentException($"Invalid force mode ignore mass: {mode}"),
+            };
+        }
+
         /// <summary>
         /// Apply a force to the rigidbody. It ignores the mass of the rigidbody.
         /// </summary>
         /// <param name="force">Force vector in world coordinates.</param>
         /// <param name="mode">Type of force to apply.</param>
-        public static void AddForceIgnoreMass(this Rigidbody rigidbody, Vector3 force, ForceMode mode = ForceMode.Force)
-            => rigidbody.AddForce(force * rigidbody.mass, mode);
+        public static void AddForceIgnoreMass(this Rigidbody rigidbody, Vector3 force, ForceModeIgnoreMass mode = ForceModeIgnoreMass.Force)
+            => rigidbody.AddForce(force * rigidbody.mass, mode.ToForceMode());
 
         /// <summary>
         /// Adds a force to the rigidbody relative to its coordinate system.<br/>
@@ -1336,8 +1355,8 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="relativeForce">Force vector in local coordinates.</param>
         /// <param name="mode">Type of force to apply.</param>
-        public static void AddRelativeForceIgnoreMass(this Rigidbody rigidbody, Vector2 relativeForce, ForceMode mode = ForceMode.Force)
-            => rigidbody.AddRelativeForce(relativeForce * rigidbody.mass, mode);
+        public static void AddRelativeForceIgnoreMass(this Rigidbody rigidbody, Vector2 relativeForce, ForceModeIgnoreMass mode = ForceModeIgnoreMass.Force)
+            => rigidbody.AddRelativeForce(relativeForce * rigidbody.mass, mode.ToForceMode());
 
         /// <summary>
         /// Applies force at position. As a result this will apply a torque and force on the object.<br/>
@@ -1346,21 +1365,38 @@ namespace HisaCat.UnityExtensions
         /// <param name="force">Force vector in world coordinates.</param>
         /// <param name="position">Position in world coordinates.</param>
         /// <param name="mode">Type of force to apply.</param>
-        public static void AddForceAtPositionIgnoreMass(this Rigidbody rigidbody, Vector2 force, Vector2 position, ForceMode mode = ForceMode.Force)
-            => rigidbody.AddForceAtPosition(force * rigidbody.mass, position, mode);
+        public static void AddForceAtPositionIgnoreMass(this Rigidbody rigidbody, Vector2 force, Vector2 position, ForceModeIgnoreMass mode = ForceModeIgnoreMass.Force)
+            => rigidbody.AddForceAtPosition(force * rigidbody.mass, position, mode.ToForceMode());
         #endregion Ignore Mass
     }
 
     public static class Physics2DExtensions
     {
         #region Ignore Mass
+        public enum ForceMode2DIgnoreMass
+        {
+            /// <summary>Add a force to the Rigidbody2D, ignoring its mass.</summary>
+            Force,
+            /// <summary>Add an instant force impulse to the rigidbody2D, ignoring its mass.</summary>
+            Impulse
+        }
+        private static ForceMode2D ToForceMode2D(this ForceMode2DIgnoreMass mode)
+        {
+            return mode switch
+            {
+                ForceMode2DIgnoreMass.Force => ForceMode2D.Force,
+                ForceMode2DIgnoreMass.Impulse => ForceMode2D.Impulse,
+                _ => throw new System.ArgumentException($"Invalid force mode ignore mass: {mode}"),
+            };
+        }
+
         /// <summary>
         /// Apply a force to the rigidbody. It ignores the mass of the rigidbody.
         /// </summary>
         /// <param name="force">Components of the force in the X and Y axes.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddForceIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 force, ForceMode2D mode = ForceMode2D.Force)
-            => rigidbody2D.AddForce(force * rigidbody2D.mass, mode);
+        public static void AddForceIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 force, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
+            => rigidbody2D.AddForce(force * rigidbody2D.mass, mode.ToForceMode2D());
         /// <summary>
         /// Adds a force to the X component of the Rigidbody2D.linearVelocity only leaving<br/>
         /// the Y component of the world space Rigidbody2D.linearVelocity untouched.<br/>
@@ -1368,7 +1404,7 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="x">The force to add to the X component of the Linear Velocity in the world space of the Rigidbody2D.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddForceXIgnoreMass(this Rigidbody2D rigidbody2D, float x, ForceMode2D mode = ForceMode2D.Force)
+        public static void AddForceXIgnoreMass(this Rigidbody2D rigidbody2D, float x, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
             => AddForceIgnoreMass(rigidbody2D, new(x, 0f), mode);
         /// <summary>
         /// Adds a force to the Y component of the Rigidbody2D.linearVelocity only leaving<br/>
@@ -1377,7 +1413,7 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="y">The force to add to the Y component of the Linear Velocity in the world space of the Rigidbody2D.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddForceYIgnoreMass(this Rigidbody2D rigidbody2D, float y, ForceMode2D mode = ForceMode2D.Force)
+        public static void AddForceYIgnoreMass(this Rigidbody2D rigidbody2D, float y, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
             => AddForceIgnoreMass(rigidbody2D, new(0f, y), mode);
 
         /// <summary>
@@ -1387,8 +1423,8 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="relativeForce">Components of the force in the X and Y axes.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddRelativeForceIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 relativeForce, ForceMode2D mode = ForceMode2D.Force)
-            => rigidbody2D.AddRelativeForce(relativeForce * rigidbody2D.mass, mode);
+        public static void AddRelativeForceIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 relativeForce, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
+            => rigidbody2D.AddRelativeForce(relativeForce * rigidbody2D.mass, mode.ToForceMode2D());
         /// <summary>
         /// Adds a force to the X component of the Rigidbody2D.linearVelocity in the local<br/>
         /// space of the Rigidbody2D only leaving the Y component of the local space Rigidbody2D.linearVelocity untouched.<br/>
@@ -1396,7 +1432,7 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="force">The force to add to the X component of the Linear Velocity in the local space of the Rigidbody2D.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddRelativeForceXIgnoreMass(this Rigidbody2D rigidbody2D, float force, ForceMode2D mode = ForceMode2D.Force)
+        public static void AddRelativeForceXIgnoreMass(this Rigidbody2D rigidbody2D, float force, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
             => AddRelativeForceIgnoreMass(rigidbody2D, new(force, 0f), mode);
         /// <summary>
         /// Adds a force to the Y component of the Rigidbody2D.linearVelocity in the local<br/>
@@ -1405,7 +1441,7 @@ namespace HisaCat.UnityExtensions
         /// </summary>
         /// <param name="force">The force to add to the Y component of the Linear Velocity in the local space of the Rigidbody2D.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddRelativeForceYIgnoreMass(this Rigidbody2D rigidbody2D, float force, ForceMode2D mode = ForceMode2D.Force)
+        public static void AddRelativeForceYIgnoreMass(this Rigidbody2D rigidbody2D, float force, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
             => AddRelativeForceIgnoreMass(rigidbody2D, new(0f, force), mode);
 
         /// <summary>
@@ -1415,8 +1451,8 @@ namespace HisaCat.UnityExtensions
         /// <param name="force">Components of the force in the X and Y axes.</param>
         /// <param name="position">Position in world space to apply the force.</param>
         /// <param name="mode">The method used to apply the specified force.</param>
-        public static void AddForceAtPositionIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 force, Vector2 position, ForceMode2D mode = ForceMode2D.Force)
-            => rigidbody2D.AddForceAtPosition(force * rigidbody2D.mass, position, mode);
+        public static void AddForceAtPositionIgnoreMass(this Rigidbody2D rigidbody2D, Vector2 force, Vector2 position, ForceMode2DIgnoreMass mode = ForceMode2DIgnoreMass.Force)
+            => rigidbody2D.AddForceAtPosition(force * rigidbody2D.mass, position, mode.ToForceMode2D());
         #endregion Ignore Mass
 
         #region ForceMode Extended
