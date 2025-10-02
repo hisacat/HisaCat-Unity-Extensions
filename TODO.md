@@ -6,4 +6,5 @@
   If possible, allow users to use WindowSystem out-of-the-box without having to manually define it or rely on samples
 - [ ] Automate release process  
   Automatically increment and match versions in 'package.json' and 'CHANGELOG.md'
+- [ ] Detach settings with ProjectSettings and UserSettings.
 - [ ] ...
