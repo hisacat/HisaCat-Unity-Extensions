@@ -51,11 +51,24 @@ namespace HisaCat.HUE.Settings
             [System.Serializable]
             public class MeshColliderSettingsData
             {
-                [SerializeField] private bool m_ShowNonConvexWithRenderer = false;
                 public bool ShowNonConvexWithRenderer { get => this.m_ShowNonConvexWithRenderer; set => this.m_ShowNonConvexWithRenderer = value; }
+                [SerializeField] private bool m_ShowNonConvexWithRenderer = false;
                 public static readonly Color DefaultNonConvexWithRendererColor = new Color32(145, 244, 139, 192);
-                [SerializeField] private Color m_NonConvexWithRendererColor = DefaultNonConvexWithRendererColor;
                 public Color NonConvexWithRendererColor { get => this.m_NonConvexWithRendererColor; set => this.m_NonConvexWithRendererColor = value; }
+                [SerializeField] private Color m_NonConvexWithRendererColor = DefaultNonConvexWithRendererColor;
+            }
+
+            public EditorPlayModeStartSceneSettingsData EditorPlayModeStartSceneSettings { get => this.m_EditorPlayModeStartSceneSettings; set => this.m_EditorPlayModeStartSceneSettings = value; }
+            [SerializeField] private EditorPlayModeStartSceneSettingsData m_EditorPlayModeStartSceneSettings = new();
+            [System.Serializable]
+            public class EditorPlayModeStartSceneSettingsData
+            {
+                public bool Enable { get => this.m_Enable; set => this.m_Enable = value; }
+                [SerializeField] private bool m_Enable = false;
+                public bool UseFirstBuildScene { get => this.m_UseFirstBuildScene; set => this.m_UseFirstBuildScene = value; }
+                [SerializeField] private bool m_UseFirstBuildScene = false;
+                public string StartScenePath { get => this.m_StartScenePath; set => this.m_StartScenePath = value; }
+                [SerializeField] private string m_StartScenePath = string.Empty;
             }
         }
     }

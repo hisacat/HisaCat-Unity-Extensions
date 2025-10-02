@@ -58,6 +58,43 @@ namespace HisaCat.HUE.Settings
                         EditorGUI.indentLevel--;
                     }
                     EditorGUI.indentLevel--;
+
+
+                    EditorGUILayout.LabelField("Gizmos", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    {
+                        EditorGUILayout.LabelField("Editor Play Mode Start Scene", EditorStyles.boldLabel);
+                        EditorGUI.indentLevel++;
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                var editorPlayModeStartSceneSettings = gizmosSettings.EditorPlayModeStartSceneSettings;
+                                editorPlayModeStartSceneSettings.Enable =
+                                    EditorGUILayout.Toggle("Enable", editorPlayModeStartSceneSettings.Enable);
+
+                                EditorGUILayout.Space();
+                                editorPlayModeStartSceneSettings.UseFirstBuildScene =
+                                    EditorGUILayout.Toggle("Use First Build Scene", editorPlayModeStartSceneSettings.UseFirstBuildScene);
+
+                                EditorGUI.BeginDisabledGroup(editorPlayModeStartSceneSettings.UseFirstBuildScene);
+                                {
+                                    EditorGUI.BeginChangeCheck();
+                                    var scenePath = editorPlayModeStartSceneSettings.StartScenePath;
+                                    var sceneAsset = string.IsNullOrEmpty(scenePath) ? null : AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
+                                    sceneAsset = EditorGUILayout.ObjectField("Start Scene Path", sceneAsset, typeof(SceneAsset), false) as SceneAsset;
+                                    if (EditorGUI.EndChangeCheck())
+                                    {
+                                        editorPlayModeStartSceneSettings.StartScenePath =
+                                           sceneAsset == null ? null : AssetDatabase.GetAssetPath(sceneAsset);
+                                    }
+                                }
+                                EditorGUI.EndDisabledGroup();
+                            }
+                            if (EditorGUI.EndChangeCheck()) EditorPlayModeStartSceneManager.UpdateStartScene();
+                        }
+                        EditorGUI.indentLevel--;
+                    }
+                    EditorGUI.indentLevel--;
                 }
                 EditorGUIUtility.labelWidth = originalLabelWidth;
             }
