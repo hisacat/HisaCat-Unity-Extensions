@@ -5,11 +5,11 @@ using HisaCat.HUE.Settings;
 
 namespace HisaCat.HUE
 {
-    public class EditorPlayModeStartSceneManager : AssetPostprocessor
+    [InitializeOnLoad]
+    public static class EditorPlayModeStartSceneManager
     {
         private static bool IsInitializedOnce = false;
-
-        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        static EditorPlayModeStartSceneManager()
         {
             if (IsInitializedOnce) return;
             UpdateStartScene();
