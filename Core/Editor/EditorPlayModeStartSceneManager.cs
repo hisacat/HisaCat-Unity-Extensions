@@ -11,9 +11,18 @@ namespace HisaCat.HUE
         private static bool IsInitializedOnce = false;
         static EditorPlayModeStartSceneManager()
         {
-            if (IsInitializedOnce) return;
-            UpdateStartScene();
-            IsInitializedOnce = true;
+            // Hotfix: Some Unity Editor versions have an issue where
+            // EditorBuildSettings.scenes is empty during InitializeOnLoad initialization.
+            // Using delayCall to defer execution ensures scenes are properly loaded before accessing them.
+            // * This issue is confirmed in Unity 6000.2.6f2.
+            EditorApplication.delayCall -= Callback;
+            EditorApplication.delayCall += Callback;
+            static void Callback()
+            {
+                if (IsInitializedOnce) return;
+                UpdateStartScene();
+                IsInitializedOnce = true;
+            }
         }
 
         public static void SetStartScene(string scenePath)

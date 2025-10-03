@@ -13,7 +13,13 @@ namespace HisaCat.HUE
         [InitializeOnLoadMethod]
         private static void InitializeOnLoad()
         {
-            GenerateProjectDefinitionsScriptIfDirty();
+            // Hotfix: Some Unity Editor versions have an issue where
+            // EditorBuildSettings.scenes is empty during InitializeOnLoad initialization.
+            // Using delayCall to defer execution ensures scenes are properly loaded before accessing them.
+            // * This issue is confirmed in Unity 6000.2.6f2.
+            EditorApplication.delayCall -= Callback;
+            EditorApplication.delayCall += Callback;
+            static void Callback() => GenerateProjectDefinitionsScriptIfDirty();
         }
 
         public readonly static string ThisScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
