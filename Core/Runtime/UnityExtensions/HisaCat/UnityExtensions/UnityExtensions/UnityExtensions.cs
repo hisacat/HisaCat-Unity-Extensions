@@ -813,18 +813,15 @@ namespace HisaCat.UnityExtensions
 
     public static class ArrayExtensions
     {
+        /// <summary>Returns true if the array is null or empty.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this T[] array) => array == null || array.Length <= 0;
 
+        /// <summary>Returns a random element from the array.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T PickRandom<T>(this IList<T> array)
-        {
-            return array[Random.Range(0, array.Count)];
-        }
+        public static T PickRandom<T>(this IList<T> array) => array[Random.Range(0, array.Count)];
 
-        /// <summary>
-        /// Iterate elements from first to last.
-        /// </summary>
+        /// <summary>Iterate elements from first to last.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ForEachFast<T>(this IList<T> array, System.Action<T> action)
         {
@@ -832,9 +829,7 @@ namespace HisaCat.UnityExtensions
             for (int i = 0; i < count; i++)
                 action.Invoke(array[i]);
         }
-        /// <summary>
-        /// Iterate elements from last to first.
-        /// </summary>
+        /// <summary>Iterate elements from last to first.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ForEachFromEndFast<T>(this IList<T> array, System.Action<T> action)
         {
@@ -843,9 +838,11 @@ namespace HisaCat.UnityExtensions
                 action.Invoke(array[i]);
         }
 
+        /// <summary>Returns the last element of the array.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T LastElement<T>(this IList<T> array) => array[^1];
 
+        /// <summary>Tries to get the element at the specified index.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryIndexing<T>(this IList<T> array, int index, out T result)
         {
@@ -858,6 +855,7 @@ namespace HisaCat.UnityExtensions
             return true;
         }
 
+        /// <summary>Returns true if the index is within the range of the array.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsIndexInRange<T>(this T[] array, int index) => index >= 0 && index < array.Length;
     }
