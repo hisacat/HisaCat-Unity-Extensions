@@ -240,13 +240,16 @@ namespace HisaCat.HUE.UI.Windows
                 return Instance.resourcesWindowCache[windowPath];
 
             var window = LoadWindowBasePrefabFrom_Internal(windowPath);
-            var loadedWindowType = window.GetType();
-            if (window != null && loadedWindowType != type)
+            if (window != null)
             {
-                Debug.LogError(
-                    $"[{nameof(WindowSystemBase)}] {nameof(LoadWindowPrefab)}: Window '{window.name}' type '{loadedWindowType.Name}' is not '{type.Name}'."
-                    + $"\r\nPath: '{windowPath}'");
-                return null;
+                var loadedWindowType = window.GetType();
+                if (loadedWindowType != type)
+                {
+                    Debug.LogError(
+                        $"[{nameof(WindowSystemBase)}] {nameof(LoadWindowPrefab)}: Window '{window.name}' type '{loadedWindowType.Name}' is not '{type.Name}'."
+                        + $"\r\nPath: '{windowPath}'");
+                    return null;
+                }
             }
 
             Instance.resourcesWindowCache.Add(windowPath, window);
