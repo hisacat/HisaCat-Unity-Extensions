@@ -1,9 +1,9 @@
-namespace HisaCat.HUE.DataBindEx.Providers
+namespace HisaCat.HUE.DataBindEx.Providers.Getters
 {
     using Slash.Unity.DataBind.Foundation.Providers.Getters;
     using UnityEngine;
 
-    [AddComponentMenu("HisaCat/Data Bind Extension/Providers/[DB] TextMeshPro Input Field Text Provider (Unity)")]
+    [AddComponentMenu("HisaCat/Data Bind Extension/Getters/[DB] TextMeshPro Input Field Text Provider (Unity)")]
     public class TextMeshProInputFieldTextProvider : ComponentDataProvider<TMPro.TMP_InputField, string>
     {
         /// <summary>

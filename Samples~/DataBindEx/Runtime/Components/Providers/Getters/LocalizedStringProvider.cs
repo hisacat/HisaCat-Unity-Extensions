@@ -1,10 +1,10 @@
-namespace HisaCat.HUE.DataBindEx.Providers
+namespace HisaCat.HUE.DataBindEx.Providers.Getters
 {
     using HisaCat.Localization;
     using Slash.Unity.DataBind.Core.Presentation;
     using UnityEngine;
 
-    [AddComponentMenu("HisaCat/Data Bind Extension/Providers/[DB] Localized String Provider (Unity)")]
+    [AddComponentMenu("HisaCat/Data Bind Extension/Getters/[DB] Localized String Provider (Unity)")]
     public class LocalizedStringProvider : DataProvider
     {
         [DataTypeHintExplicit(typeof(string))]

@@ -1,10 +1,10 @@
-namespace HisaCat.HUE.DataBindEx.Providers
+namespace HisaCat.HUE.DataBindEx.Providers.Getters
 {
     using Slash.Unity.DataBind.Core.Presentation;
 
     using UnityEngine;
 
-    [AddComponentMenu("HisaCat/Data Bind Extension/Providers/[DB] Screen Orientation Provider (Unity)")]
+    [AddComponentMenu("HisaCat/Data Bind Extension/Getters/[DB] Screen Orientation Provider (Unity)")]
     public class ScreenOrientationProvider : DataProvider
     {
         private ScreenOrientation lastOrientation = default;
