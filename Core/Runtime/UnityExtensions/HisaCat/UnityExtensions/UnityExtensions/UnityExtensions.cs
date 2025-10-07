@@ -196,6 +196,16 @@ namespace HisaCat.UnityExtensions
                 GameObject.Destroy(transform.GetChild(i).gameObject);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DestroyAllChildren(this Transform transform, System.Func<Transform, bool> predicate)
+        {
+            var childCount = transform.childCount;
+            for (int i = childCount - 1; i >= 0; i--)
+            {
+                var child = transform.GetChild(i);
+                if (predicate(child)) GameObject.Destroy(child.gameObject);
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ResetTransform(this Transform transform)
         {
             transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
