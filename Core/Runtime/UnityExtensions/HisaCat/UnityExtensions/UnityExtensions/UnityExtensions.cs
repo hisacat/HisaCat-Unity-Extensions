@@ -867,7 +867,7 @@ namespace HisaCat.UnityExtensions
 
         /// <summary>Returns true if the index is within the range of the array.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsIndexInRange<T>(this T[] array, int index) => index >= 0 && index < array.Length;
+        public static bool IsIndexInRange<T>(this IList<T> array, int index) => index >= 0 && index < array.Count;
     }
 
     public static class ListExtension
