@@ -130,28 +130,10 @@ namespace HisaCat.HUE
                     {
                         scriptBuilder.AppendLine("        public static class SortingLayers");
                         scriptBuilder.AppendLine("        {");
-                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
-                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
-                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
-                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
-                        scriptBuilder.AppendLine("            {");
-                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
-                        scriptBuilder.AppendLine("                {");
                         foreach (var sortingLayer in sortingLayers)
                         {
                             string validName = NormalizeName(sortingLayer.Value);
-                            scriptBuilder.AppendLine($"                    {validName} = {sortingLayer.Key};");
-                        }
-                        scriptBuilder.AppendLine("                }");
-                        scriptBuilder.AppendLine("            }");
-                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
-                        scriptBuilder.AppendLine("#endif");
-                        scriptBuilder.AppendLine();
-
-                        foreach (var sortingLayer in sortingLayers)
-                        {
-                            string validName = NormalizeName(sortingLayer.Value);
-                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = {sortingLayer.Key};");
+                            scriptBuilder.AppendLine($"            public const int {validName} = {sortingLayer.Key};");
                         }
                         scriptBuilder.AppendLine("        }");
                         scriptBuilder.AppendLine();
@@ -161,28 +143,10 @@ namespace HisaCat.HUE
                     {
                         scriptBuilder.AppendLine("        public static class Layers");
                         scriptBuilder.AppendLine("        {");
-                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
-                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
-                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
-                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
-                        scriptBuilder.AppendLine("            {");
-                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
-                        scriptBuilder.AppendLine("                {");
                         foreach (var layer in layers)
                         {
                             string validName = NormalizeName(layer.Value);
-                            scriptBuilder.AppendLine($"                    {validName} = {layer.Key};");
-                        }
-                        scriptBuilder.AppendLine("                }");
-                        scriptBuilder.AppendLine("            }");
-                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
-                        scriptBuilder.AppendLine("#endif");
-                        scriptBuilder.AppendLine();
-
-                        foreach (var layer in layers)
-                        {
-                            string validName = NormalizeName(layer.Value);
-                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = {layer.Key};");
+                            scriptBuilder.AppendLine($"            public const int {validName} = {layer.Key};");
                         }
                         scriptBuilder.AppendLine("        }");
                         scriptBuilder.AppendLine();
@@ -192,28 +156,10 @@ namespace HisaCat.HUE
                     {
                         scriptBuilder.AppendLine("        public static class RenderingLayers");
                         scriptBuilder.AppendLine("        {");
-                        scriptBuilder.AppendLine("#if UNITY_EDITOR");
-                        scriptBuilder.AppendLine("#pragma warning disable IDE0051");
-                        scriptBuilder.AppendLine("            [UnityEditor.InitializeOnEnterPlayMode]");
-                        scriptBuilder.AppendLine("            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)");
-                        scriptBuilder.AppendLine("            {");
-                        scriptBuilder.AppendLine("                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))");
-                        scriptBuilder.AppendLine("                {");
                         foreach (var renderingLayer in renderingLayers)
                         {
                             string validName = NormalizeName(renderingLayer.Value);
-                            scriptBuilder.AppendLine($"                    {validName} = {renderingLayer.Key};");
-                        }
-                        scriptBuilder.AppendLine("                }");
-                        scriptBuilder.AppendLine("            }");
-                        scriptBuilder.AppendLine("#pragma warning restore IDE0051");
-                        scriptBuilder.AppendLine("#endif");
-                        scriptBuilder.AppendLine();
-
-                        foreach (var renderingLayer in renderingLayers)
-                        {
-                            string validName = NormalizeName(renderingLayer.Value);
-                            scriptBuilder.AppendLine($"            public static int {validName} {{ get; private set; }} = {renderingLayer.Key};");
+                            scriptBuilder.AppendLine($"            public const int {validName} = {renderingLayer.Key};");
                         }
                         scriptBuilder.AppendLine("        }");
                     }
