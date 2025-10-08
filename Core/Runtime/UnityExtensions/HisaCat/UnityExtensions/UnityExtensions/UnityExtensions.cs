@@ -479,6 +479,25 @@ namespace HisaCat.UnityExtensions
             if (coroutine != null) { monoBehaviour.StopCoroutine(coroutine); coroutine = null; }
             coroutine = monoBehaviour.StartCoroutine(enumerator);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PlayOrStopCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
+        {
+            if (play)
+            {
+                if (coroutine != null && restartIfAlreadyPlaying == false) return;
+
+                PlayOrRestartCoroutine(monoBehaviour, ref coroutine, enumerator);
+                return;
+            }
+            else
+            {
+                if (coroutine == null) return;
+
+                monoBehaviour.StopCoroutine(coroutine);
+                coroutine = null;
+                return;
+            }
+        }
     }
 
     public static class GizmosExtensions
