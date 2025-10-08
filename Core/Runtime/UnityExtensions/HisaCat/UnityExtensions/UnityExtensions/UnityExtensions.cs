@@ -466,9 +466,8 @@ namespace HisaCat.UnityExtensions
             /// <summary>
             /// Clear captured values.
             /// </summary>
-            /// <param name="startValue"></param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Reset(T startValue)
+            public void Reset()
             {
                 this.stackedValues.Clear();
             }
