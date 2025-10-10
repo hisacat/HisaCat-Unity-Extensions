@@ -292,11 +292,11 @@ namespace HisaCat.UnityExtensions
         public static T[] SafeGetComponentsInChildren<T>(this Component component, bool includeInactive = false) where T : Component => component == null ? null : component.GetComponentsInChildren<T>(includeInactive);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ForceSetLayerRecursive(this Component component, int layer, System.Func<GameObject, RecursiveGameObjectUtil.RecursiveIgnoreState> shouldIgnore = null, bool printErrorLog = true)
+        public static void ForceSetLayerRecursiveWithErrorLog(this Component component, int layer, System.Func<GameObject, RecursiveGameObjectUtil.RecursiveIgnoreState> shouldIgnore = null, bool printErrorLog = true)
         {
             if (component.gameObject.layer != layer)
             {
-                if (printErrorLog) Debug.LogError($"'{component.name}'s Layer is not set as {LayerMask.LayerToName(layer)}! It will be change automatically.");
+                if (printErrorLog) Debug.LogError($"'{component.name}'s Layer is not set as {LayerMask.LayerToName(layer)}! (current: {LayerMask.LayerToName(component.gameObject.layer)}) It will be change automatically.", component);
                 component.gameObject.SetLayerRecursive(layer, shouldIgnore);
             }
         }
@@ -306,16 +306,15 @@ namespace HisaCat.UnityExtensions
     public static class ComponentEditorExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ValidateLayerOnEditor(this Component component, int layer)
+        public static void ValidateLayerOnEditorWithDialog(this Component component, int layer)
         {
             if (Application.isPlaying) return;
 
             if (component.gameObject.layer != layer)
             {
-                UnityEditor.EditorUtility.DisplayDialog("Warning",
-                    $"'{component.name}'s Layer is not set as '{LayerMask.LayerToName(layer)}' (current: '{LayerMask.LayerToName(component.gameObject.layer)}')."
-                    + $"\r\nIt will be change automatically'.",
-                    "OK");
+                string message = $"'{component.name}'s Layer is not set as {LayerMask.LayerToName(layer)}! (current: {LayerMask.LayerToName(component.gameObject.layer)}) It will be change automatically.";
+                Debug.LogWarning(message, component);
+                UnityEditor.EditorUtility.DisplayDialog("Warning", message, "OK");
                 component.gameObject.SetLayerRecursive(layer);
                 UnityEditor.EditorUtility.SetDirty(component.gameObject);
             }
