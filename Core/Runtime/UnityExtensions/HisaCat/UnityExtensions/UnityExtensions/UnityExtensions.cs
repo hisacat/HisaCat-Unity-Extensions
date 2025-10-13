@@ -341,6 +341,19 @@ namespace HisaCat.UnityExtensions
             ray.origin = camera.transform.position;
             return ray;
         }
+
+        /// <summary>
+        /// Gets the world rectangle of the camera's viewport.
+        /// </summary>
+        /// <param name="camera">The source camera.</param>
+        /// <returns>A <see cref="Rect"/> in world space.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rect GetViewportWorldRect(this Camera camera)
+        {
+            Vector2 min = camera.ViewportToWorldPoint(new Vector2(0, 0));
+            Vector2 max = camera.ViewportToWorldPoint(new Vector2(1, 1));
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
     }
 
     public static class Vector3Extensions
@@ -973,6 +986,31 @@ namespace HisaCat.UnityExtensions
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Gets a random position on the outline of the rectangle.
+        /// </summary>
+        /// <param name="rect">The rectangle to get a random position on the outline of.</param>
+        /// <returns>A random position on the outline of the rectangle.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 GetRandomPositionOnRectOutline(this Rect rect)
+        {
+            float width = rect.width;
+            float height = rect.height;
+            float perimeter = (width + height) * 2f;
+
+            float randomDistance = Random.Range(0f, perimeter);
+            if (randomDistance < width) return new Vector2(rect.xMin + randomDistance, rect.yMin);
+
+            randomDistance -= width;
+            if (randomDistance < height) return new Vector2(rect.xMax, rect.yMin + randomDistance);
+
+            randomDistance -= height;
+            if (randomDistance < width) return new Vector2(rect.xMax - randomDistance, rect.yMax);
+
+            randomDistance -= width;
+            return new Vector2(rect.xMin, rect.yMax - randomDistance);
         }
     }
 
