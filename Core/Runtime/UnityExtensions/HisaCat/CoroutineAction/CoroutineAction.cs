@@ -1,3 +1,4 @@
+using HisaCat.UnityExtensions;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -45,10 +46,16 @@ namespace HisaCat
         {
             return instance.StartCoroutine(enumerator);
         }
+
         public static void Stop(Coroutine coroutine)
         {
             instance.StopCoroutine(coroutine);
         }
+
+        public static void PlayOrRestartCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
+            => instance.PlayOrRestartCoroutine(ref coroutine, enumerator);
+        public static void PlayOrStopCoroutine(ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
+            => instance.PlayOrStopCoroutine(ref coroutine, enumerator, play, restartIfAlreadyPlaying);
 
         public static void LoadImageFromURL(Texture2D texture, string url, Action<Texture2D> onLoaded)
         {
