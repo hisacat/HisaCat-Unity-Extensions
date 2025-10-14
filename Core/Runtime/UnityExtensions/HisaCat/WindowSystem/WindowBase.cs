@@ -50,6 +50,8 @@ namespace HisaCat.HUE.UI.Windows
 
         [SerializeField] private AnimationClip m_ShowAnimationClip = null;
         [SerializeField] private AnimationClip m_CloseAnimationClip = null;
+        public bool UseUnscaledTimeForAnimation => this.m_UseUnscaledTimeForAnimation;
+        [SerializeField] private bool m_UseUnscaledTimeForAnimation = false;
         #endregion Serialized Fields
 
         #region Properties

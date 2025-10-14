@@ -345,12 +345,18 @@ namespace HisaCat.HUE.UI.Windows
                 anim.AddClip(window.ShowAnimationClip, window.ShowAnimationClip.name);
 
                 anim.clip = window.ShowAnimationClip;
-                anim.Play();
-
-                // Check window was destoyed: (anim != null)
-                while (anim != null && anim.isPlaying) yield return null;
-                if (anim != null) anim.clip = null;
-                yield return CachedYieldInstruction.WaitForEndOfFrame();
+                if (window.UseUnscaledTimeForAnimation)
+                {
+                    yield return anim.PlayUnscaledTimeRoutine(window.ShowAnimationClip.name);
+                }
+                else
+                {
+                    anim.Play();
+                    // Check window was destoyed: (anim != null)
+                    while (anim != null && anim.isPlaying) yield return null;
+                    if (anim != null) anim.clip = null;
+                    yield return CachedYieldInstruction.WaitForEndOfFrame();
+                }
             }
 
             window.OnShownCallback();
@@ -388,11 +394,17 @@ namespace HisaCat.HUE.UI.Windows
                         anim.AddClip(window.CloseAnimationClip, window.CloseAnimationClip.name);
 
                         anim.clip = window.CloseAnimationClip;
-                        anim.Play();
-
-                        while (anim.isPlaying) yield return null;
-                        if (anim != null) anim.clip = null;
-                        yield return CachedYieldInstruction.WaitForEndOfFrame();
+                        if (window.UseUnscaledTimeForAnimation)
+                        {
+                            yield return anim.PlayUnscaledTimeRoutine(window.CloseAnimationClip.name);
+                        }
+                        else
+                        {
+                            anim.Play();
+                            while (anim.isPlaying) yield return null;
+                            if (anim != null) anim.clip = null;
+                            yield return CachedYieldInstruction.WaitForEndOfFrame();
+                        }
                     }
                 }
             }

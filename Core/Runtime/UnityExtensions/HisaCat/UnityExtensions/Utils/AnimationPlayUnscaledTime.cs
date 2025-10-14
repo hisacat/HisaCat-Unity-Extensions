@@ -6,9 +6,7 @@ namespace HisaCat
     public static class AnimationPlayUnscaledTime
     {
         public static IEnumerator PlayUnscaledTimeRoutine(this Animation animation, string clipName)
-        {
-            return PlayAnimationUnscaledTimeRoutine(animation, clipName);
-        }
+            => PlayAnimationUnscaledTimeRoutine(animation, clipName);
         public static IEnumerator PlayAnimationUnscaledTimeRoutine(Animation animation, string clipName)
         {
             AnimationState _currState = animation[clipName];

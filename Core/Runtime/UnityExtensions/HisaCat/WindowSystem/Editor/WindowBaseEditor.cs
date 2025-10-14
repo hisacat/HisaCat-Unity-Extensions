@@ -20,6 +20,7 @@ namespace HisaCat.HUE.UI.Windows
         private SerializedProperty m_CloseSEClip = null;
         private SerializedProperty m_ShowAnimationClip = null;
         private SerializedProperty m_CloseAnimationClip = null;
+        private SerializedProperty m_UseUnscaledTimeForAnimation = null;
         void OnEnable()
         {
             this.m_FocusOnlyInteractable = serializedObject.FindProperty(nameof(m_FocusOnlyInteractable));
@@ -34,7 +35,7 @@ namespace HisaCat.HUE.UI.Windows
             this.m_CloseSEClip = serializedObject.FindProperty(nameof(m_CloseSEClip));
             this.m_ShowAnimationClip = serializedObject.FindProperty(nameof(m_ShowAnimationClip));
             this.m_CloseAnimationClip = serializedObject.FindProperty(nameof(m_CloseAnimationClip));
-
+            this.m_UseUnscaledTimeForAnimation = serializedObject.FindProperty(nameof(m_UseUnscaledTimeForAnimation));
         }
 
         public void DrawBaseInspector()
@@ -101,6 +102,7 @@ namespace HisaCat.HUE.UI.Windows
             {
                 EditorGUILayout.PropertyField(this.m_ShowAnimationClip);
                 EditorGUILayout.PropertyField(this.m_CloseAnimationClip);
+                EditorGUILayout.PropertyField(this.m_UseUnscaledTimeForAnimation);
             }
             EditorGUI.indentLevel--;
 
@@ -167,6 +169,7 @@ namespace HisaCat.HUE.UI.Windows
                 nameof(this.m_CloseSEClip),
                 nameof(this.m_ShowAnimationClip),
                 nameof(this.m_CloseAnimationClip),
+                nameof(this.m_UseUnscaledTimeForAnimation),
             });
 
             serializedObject.ApplyModifiedProperties();
