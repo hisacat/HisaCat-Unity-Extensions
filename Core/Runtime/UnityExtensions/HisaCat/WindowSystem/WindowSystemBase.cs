@@ -311,7 +311,7 @@ namespace HisaCat.HUE.UI.Windows
             for (int i = windowCount - 1; i >= 0; i--)
                 Close(Instance.windowList[i], immediately);
         }
-        public static void CloseAllWindows(HashSet<WindowBase> except = null, bool immediately = false)
+        public static void CloseAllWindows(HashSet<WindowBase> except, bool immediately = false)
         {
             var windowCount = Instance.windowList.Count;
             for (int i = windowCount - 1; i >= 0; i--)
