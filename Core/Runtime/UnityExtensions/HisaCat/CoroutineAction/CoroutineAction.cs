@@ -1,4 +1,5 @@
 using HisaCat.UnityExtensions;
+using HisaCat.Utilities;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -49,6 +50,7 @@ namespace HisaCat
 
         public static void Stop(Coroutine coroutine)
         {
+            if (ApplicationUtils.IsQuitting()) return;
             instance.StopCoroutine(coroutine);
         }
 
