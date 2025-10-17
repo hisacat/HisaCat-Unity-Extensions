@@ -174,6 +174,19 @@ namespace HisaCat.UnityExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<GameObject> GetNestedAllChidrenList(this GameObject go)
             => InternalChildrenUtil.GetNestedAllChildrenList(go.transform, tr => tr.childCount, (tr, i) => tr.GetChild(i), tr => tr.gameObject);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryGetComponentInParent<T>(this GameObject go, out T component) where T : Component
+        {
+            component = go.GetComponentInParent<T>();
+            return component != null;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryGetComponentInChildren<T>(this GameObject go, out T component) where T : Component
+        {
+            component = go.GetComponentInChildren<T>();
+            return component != null;
+        }
     }
 
     public static class TransformExtensions
