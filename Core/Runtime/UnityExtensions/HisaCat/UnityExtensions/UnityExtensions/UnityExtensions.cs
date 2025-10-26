@@ -542,6 +542,14 @@ namespace HisaCat.UnityExtensions
                 return;
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void StopAndClearCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine)
+        {
+            if (coroutine == null) return;
+            monoBehaviour.StopCoroutine(coroutine);
+            coroutine = null;
+            return;
+        }
     }
 
     public static class GizmosExtensions
@@ -1044,6 +1052,10 @@ namespace HisaCat.UnityExtensions
             randomDistance -= width;
             return new Vector2(rect.xMin, rect.yMax - randomDistance);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 GetRandomCircleOutlinePosition(float distance)
+            => Random.insideUnitCircle.normalized * distance;
     }
 
     public static class PlayerPrefsExtensions
