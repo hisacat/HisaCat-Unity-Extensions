@@ -16,6 +16,8 @@ namespace HisaCat.HUE.UI.Windows
         private SerializedProperty m_BGMClip = null;
         private SerializedProperty m_PauseBGMOnShow = null;
         private SerializedProperty m_PauseBGMOnFocus = null;
+        private SerializedProperty m_SetBGMVolumeOnShow = null; private SerializedProperty m_BGMVolumeOnShow = null;
+        private SerializedProperty m_SetBGMVolumeOnFocus = null; private SerializedProperty m_BGMVolumeOnFocus = null;
         private SerializedProperty m_ShowSEClip = null;
         private SerializedProperty m_CloseSEClip = null;
         private SerializedProperty m_ShowAnimationClip = null;
@@ -31,6 +33,10 @@ namespace HisaCat.HUE.UI.Windows
             this.m_BGMClip = serializedObject.FindProperty(nameof(m_BGMClip));
             this.m_PauseBGMOnShow = serializedObject.FindProperty(nameof(m_PauseBGMOnShow));
             this.m_PauseBGMOnFocus = serializedObject.FindProperty(nameof(m_PauseBGMOnFocus));
+            this.m_SetBGMVolumeOnShow = serializedObject.FindProperty(nameof(m_SetBGMVolumeOnShow));
+            this.m_BGMVolumeOnShow = serializedObject.FindProperty(nameof(m_BGMVolumeOnShow));
+            this.m_SetBGMVolumeOnFocus = serializedObject.FindProperty(nameof(m_SetBGMVolumeOnFocus));
+            this.m_BGMVolumeOnFocus = serializedObject.FindProperty(nameof(m_BGMVolumeOnFocus));
             this.m_ShowSEClip = serializedObject.FindProperty(nameof(m_ShowSEClip));
             this.m_CloseSEClip = serializedObject.FindProperty(nameof(m_CloseSEClip));
             this.m_ShowAnimationClip = serializedObject.FindProperty(nameof(m_ShowAnimationClip));
@@ -76,14 +82,40 @@ namespace HisaCat.HUE.UI.Windows
             {
                 EditorGUILayout.PropertyField(this.m_BGMClip);
                 EditorGUILayout.LabelField("Pause BGM On ...");
-                EditorGUILayout.BeginHorizontal();
                 EditorGUI.indentLevel++;
                 {
+                    EditorGUILayout.BeginHorizontal();
                     this.m_PauseBGMOnShow.boolValue = EditorGUILayout.ToggleLeft("Show", this.m_PauseBGMOnShow.boolValue, GUILayout.MaxWidth(100));
                     this.m_PauseBGMOnFocus.boolValue = EditorGUILayout.ToggleLeft("Focus", this.m_PauseBGMOnFocus.boolValue, GUILayout.MaxWidth(100));
+                    EditorGUILayout.EndHorizontal();
                 }
                 EditorGUI.indentLevel--;
-                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Set BGM Volume On ...");
+                EditorGUI.indentLevel++;
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        this.m_SetBGMVolumeOnShow.boolValue = EditorGUILayout.ToggleLeft("Show", this.m_SetBGMVolumeOnShow.boolValue, GUILayout.MaxWidth(100));
+                        EditorGUI.BeginDisabledGroup(this.m_SetBGMVolumeOnShow.boolValue == false);
+                        this.m_BGMVolumeOnShow.floatValue = EditorGUILayout.FloatField("Volume", this.m_BGMVolumeOnShow.floatValue);
+                        GUILayout.FlexibleSpace();
+                        EditorGUI.EndDisabledGroup();
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        this.m_SetBGMVolumeOnFocus.boolValue = EditorGUILayout.ToggleLeft("Focus", this.m_SetBGMVolumeOnFocus.boolValue, GUILayout.MaxWidth(100));
+                        EditorGUI.BeginDisabledGroup(this.m_SetBGMVolumeOnFocus.boolValue == false);
+                        this.m_BGMVolumeOnFocus.floatValue = EditorGUILayout.FloatField("Volume", this.m_BGMVolumeOnFocus.floatValue);
+                        GUILayout.FlexibleSpace();
+                        EditorGUI.EndDisabledGroup();
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+                EditorGUI.indentLevel--;
             }
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
@@ -165,6 +197,10 @@ namespace HisaCat.HUE.UI.Windows
                 nameof(this.m_BGMClip),
                 nameof(this.m_PauseBGMOnShow),
                 nameof(this.m_PauseBGMOnFocus),
+                nameof(this.m_SetBGMVolumeOnShow),
+                nameof(this.m_BGMVolumeOnShow),
+                nameof(this.m_SetBGMVolumeOnFocus),
+                nameof(this.m_BGMVolumeOnFocus),
                 nameof(this.m_ShowSEClip),
                 nameof(this.m_CloseSEClip),
                 nameof(this.m_ShowAnimationClip),

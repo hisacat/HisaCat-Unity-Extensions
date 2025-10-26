@@ -163,7 +163,19 @@ namespace HisaCat.Sounds
             }
         }
 
+        public class BGMVolumeTicket
+        {
+            public readonly object Owner = null;
+            public readonly float Volume = 1f;
+            public BGMVolumeTicket(object owner, float volume)
+            {
+                this.Owner = owner;
+                this.Volume = volume;
+            }
+        }
+
         private List<BGMTicket> bgmQueue = null;
+        private List<BGMVolumeTicket> bgmVolumeQueue = null;
 
         private void Initialize()
         {
@@ -195,6 +207,7 @@ namespace HisaCat.Sounds
 
             this.collapseTimeTablePerClip = new Dictionary<AudioClip, float>();
             this.bgmQueue = new List<BGMTicket>();
+            this.bgmVolumeQueue = new List<BGMVolumeTicket>();
         }
 
         public static BGMTicket PlayBGMFromQueue(object owner, AudioClip clip)
@@ -267,6 +280,45 @@ namespace HisaCat.Sounds
                     instance.audioSource_BGM.loop = true;
                     instance.audioSource_BGM.Play();
                 }
+            }
+        }
+
+        public static BGMVolumeTicket SetBGMVolumeFromQueue(object owner, float volume)
+        {
+            if (instance == null) return null;
+
+            var ticket = new BGMVolumeTicket(owner, volume);
+            instance.bgmVolumeQueue.Add(ticket);
+
+            UpdateBGMVolumeFromQueue();
+            return ticket;
+        }
+        public static bool RemoveBGMVolumeFromQueue(BGMVolumeTicket ticket)
+        {
+            if (instance == null) return false;
+
+            if (ticket == null || instance.bgmVolumeQueue.Contains(ticket) == false)
+                return false;
+
+            instance.bgmVolumeQueue.Remove(ticket);
+
+            UpdateBGMVolumeFromQueue();
+            return true;
+        }
+        private static void UpdateBGMVolumeFromQueue()
+        {
+            if (instance == null) return;
+
+            if (instance.bgmVolumeQueue.Count <= 0)
+            {
+                instance.audioSource_BGM.volume = BGMReferenceVolume * BGMVolume;
+            }
+            else
+            {
+                var currentBGMVolumeTicket = instance.bgmVolumeQueue[instance.bgmVolumeQueue.Count - 1];
+                var currentBGMVolume = currentBGMVolumeTicket.Volume;
+
+                instance.audioSource_BGM.volume = BGMReferenceVolume * BGMVolume * currentBGMVolume;
             }
         }
 

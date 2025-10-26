@@ -44,6 +44,8 @@ namespace HisaCat.HUE.UI.Windows
         [SerializeField] private AudioClip m_BGMClip = null;
         [SerializeField] private bool m_PauseBGMOnShow = false;
         [SerializeField] private bool m_PauseBGMOnFocus = false;
+        [SerializeField] private bool m_SetBGMVolumeOnShow = false; [SerializeField] private float m_BGMVolumeOnShow = 1f;
+        [SerializeField] private bool m_SetBGMVolumeOnFocus = false; [SerializeField] private float m_BGMVolumeOnFocus = 1f;
 
         [SerializeField] private AudioClip m_ShowSEClip = null;
         [SerializeField] private AudioClip m_CloseSEClip = null;
@@ -130,6 +132,8 @@ namespace HisaCat.HUE.UI.Windows
         private SoundManager.BGMTicket curBGMTicket = null;
         private SoundManager.BGMTicket curPauseBGMOnShowTicket = null;
         private SoundManager.BGMTicket curPauseBGMOnFocusTicket = null;
+        private SoundManager.BGMVolumeTicket curSetBGMVolumeOnShowTicket = null;
+        private SoundManager.BGMVolumeTicket curSetBGMVolumeOnFocusTicket = null;
         private Coroutine autoSelectEntrySelectableCoroutine = null;
         public void OnStartShowCallback()
         {
@@ -141,6 +145,9 @@ namespace HisaCat.HUE.UI.Windows
 
             if (this.m_PauseBGMOnShow)
                 this.curPauseBGMOnShowTicket = SoundManager.PauseBGMFromQueue(this);
+
+            if (this.m_SetBGMVolumeOnShow)
+                this.curSetBGMVolumeOnShowTicket = SoundManager.SetBGMVolumeFromQueue(this, this.m_BGMVolumeOnShow);
 
             if (this.m_ShowSEClip != null)
                 SoundManager.PlaySE(this.m_ShowSEClip);
@@ -218,6 +225,11 @@ namespace HisaCat.HUE.UI.Windows
                 SoundManager.RemoveBGMFromQueue(this.curPauseBGMOnShowTicket);
                 this.curPauseBGMOnShowTicket = null;
             }
+            if (this.curSetBGMVolumeOnShowTicket != null)
+            {
+                SoundManager.RemoveBGMVolumeFromQueue(this.curSetBGMVolumeOnShowTicket);
+                this.curSetBGMVolumeOnShowTicket = null;
+            }
 
             if (this.m_CloseSEClip != null)
                 SoundManager.PlaySE(this.m_CloseSEClip);
@@ -262,6 +274,11 @@ namespace HisaCat.HUE.UI.Windows
                 SoundManager.RemoveBGMFromQueue(this.curPauseBGMOnFocusTicket);
                 this.curPauseBGMOnFocusTicket = null;
             }
+            if (this.curSetBGMVolumeOnFocusTicket != null)
+            {
+                SoundManager.RemoveBGMVolumeFromQueue(this.curSetBGMVolumeOnFocusTicket);
+                this.curSetBGMVolumeOnFocusTicket = null;
+            }
 
             if (this.m_FocusOnlyInteractable)
                 this.CanvasGroup.interactable = false;
@@ -271,6 +288,8 @@ namespace HisaCat.HUE.UI.Windows
         {
             if (this.m_PauseBGMOnFocus)
                 this.curPauseBGMOnFocusTicket = SoundManager.PauseBGMFromQueue(this);
+            if (this.m_SetBGMVolumeOnFocus)
+                this.curSetBGMVolumeOnFocusTicket = SoundManager.SetBGMVolumeFromQueue(this, this.m_BGMVolumeOnFocus);
 
             if (this.m_FocusOnlyInteractable)
                 this.CanvasGroup.interactable = true;
