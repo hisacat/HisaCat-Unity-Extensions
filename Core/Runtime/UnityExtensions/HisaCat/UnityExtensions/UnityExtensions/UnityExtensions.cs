@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
@@ -366,6 +367,24 @@ namespace HisaCat.UnityExtensions
             Vector2 min = camera.ViewportToWorldPoint(new Vector2(0, 0));
             Vector2 max = camera.ViewportToWorldPoint(new Vector2(1, 1));
             return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+    }
+
+    public static class AudioSourceExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PlayClipAtPoint(AudioClip clip, Vector3 position, AudioMixerGroup audioMixerGroup, float volume, float spatialBlend)
+        {
+            GameObject gameObject = new("[HUE] One shot audio");
+            Object.DontDestroyOnLoad(gameObject);
+            gameObject.transform.position = position;
+            AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.clip = clip;
+            audioSource.spatialBlend = spatialBlend;
+            audioSource.volume = volume;
+            audioSource.outputAudioMixerGroup = audioMixerGroup;
+            audioSource.Play();
+            Object.Destroy(gameObject, clip.length * ((Time.timeScale < 0.01f) ? 0.01f : Time.timeScale));
         }
     }
 
