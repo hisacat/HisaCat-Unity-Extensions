@@ -4,6 +4,7 @@ using HisaCat.Collections;
 using HisaCat.SimpleObjectPool;
 using HisaCat.Utilities;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace HisaCat.Sounds
 {
@@ -33,12 +34,50 @@ namespace HisaCat.Sounds
             0.95f, 0.9f, 0.85f
         };
 
-        public const float BGMReferenceVolume = 0.55f;
+        public const float BGMReferenceVolume = 1f;
         public const float DefaultBlockSECollapseTime = 0.02f;
 
         public delegate void VolumeChangedEventHandler(float volume);
         public static event VolumeChangedEventHandler OnBGMVolumeChanged;
         public static event VolumeChangedEventHandler OnSEVolumeChanged;
+
+        public delegate void AudioMixerGroupChangedEventHandler(AudioMixerGroup audioMixerGroup);
+        public static event AudioMixerGroupChangedEventHandler OnBGMAudioMixerGroupChanged;
+        public static event AudioMixerGroupChangedEventHandler OnSEAudioMixerGroupChanged;
+
+        private static float _BGMVolume = 1f;
+        public static float BGMVolume
+        {
+            get => _BGMVolume;
+            set
+            {
+                _BGMVolume = value;
+                if (instance != null)
+                {
+                    UpdateBGMVolume();
+                    OnBGMVolumeChanged?.Invoke(_BGMVolume);
+                }
+            }
+        }
+        private static void UpdateBGMVolume()
+            => instance.audioSource_BGM.volume = BGMReferenceVolume * BGMVolume;
+
+        private static AudioMixerGroup _BGMAudioMixerGroup = null;
+        public static AudioMixerGroup BGMAudioMixerGroup
+        {
+            get => _BGMAudioMixerGroup;
+            set
+            {
+                _BGMAudioMixerGroup = value;
+                if (instance != null)
+                {
+                    UpdateBGMAudioMixorGroup();
+                    OnBGMAudioMixerGroupChanged?.Invoke(BGMAudioMixerGroup);
+                }
+            }
+        }
+        private static void UpdateBGMAudioMixorGroup()
+            => instance.audioSource_BGM.outputAudioMixerGroup = BGMAudioMixerGroup;
 
         private static float _SEVolume = 1f;
         public static float SEVolume
@@ -58,24 +97,24 @@ namespace HisaCat.Sounds
         {
             instance.audioSource_SE.volume = SEVolume;
         }
-        private static float _BGMVolume = 1f;
-        public static float BGMVolume
+
+        private static AudioMixerGroup _SEAudioMixerGroup = null;
+        public static AudioMixerGroup SEAudioMixerGroup
         {
-            get => _BGMVolume;
+            get => _SEAudioMixerGroup;
             set
             {
-                _BGMVolume = value;
+                _SEAudioMixerGroup = value;
                 if (instance != null)
                 {
-                    UpdateBGMVolume();
-                    OnBGMVolumeChanged?.Invoke(_BGMVolume);
+                    UpdateSEAudioMixorGroup();
+                    OnSEAudioMixerGroupChanged?.Invoke(SEAudioMixerGroup);
                 }
             }
         }
-        private static void UpdateBGMVolume()
-        {
-            instance.audioSource_BGM.volume = BGMReferenceVolume * BGMVolume;
-        }
+        private static void UpdateSEAudioMixorGroup()
+            => instance.audioSource_SE.outputAudioMixerGroup = SEAudioMixerGroup;
+
 
         private static SoundManager _instance = null;
         private static SoundManager instance
@@ -150,6 +189,9 @@ namespace HisaCat.Sounds
 
             UpdateBGMVolume();
             UpdateSEVolume();
+
+            UpdateBGMAudioMixorGroup();
+            UpdateSEAudioMixorGroup();
 
             this.collapseTimeTablePerClip = new Dictionary<AudioClip, float>();
             this.bgmQueue = new List<BGMTicket>();
