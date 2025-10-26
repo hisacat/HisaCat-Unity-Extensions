@@ -14,7 +14,7 @@ namespace HisaCat.HUE.UI
         [SerializeField] private float m_Volume = 1f;
         [SerializeField] private AudioMixerGroup m_AudioMixerGroup = null;
         [SerializeField] private float m_MinimumPlayAudioInterval = 0.1f;
-        [SerializeField] private bool m_DontPlayAudioOnStart = false;
+        [SerializeField] private bool m_DontPlayAudioOnStart = true;
 
         private int startFrameCount = 0;
         private float m_LastAudioPlayedTime = 0f;
