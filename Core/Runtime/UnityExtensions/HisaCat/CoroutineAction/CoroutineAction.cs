@@ -223,6 +223,16 @@ namespace HisaCat
             callback();
         }
 
+        public static void WaitSecondsRealtime(float seconds, Action callback)
+        {
+            instance.StartCoroutine(instance.WaitSecondsRealtimeRoutine(seconds, callback));
+        }
+        private IEnumerator WaitSecondsRealtimeRoutine(float seconds, Action callback)
+        {
+            yield return CachedYieldInstruction.WaitForSecondsRealtime(seconds);
+            callback();
+        }
+
         public static void WaitForEndOfFrame(Action callback)
         {
             instance.StartCoroutine(instance.WaitForEndOfFrameRoutine(callback));
