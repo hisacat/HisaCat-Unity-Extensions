@@ -287,9 +287,23 @@ namespace HisaCat.HUE.UI.Windows
         public void OnFocusedCallback()
         {
             if (this.m_PauseBGMOnFocus)
+            {
+                if (this.curPauseBGMOnFocusTicket != null)
+                {
+                    SoundManager.RemoveBGMFromQueue(this.curPauseBGMOnFocusTicket);
+                    this.curPauseBGMOnFocusTicket = null;
+                }
                 this.curPauseBGMOnFocusTicket = SoundManager.PauseBGMFromQueue(this);
+            }
             if (this.m_SetBGMVolumeOnFocus)
+            {
+                if (this.curSetBGMVolumeOnFocusTicket != null)
+                {
+                    SoundManager.RemoveBGMVolumeFromQueue(this.curSetBGMVolumeOnFocusTicket);
+                    this.curSetBGMVolumeOnFocusTicket = null;
+                }
                 this.curSetBGMVolumeOnFocusTicket = SoundManager.SetBGMVolumeFromQueue(this, this.m_BGMVolumeOnFocus);
+            }
 
             if (this.m_FocusOnlyInteractable)
                 this.CanvasGroup.interactable = true;
