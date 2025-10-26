@@ -384,7 +384,8 @@ namespace HisaCat.UnityExtensions
             audioSource.volume = volume;
             audioSource.outputAudioMixerGroup = audioMixerGroup;
             audioSource.Play();
-            Object.Destroy(gameObject, clip.length * ((Time.timeScale < 0.01f) ? 0.01f : Time.timeScale));
+            CoroutineAction.WaitSecondsRealtime(clip.length, Destroy);
+            void Destroy() => Object.Destroy(gameObject);
         }
     }
 
