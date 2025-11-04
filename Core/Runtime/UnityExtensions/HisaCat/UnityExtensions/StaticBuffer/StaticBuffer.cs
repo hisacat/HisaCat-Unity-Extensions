@@ -37,7 +37,7 @@ namespace HisaCat
         /// <summary>
         /// 실제 데이터를 저장하는 배열 버퍼
         /// </summary>
-        public T[] Buffer => buffer;
+        public T[] Buffer => this.buffer;
         private T[] buffer = null;
 
         /// <summary>
@@ -63,17 +63,17 @@ namespace HisaCat
         /// <summary>
         /// 버퍼에 아이템을 추가하고 인덱스를 증가시킵니다.<br/>
         /// 버퍼 크기가 부족하면 자동으로 크기를 증가합니다.
-        /// </summary>
-        /// <param name="index">추가할 인덱스</param>
+        /// </summary>        
+        /// <param name="itemCount">현재 저장된 아이템 개수 (추가 후 자동으로 1 증가)</param>
         /// <param name="element">추가할 아이템</param>
-        public void AddItemSafely(ref int index, T element)
+        public void AddItemSafely(ref int itemCount, T element)
         {
-            if (this.Buffer.Length <= index)
+            if (this.Buffer.Length <= itemCount)
             {
                 Debug.LogWarning($"[{nameof(StaticBuffer<T>)}]: Buffer capacity reached. Automatically increasing buffer size. This may impact performance.");
                 System.Array.Resize(ref this.buffer, this.buffer.Length * 2);
             }
-            this.Buffer[index++] = element;
+            this.Buffer[itemCount++] = element;
         }
 
         /// <summary>
