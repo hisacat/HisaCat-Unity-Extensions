@@ -2340,4 +2340,10 @@ namespace HisaCat.UnityExtensions
             return added;
         }
     }
+
+    public static class DictionaryExtensions
+    {
+        public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
+            => new ReadOnlyDictionary<TKey, TValue>(dictionary);
+    }
 }
