@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,7 +12,8 @@ namespace HisaCat.HUE.Collections
 
         public ReadOnlyHashSet(ISet<T> data)
         {
-            _data = data;
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            this._data = data;
         }
 
         #region ISet<T>
