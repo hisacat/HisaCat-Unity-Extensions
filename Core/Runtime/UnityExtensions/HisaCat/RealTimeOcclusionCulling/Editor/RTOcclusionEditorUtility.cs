@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ColorUtility = UnityEngine.ColorUtility;
 using HisaCat.UnityExtensions;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace HisaCat.RealTimeOcclusionCulling
 {
@@ -17,22 +19,28 @@ namespace HisaCat.RealTimeOcclusionCulling
                 EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
                 {
-                    EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
                     EditorGUI.BeginChangeCheck();
                     {
                         RTOcclusionEditorSettings.ShowGizmosAlways = EditorGUILayout.Toggle("Show Gizmos Always", RTOcclusionEditorSettings.ShowGizmosAlways);
+                        RTOcclusionEditorSettings.ShowSelectedOverlappedCells = EditorGUILayout.Toggle("Show Selected Overlapped Cells", RTOcclusionEditorSettings.ShowSelectedOverlappedCells);
                     }
                     if (EditorGUI.EndChangeCheck())
                     {
                         // Repaint scene views when draw gizmos status is changed.
-                        var views = SceneView.sceneViews;
-                        int count = views.Count;
-                        for (int i = 0; i < count; i++)
-                        {
-                            if (views[i] is not SceneView view) continue;
-                            view.Repaint();
-                        }
+                        SceneView.RepaintAll();
                     }
+                }
+                EditorGUI.indentLevel--;
+            }
+
+            public static void DrawStatusGUI()
+            {
+                EditorGUILayout.LabelField("Status", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                {
+                    EditorGUILayout.LabelField($"Detected occluders: {RTOcclusionManager.Occluders.Count}");
+                    EditorGUILayout.LabelField($"Detected occludees: {RTOcclusionManager.Occludees.Count}");
+                    EditorGUILayout.LabelField($"{RTOcclusionManager.CulledOccludees.Count} occludees culled");
                 }
                 EditorGUI.indentLevel--;
             }
@@ -141,32 +149,20 @@ namespace HisaCat.RealTimeOcclusionCulling
 
         public static class DrawGizmos
         {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-            [InitializeOnEnterPlayMode]
-            private static void OnEnterPlaymodeInEditor(EnterPlayModeOptions options)
-            {
-                if (options.HasFlag(EnterPlayModeOptions.DisableDomainReload))
-                {
-                    CellsBuffer.Initialize();
-                }
-            }
-#pragma warning restore IDE0051
-#endif
-
-            private static readonly StaticBuffer<Vector3Int> CellsBuffer = new((_) => new Vector3Int[128]);
             public static void DrawOverlappedCells(RTOcclusionBase target)
             {
-                var cells = RTOcclusionManager.GetOverlappedCellsNonAlloc(target.Bounds, target.transform.localToWorldMatrix, RTOcclusionManager.CellSize, CellsBuffer.Buffer);
-                for (int i = 0; i < cells; i++)
+                using (var enumerator = target.OverlappedCells.GetEnumerator())
                 {
-                    var cell = CellsBuffer.Buffer[i];
-                    Gizmos.color = Color.cyan.WithAlpha(0.125f);
-                    var center = new Vector3(cell.x, cell.y, cell.z) * RTOcclusionManager.CellSize;
-                    center += (Vector3.one * RTOcclusionManager.CellSize) * 0.5f; // Center offset.
-                    var size = new Vector3(RTOcclusionManager.CellSize, RTOcclusionManager.CellSize, RTOcclusionManager.CellSize);
-                    Gizmos.DrawWireCube(center, size);
-                    Gizmos.DrawCube(center, size);
+                    while (enumerator.MoveNext())
+                    {
+                        var cell = enumerator.Current;
+                        Gizmos.color = Color.cyan.WithAlpha(0.125f);
+                        var center = new Vector3(cell.x, cell.y, cell.z) * RTOcclusionManager.CellSize;
+                        center += (Vector3.one * RTOcclusionManager.CellSize) * 0.5f; // Center offset.
+                        var size = new Vector3(RTOcclusionManager.CellSize, RTOcclusionManager.CellSize, RTOcclusionManager.CellSize);
+                        Gizmos.DrawWireCube(center, size);
+                        Gizmos.DrawCube(center, size);
+                    }
                 }
             }
         }

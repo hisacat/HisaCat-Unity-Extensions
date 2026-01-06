@@ -13,6 +13,13 @@ namespace HisaCat.RealTimeOcclusionCulling
             get => EditorPrefs.GetBool(ShowGizmosAlwaysKey, false);
             set => EditorPrefs.SetBool(ShowGizmosAlwaysKey, value);
         }
+
+        public static readonly string ShowSelectedOverlappedCellsKey = $"{BaseKey}.{nameof(ShowSelectedOverlappedCells)}";
+        public static bool ShowSelectedOverlappedCells
+        {
+            get => EditorPrefs.GetBool(ShowSelectedOverlappedCellsKey, false);
+            set => EditorPrefs.SetBool(ShowSelectedOverlappedCellsKey, value);
+        }
     }
 }
 #endif

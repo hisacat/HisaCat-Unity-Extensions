@@ -8,7 +8,7 @@ namespace HisaCat.RealTimeOcclusionCulling
 {
     [CustomEditor(typeof(RTOccludee))]
     [CanEditMultipleObjects]
-    public class RTOccludeeEditor : Editor
+    public class RTOcclusionGroupEditor : Editor
     {
         private SerializedProperty m_Bounds;
         private SerializedProperty m_Renderers; private SerializedProperty m_ShowBounds;
@@ -33,8 +33,8 @@ namespace HisaCat.RealTimeOcclusionCulling
             EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             EditorGUILayout.LabelField("Culling Status", EditorStyles.boldLabel);
             {
-                var target = this.target as RTOccludee;
-                var targets = this.targets.Cast<RTOccludee>().ToArray();
+                var target = this.target as RTOcclusionGroup;
+                var targets = this.targets.Cast<RTOcclusionGroup>().ToArray();
 
                 EditorGUI.BeginDisabledGroup(true);
                 {

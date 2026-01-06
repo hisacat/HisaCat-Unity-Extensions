@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using Unity.VisualScripting;
 using HisaCat.UnityExtensions;
+using HisaCat.UnityExtensions.Editors;
 
 namespace HisaCat.RealTimeOcclusionCulling
 {
@@ -23,6 +24,7 @@ namespace HisaCat.RealTimeOcclusionCulling
 
         public override void OnInspectorGUI()
         {
+            this.DrawScriptField();
             this.serializedObject.Update();
 
             RTOcclusionEditorUtility.InspectorGUI.DrawRenderersGUI(this.serializedObject, this.m_Renderers);
@@ -32,6 +34,7 @@ namespace HisaCat.RealTimeOcclusionCulling
 
             EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             RTOcclusionEditorUtility.InspectorGUI.DrawDebugGUI();
+            RTOcclusionEditorUtility.InspectorGUI.DrawStatusGUI();
 
             EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             EditorGUILayout.LabelField("Portal Management", EditorStyles.boldLabel);
@@ -57,13 +60,14 @@ namespace HisaCat.RealTimeOcclusionCulling
             if (RTOcclusionEditorSettings.ShowGizmosAlways == false)
                 DrawDefaultGizmos(target);
 
-            RTOcclusionEditorUtility.DrawGizmos.DrawOverlappedCells(target);
+            if (RTOcclusionEditorSettings.ShowSelectedOverlappedCells)
+                RTOcclusionEditorUtility.DrawGizmos.DrawOverlappedCells(target);
         }
         private static void DrawDefaultGizmos(RTOccluder target)
         {
             // Set matrix
             // Gizmos.matrix = Matrix4x4.TRS(target.transform.position, target.transform.rotation, target.transform.lossyScale);
-            Gizmos.matrix = target.transform.localToWorldMatrix;
+            Gizmos.matrix = target.CachedLocalToWorldMatrix;
             {
                 // Draw bounds
                 Gizmos.color = Color.white;
@@ -74,7 +78,7 @@ namespace HisaCat.RealTimeOcclusionCulling
                 {
                     if (facePortal == null) continue;
                     Gizmos.color = facePortal.IsEnabled ? Color.cyan.WithAlpha(0.25f) : Color.gray.WithAlpha(0.25f);
-                    var bounds = facePortal.GetBounds(target);
+                    var bounds = facePortal.GetLocalBounds(target);
                     Gizmos.DrawCube(bounds.center, bounds.size);
                 }
             }

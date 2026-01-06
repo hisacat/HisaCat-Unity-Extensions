@@ -10,14 +10,23 @@ namespace HisaCat.RealTimeOcclusionCulling
     public class RTOccludee : RTOcclusionBase
     {
         protected override string ComponentName => nameof(RTOccludee);
-        public bool IsCulled { get; private set; }
 
-        private void OnEnable() => RTOcclusionCamera.RegisterOccludee(this);
-        private void OnDisable() => RTOcclusionCamera.UnregisterOccludee(this);
-
-        public void SetCulling(bool cull)
+        override protected void OnEnable()
         {
-            if (this.IsCulled == cull) return;
+            base.OnEnable();
+            RTOcclusionManager.RegisterOccludee(this);
+        }
+
+        override protected void OnDisable()
+        {
+            base.OnDisable();
+            RTOcclusionManager.UnregisterOccludee(this);
+        }
+
+        public bool IsCulled { get; private set; }
+        public void SetCulling(bool cull, bool force = false)
+        {
+            if (force == false && this.IsCulled == cull) return;
 
             this.IsCulled = cull;
 
@@ -40,6 +49,12 @@ namespace HisaCat.RealTimeOcclusionCulling
         {
             base.RendererRemovedCallback(renderer);
             renderer.forceRenderingOff = false;
+        }
+
+        protected override void OnTransformChanged()
+        {
+            base.OnTransformChanged();
+            RTOcclusionManager.OnOccludeeTransformChanged(this);
         }
     }
 }
