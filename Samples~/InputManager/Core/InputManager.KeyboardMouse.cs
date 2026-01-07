@@ -7,11 +7,16 @@ namespace HisaCat.HUE.Inputs
     {
         public static class KeyboardMouse
         {
+            #region New Input System Wrapper Methods
             public static Vector2 GetMousePosition()
-            {
-                var mouse = Mouse.current;
-                return mouse == null ? Vector2.zero : mouse.position.ReadValue();
-            }
+                => Mouse.current?.position.ReadValue() ?? Vector2.zero;
+            public static bool GetKeyDown(Key key)
+                => Keyboard.current?[key].wasPressedThisFrame ?? false;
+            public static bool GetKeyUp(Key key)
+                => Keyboard.current?[key].wasReleasedThisFrame ?? false;
+            public static bool GetKey(Key key)
+                => Keyboard.current?[key].isPressed ?? false;
+            #endregion
         }
     }
 }
