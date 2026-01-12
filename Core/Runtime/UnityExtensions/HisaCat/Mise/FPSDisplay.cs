@@ -1,3 +1,4 @@
+using HisaCat.UnityExtensions;
 using UnityEngine;
 
 namespace HisaCat.Mise
@@ -6,6 +7,9 @@ namespace HisaCat.Mise
     {
         [Tooltip("Number of frames to sample for averaging.")]
         [SerializeField] private int sampleSize = 30; // 샘플링할 프레임 수
+        [SerializeField] private float fontSize = 20f;
+        [SerializeField] private Color textColor = Color.white;
+        [SerializeField] private Color backgroundColor = Color.black.WithAlpha(0.5f);
 
         private float[] frameDurations;
         private int sampleIndex = 0;
@@ -27,19 +31,64 @@ namespace HisaCat.Mise
             this.sampleIndex = (this.sampleIndex + 1) % this.sampleSize;
         }
 
-        private GUIStyle style = new();
+        private readonly GUIStyle backgroundStyle = new();
+        private readonly GUIStyle labelStyle = new();
+
+        private float lastScale = 0;
+        private bool contentChanged = true;
+        private Vector2 textSize = Vector2.zero;
+        private GUIContent contentForCalcSize = null;
+
+#if UNITY_EDITOR
+        void OnValidate() => this.contentChanged = true;
+#endif
         private void OnGUI()
         {
-            float averageDeltaTime = totalFrameTime / sampleSize;
+            float averageDeltaTime = this.totalFrameTime / this.sampleSize;
             float fps = 1.0f / averageDeltaTime;
 
             float scale = Screen.height / 1080.0f;
+            if (this.lastScale != scale)
+            {
+                this.contentChanged = true;
+                this.lastScale = scale;
+            }
 
-            this.style.fontSize = (int)(20 * scale);
-            this.style.normal.textColor = Color.white;
+            this.backgroundStyle.normal.background = Texture2D.whiteTexture;
+            GUI.backgroundColor = this.backgroundColor;
 
-            Rect rect = new(10 * scale, 10 * scale, Screen.width, Screen.height * 0.05f);
-            GUI.Label(rect, $"FPS: {fps:0.0}", style);
+            int scaledFontSize = Mathf.RoundToInt(this.fontSize * scale);
+            this.labelStyle.fontSize = scaledFontSize;
+            this.labelStyle.normal.textColor = this.textColor;
+
+
+            if (this.contentChanged)
+            {
+                // For the maximum width to be secured,
+                // calculate the size with the maximum number of digits.
+                this.textSize = this.labelStyle.CalcSize(
+                    this.contentForCalcSize ??= new GUIContent(formatFps(999))
+                );
+
+                this.contentChanged = false;
+            }
+
+            float padding = 5 * scale;
+            (float width, float height) = (this.textSize.x, this.textSize.y);
+
+            // Draw background
+            {
+                Rect rect = new(0, 0, width + padding * 2, height + padding * 2);
+                GUI.Box(rect, string.Empty, this.backgroundStyle);
+            }
+
+            // Draw text
+            {
+                Rect rect = new(padding, padding, width, height);
+                GUI.Label(rect, formatFps(fps), this.labelStyle);
+            }
+
+            string formatFps(float fps) => $"FPS: {fps:0.0}";
         }
     }
 }
