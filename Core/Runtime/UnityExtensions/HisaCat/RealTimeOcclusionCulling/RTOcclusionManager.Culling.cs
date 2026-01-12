@@ -10,6 +10,8 @@ namespace HisaCat.RealTimeOcclusionCulling
 {
     public static partial class RTOcclusionManager
     {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
         private static void OnEnterPlaymodeInEditor_Culling(UnityEditor.EnterPlayModeOptions options)
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
@@ -23,6 +25,8 @@ namespace HisaCat.RealTimeOcclusionCulling
                 sortedOccludersBuffer.Clear();
             }
         }
+#pragma warning restore IDE0051
+#endif
 
         #region Buffers
         // 거리 정렬용 재사용 가능 버퍼

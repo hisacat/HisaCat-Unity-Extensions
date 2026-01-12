@@ -27,6 +27,8 @@ namespace HisaCat.RealTimeOcclusionCulling
 #pragma warning restore IDE0051
 #endif
 
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
         private static void OnEnterPlaymodeInEditor_Core(UnityEditor.EnterPlayModeOptions options)
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
@@ -49,6 +51,8 @@ namespace HisaCat.RealTimeOcclusionCulling
                 IsPreviewMode = false;
             }
         }
+#pragma warning restore IDE0051
+#endif
 
         #region Events
         public delegate void OcclusionCameraAddedCallback(RTOcclusionCamera occlusionCamera);

@@ -10,6 +10,8 @@ namespace HisaCat.RealTimeOcclusionCulling
 {
     public static partial class RTOcclusionManager
     {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
         private static void OnEnterPlaymodeInEditor_Preview(UnityEditor.EnterPlayModeOptions options)
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
@@ -17,6 +19,8 @@ namespace HisaCat.RealTimeOcclusionCulling
                 IsPreviewMode = false;
             }
         }
+#pragma warning restore IDE0051
+#endif
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
