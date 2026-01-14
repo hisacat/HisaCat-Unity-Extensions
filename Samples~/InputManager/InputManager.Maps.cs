@@ -24,7 +24,7 @@ namespace HisaCat.HUE.Inputs
 #endif
 
                 public static event InputActionCallbackDelegate OnMovePerformed;
-                public static event InputActionCallbackDelegate OnFirePerformed;
+                public static event InputActionCallbackDelegate OnAttackPerformed;
 
                 public static bool IsInitialized { get; private set; } = false;
                 public static void InitializeInternal()
@@ -39,7 +39,7 @@ namespace HisaCat.HUE.Inputs
                     static void OnMovePerformedCallback(InputAction.CallbackContext ctx) => OnMovePerformed?.Invoke(ctx);
 
                     Instance.defaultInputActions.Player.Fire.performed += OnFirePerformedCallback;
-                    static void OnFirePerformedCallback(InputAction.CallbackContext ctx) => OnFirePerformed?.Invoke(ctx);
+                    static void OnFirePerformedCallback(InputAction.CallbackContext ctx) => OnAttackPerformed?.Invoke(ctx);
 
                     IsInitialized = true;
                 }
@@ -47,14 +47,14 @@ namespace HisaCat.HUE.Inputs
                 public static Vector2 GetMovementInput()
                     => Instance.defaultInputActions.Player.Move.ReadValue<Vector2>();
 
-                public static string GetFireButtonDisplayString()
-                    => GetCurrentDeviceBindingDisplayString(Instance.defaultInputActions.Player.Fire);
-                public static bool GetFireButtonUp()
-                    => Instance.defaultInputActions.Player.Fire.GetButtonUp();
-                public static bool GetFireButton()
-                    => Instance.defaultInputActions.Player.Fire.GetButton();
-                public static bool GetFireButtonDown()
-                    => Instance.defaultInputActions.Player.Fire.GetButtonDown();
+                public static string GetAttackButtonDisplayString()
+                    => GetCurrentDeviceBindingDisplayString(Instance.defaultInputActions.Player.Attack);
+                public static bool GetAttackButtonUp()
+                    => Instance.defaultInputActions.Player.Attack.GetButtonUp();
+                public static bool GetAttackButton()
+                    => Instance.defaultInputActions.Player.Attack.GetButton();
+                public static bool GetAttackButtonDown()
+                    => Instance.defaultInputActions.Player.Attack.GetButtonDown();
 
                 /// <summary>
                 /// This represents the horizontal and vertical values of pixels that need to move per inch for each frame.
