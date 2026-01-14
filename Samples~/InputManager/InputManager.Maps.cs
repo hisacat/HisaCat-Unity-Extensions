@@ -24,7 +24,9 @@ namespace HisaCat.HUE.Inputs
 #endif
 
                 public static event InputActionCallbackDelegate OnMovePerformed;
+                public static event InputActionCallbackDelegate OnMoveCanceled;
                 public static event InputActionCallbackDelegate OnAttackPerformed;
+                public static event InputActionCallbackDelegate OnAttackCanceled;
 
                 public static bool IsInitialized { get; private set; } = false;
                 public static void InitializeInternal()
@@ -37,9 +39,13 @@ namespace HisaCat.HUE.Inputs
 
                     Instance.defaultInputActions.Player.Move.performed += OnMovePerformedCallback;
                     static void OnMovePerformedCallback(InputAction.CallbackContext ctx) => OnMovePerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.Player.Move.canceled += OnMoveCanceledCallback;
+                    static void OnMoveCanceledCallback(InputAction.CallbackContext ctx) => OnMoveCanceled?.Invoke(ctx);
 
-                    Instance.defaultInputActions.Player.Fire.performed += OnFirePerformedCallback;
-                    static void OnFirePerformedCallback(InputAction.CallbackContext ctx) => OnAttackPerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.Player.Attack.performed += OnAttackPerformedCallback;
+                    static void OnAttackPerformedCallback(InputAction.CallbackContext ctx) => OnAttackPerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.Player.Attack.canceled += OnAttackCanceledCallback;
+                    static void OnAttackCanceledCallback(InputAction.CallbackContext ctx) => OnAttackCanceled?.Invoke(ctx);
 
                     IsInitialized = true;
                 }
