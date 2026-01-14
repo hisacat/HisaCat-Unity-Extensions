@@ -81,18 +81,17 @@ namespace HisaCat.HUE.Inputs
                 CreateAndEnableMouseInputAction(ref MiddleMouseButtonAction, "MiddleMouseButton", "<Mouse>/middleButton");
                 CreateAndEnableMouseInputAction(ref BackMouseButtonAction, "BackMouseButton", "<Mouse>/backButton");
                 CreateAndEnableMouseInputAction(ref ForwardMouseButtonAction, "ForwardMouseButton", "<Mouse>/forwardButton");
-                CreateAndEnableMouseInputAction(ref MousePositionAction, "MousePosition", "<Mouse>/position");
-                CreateAndEnableMouseInputAction(ref MouseDeltaAction, "MouseDelta", "<Mouse>/delta");
+                CreateAndEnableMouseInputAction(ref MousePositionAction, "MousePosition", "<Mouse>/position", InputActionType.PassThrough);
+                CreateAndEnableMouseInputAction(ref MouseDeltaAction, "MouseDelta", "<Mouse>/delta", InputActionType.PassThrough);
 
-                static void CreateAndEnableMouseInputAction(ref InputAction action, string name, string binding)
+                static void CreateAndEnableMouseInputAction(ref InputAction action, string name, string binding, InputActionType type = InputActionType.Button)
                 {
-                    action = new(name, binding: binding);
+                    action = new(name, type: type, binding: binding);
                     action.Enable();
                 }
             }
             private static void DelegateMouseActionDelegates()
             {
-
                 RegisterInputActionCallbacks(LeftMouseButtonAction,
                     (onStarted: null, onPerformed: OnLeftMouseButtonPerformedCallback, onCanceled: OnLeftMouseButtonCanceledCallback));
                 static void OnLeftMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnLeftMouseButtonPerformed?.Invoke(ctx);

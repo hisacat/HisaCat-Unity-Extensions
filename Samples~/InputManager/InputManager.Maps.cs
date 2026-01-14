@@ -11,9 +11,9 @@ namespace HisaCat.HUE.Inputs
             System.Action<InputAction.CallbackContext> onPerformed,
             System.Action<InputAction.CallbackContext> onCanceled) delegates)
         {
-            action.started += delegates.onStarted;
-            action.performed += delegates.onPerformed;
-            action.canceled += delegates.onCanceled;
+            if (delegates.onStarted != null) action.started += delegates.onStarted;
+            if (delegates.onPerformed != null) action.performed += delegates.onPerformed;
+            if (delegates.onCanceled != null) action.canceled += delegates.onCanceled;
         }
 
         public static class Maps
