@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.XR;
 
 namespace HisaCat.HUE.Inputs
 {
+    [DefaultExecutionOrder(int.MinValue)]
     public partial class InputManager : MonoBehaviour
     {
 #if UNITY_EDITOR
@@ -95,6 +96,9 @@ namespace HisaCat.HUE.Inputs
             // Initialize Map wrapper class.
             Maps.Player.InitializeInternal();
             Maps.UI.InitializeInternal();
+
+            // Initialize KeyboardMouse wrapper class.
+            KeyboardMouse.InitializeInternal();
 
             // [NOTE] Example for uses using InputAction's interactions.
             // this.defaultInputActions.Player.Interact.started += OnPlayerInteractStarted;
