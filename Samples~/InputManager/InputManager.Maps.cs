@@ -27,7 +27,7 @@ namespace HisaCat.HUE.Inputs
                 public static event InputActionCallbackDelegate OnAttackPerformed = null, OnAttackCanceled = null;
 
                 public static bool IsInitialized { get; private set; } = false;
-                public static void InitializeInternal()
+                internal static void InitializeInternal()
                 {
                     if (IsInitialized)
                     {
@@ -91,7 +91,7 @@ namespace HisaCat.HUE.Inputs
                 public static event InputActionCallbackDelegate OnCancelStarted = null;
 
                 public static bool IsInitialized { get; private set; } = false;
-                public static void InitializeInternal()
+                internal static void InitializeInternal()
                 {
                     if (IsInitialized)
                     {
