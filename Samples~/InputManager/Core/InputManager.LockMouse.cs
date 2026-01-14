@@ -1,3 +1,4 @@
+using HisaCat.UnityExtensions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,18 +9,20 @@ namespace HisaCat.HUE.Inputs
         public class LockMouseCursorTicket
         {
             public readonly object Owner = null;
+            public readonly bool IsLocked = false;
             public readonly string LogMessage = null;
             public readonly string StackTrace = null;
-            public LockMouseCursorTicket(object owner, string logMessage, string stackTrace)
+            public LockMouseCursorTicket(object owner, bool isLocked, string logMessage, string stackTrace)
             {
                 this.Owner = owner;
+                this.IsLocked = isLocked;
                 this.LogMessage = logMessage;
                 this.StackTrace = stackTrace;
             }
         }
-        private static HashSet<LockMouseCursorTicket> lockMouseCursorTickets = new HashSet<LockMouseCursorTicket>();
-        public static bool IsMouseCursorLocked => lockMouseCursorTickets.Count > 0;
-        public static LockMouseCursorTicket SetLockMouseCursor(object owner, string logMessage = null)
+        private static LinkedList<LockMouseCursorTicket> lockMouseCursorTickets = new();
+        public static bool IsMouseCursorLocked => lockMouseCursorTickets.Count <= 0 ? false : lockMouseCursorTickets.Last.Value.IsLocked;
+        public static LockMouseCursorTicket SetLockMouseCursor(object owner, bool isLocked, string logMessage = null)
         {
             string stackTrace = null;
 
@@ -32,8 +35,8 @@ namespace HisaCat.HUE.Inputs
                 $"StackTrace:\r\n" +
                 $"{stackTrace}");
 
-            var ticket = new LockMouseCursorTicket(owner, logMessage, stackTrace);
-            lockMouseCursorTickets.Add(ticket);
+            var ticket = new LockMouseCursorTicket(owner, isLocked, logMessage, stackTrace);
+            lockMouseCursorTickets.AddLast(ticket);
 
             UpdateLockMouseCursorStatus();
 
