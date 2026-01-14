@@ -5,11 +5,13 @@ namespace HisaCat.Mise
 {
     public class FPSDisplay : MonoBehaviour
     {
+        [SerializeField] private bool m_DontDestroyOnLoad = false;
+
         [Tooltip("Number of frames to sample for averaging.")]
-        [SerializeField] private int sampleSize = 30; // 샘플링할 프레임 수
-        [SerializeField] private float fontSize = 20f;
-        [SerializeField] private Color textColor = Color.white;
-        [SerializeField] private Color backgroundColor = Color.black.WithAlpha(0.5f);
+        [SerializeField] private int m_SampleSize = 30; // 샘플링할 프레임 수
+        [SerializeField] private float m_FontSize = 20f;
+        [SerializeField] private Color m_TextColor = Color.white;
+        [SerializeField] private Color m_BackgroundColor = Color.black.WithAlpha(0.5f);
 
         private float[] frameDurations;
         private int sampleIndex = 0;
@@ -17,9 +19,10 @@ namespace HisaCat.Mise
 
         private void Awake()
         {
-            this.frameDurations = new float[sampleSize];
+            this.frameDurations = new float[m_SampleSize];
 
-            DontDestroyOnLoad(this.gameObject);
+            if (this.m_DontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
         }
 
         private void Update()
@@ -28,7 +31,7 @@ namespace HisaCat.Mise
             this.totalFrameTime -= this.frameDurations[this.sampleIndex];
             this.totalFrameTime += currentDeltaTime;
             this.frameDurations[this.sampleIndex] = currentDeltaTime;
-            this.sampleIndex = (this.sampleIndex + 1) % this.sampleSize;
+            this.sampleIndex = (this.sampleIndex + 1) % this.m_SampleSize;
         }
 
         private readonly GUIStyle backgroundStyle = new();
@@ -44,7 +47,7 @@ namespace HisaCat.Mise
 #endif
         private void OnGUI()
         {
-            float averageDeltaTime = this.totalFrameTime / this.sampleSize;
+            float averageDeltaTime = this.totalFrameTime / this.m_SampleSize;
             float fps = 1.0f / averageDeltaTime;
 
             float scale = Screen.height / 1080.0f;
@@ -55,11 +58,11 @@ namespace HisaCat.Mise
             }
 
             this.backgroundStyle.normal.background = Texture2D.whiteTexture;
-            GUI.backgroundColor = this.backgroundColor;
+            GUI.backgroundColor = this.m_BackgroundColor;
 
-            int scaledFontSize = Mathf.RoundToInt(this.fontSize * scale);
+            int scaledFontSize = Mathf.RoundToInt(this.m_FontSize * scale);
             this.labelStyle.fontSize = scaledFontSize;
-            this.labelStyle.normal.textColor = this.textColor;
+            this.labelStyle.normal.textColor = this.m_TextColor;
 
 
             if (this.contentChanged)
