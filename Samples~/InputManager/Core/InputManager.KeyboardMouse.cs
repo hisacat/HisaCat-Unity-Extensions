@@ -86,13 +86,41 @@ namespace HisaCat.HUE.Inputs
             }
             private static void DelegateMouseActionDelegates()
             {
-                RegisterInputActionCallbacks(LeftMouseButtonAction, (started: null, performed: OnLeftMouseButtonPerformed, canceled: OnLeftMouseButtonCanceled));
-                RegisterInputActionCallbacks(RightMouseButtonAction, (started: null, performed: OnRightMouseButtonPerformed, canceled: OnRightMouseButtonCanceled));
-                RegisterInputActionCallbacks(MiddleMouseButtonAction, (started: null, performed: OnMiddleMouseButtonPerformed, canceled: OnMiddleMouseButtonCanceled));
-                RegisterInputActionCallbacks(BackMouseButtonAction, (started: null, performed: OnBackMouseButtonPerformed, canceled: OnBackMouseButtonCanceled));
-                RegisterInputActionCallbacks(ForwardMouseButtonAction, (started: null, performed: OnForwardMouseButtonPerformed, canceled: OnForwardMouseButtonCanceled));
-                RegisterInputActionCallbacks(MousePositionAction, (started: null, performed: OnMousePositionPerformed, canceled: OnMousePositionCanceled));
-                RegisterInputActionCallbacks(MouseDeltaAction, (started: null, performed: OnMouseDeltaPerformed, canceled: OnMouseDeltaCanceled));
+
+                RegisterInputActionCallbacks(LeftMouseButtonAction,
+                    (onStarted: null, onPerformed: OnLeftMouseButtonPerformedCallback, onCanceled: OnLeftMouseButtonCanceledCallback));
+                static void OnLeftMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnLeftMouseButtonPerformed?.Invoke(ctx);
+                static void OnLeftMouseButtonCanceledCallback(InputAction.CallbackContext ctx) => OnLeftMouseButtonCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(RightMouseButtonAction,
+                    (onStarted: null, onPerformed: OnRightMouseButtonPerformedCallback, onCanceled: OnRightMouseButtonCanceledCallback));
+                static void OnRightMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnRightMouseButtonPerformed?.Invoke(ctx);
+                static void OnRightMouseButtonCanceledCallback(InputAction.CallbackContext ctx) => OnRightMouseButtonCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(MiddleMouseButtonAction,
+                    (onStarted: null, onPerformed: OnMiddleMouseButtonPerformedCallback, onCanceled: OnMiddleMouseButtonCanceledCallback));
+                static void OnMiddleMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnMiddleMouseButtonPerformed?.Invoke(ctx);
+                static void OnMiddleMouseButtonCanceledCallback(InputAction.CallbackContext ctx) => OnMiddleMouseButtonCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(BackMouseButtonAction,
+                    (onStarted: null, onPerformed: OnBackMouseButtonPerformedCallback, onCanceled: OnBackMouseButtonCanceledCallback));
+                static void OnBackMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnBackMouseButtonPerformed?.Invoke(ctx);
+                static void OnBackMouseButtonCanceledCallback(InputAction.CallbackContext ctx) => OnBackMouseButtonCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(ForwardMouseButtonAction,
+                    (onStarted: null, onPerformed: OnForwardMouseButtonPerformedCallback, onCanceled: OnForwardMouseButtonCanceledCallback));
+                static void OnForwardMouseButtonPerformedCallback(InputAction.CallbackContext ctx) => OnForwardMouseButtonPerformed?.Invoke(ctx);
+                static void OnForwardMouseButtonCanceledCallback(InputAction.CallbackContext ctx) => OnForwardMouseButtonCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(MousePositionAction,
+                    (onStarted: null, onPerformed: OnMousePositionPerformedCallback, onCanceled: OnMousePositionCanceledCallback));
+                static void OnMousePositionPerformedCallback(InputAction.CallbackContext ctx) => OnMousePositionPerformed?.Invoke(ctx);
+                static void OnMousePositionCanceledCallback(InputAction.CallbackContext ctx) => OnMousePositionCanceled?.Invoke(ctx);
+
+                RegisterInputActionCallbacks(MouseDeltaAction,
+                    (onStarted: null, onPerformed: OnMouseDeltaPerformedCallback, onCanceled: OnMouseDeltaCanceledCallback));
+                static void OnMouseDeltaPerformedCallback(InputAction.CallbackContext ctx) => OnMouseDeltaPerformed?.Invoke(ctx);
+                static void OnMouseDeltaCanceledCallback(InputAction.CallbackContext ctx) => OnMouseDeltaCanceled?.Invoke(ctx);
             }
 
             public static Vector2 GetMousePosition()

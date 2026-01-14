@@ -6,13 +6,14 @@ namespace HisaCat.HUE.Inputs
 {
     public partial class InputManager : MonoBehaviour
     {
-        internal static void RegisterInputActionCallbacks(InputAction action,
-            (InputActionCallbackDelegate started, InputActionCallbackDelegate performed, InputActionCallbackDelegate canceled) delegates)
+        private static void RegisterInputActionCallbacks(InputAction action,
+            (System.Action<InputAction.CallbackContext> onStarted,
+            System.Action<InputAction.CallbackContext> onPerformed,
+            System.Action<InputAction.CallbackContext> onCanceled) delegates)
         {
-            action.started += StartedCallback; action.performed += PerformedCallback; action.canceled += CanceledCallback;
-            void StartedCallback(InputAction.CallbackContext ctx) => delegates.started?.Invoke(ctx);
-            void PerformedCallback(InputAction.CallbackContext ctx) => delegates.performed?.Invoke(ctx);
-            void CanceledCallback(InputAction.CallbackContext ctx) => delegates.canceled?.Invoke(ctx);
+            action.started += delegates.onStarted;
+            action.performed += delegates.onPerformed;
+            action.canceled += delegates.onCanceled;
         }
 
         public static class Maps
@@ -26,7 +27,9 @@ namespace HisaCat.HUE.Inputs
                 {
                     if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                     {
+
                         (OnMovePerformed, OnMoveCanceled) = (null, null);
+
                         (OnAttackPerformed, OnAttackCanceled) = (null, null);
 
                         IsInitialized = false;
@@ -47,10 +50,15 @@ namespace HisaCat.HUE.Inputs
                         return;
                     }
 
-                    RegisterInputActionCallbacks(Instance.defaultInputActions.Player.Move,
-                        (started: null, performed: OnMovePerformed, canceled: OnMoveCanceled));
-                    RegisterInputActionCallbacks(Instance.defaultInputActions.Player.Attack,
-                        (started: null, performed: OnAttackPerformed, canceled: OnAttackCanceled));
+                    Instance.defaultInputActions.Player.Move.performed += OnMovePerformedCallback;
+                    static void OnMovePerformedCallback(InputAction.CallbackContext ctx) => OnMovePerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.Player.Move.canceled += OnMoveCanceledCallback;
+                    static void OnMoveCanceledCallback(InputAction.CallbackContext ctx) => OnMoveCanceled?.Invoke(ctx);
+
+                    Instance.defaultInputActions.Player.Attack.performed += OnAttackPerformedCallback;
+                    static void OnAttackPerformedCallback(InputAction.CallbackContext ctx) => OnAttackPerformed?.Invoke(ctx);
+                    Instance.defaultInputActions.Player.Attack.canceled += OnAttackCanceledCallback;
+                    static void OnAttackCanceledCallback(InputAction.CallbackContext ctx) => OnAttackCanceled?.Invoke(ctx);
 
                     IsInitialized = true;
                 }
@@ -83,8 +91,11 @@ namespace HisaCat.HUE.Inputs
                 {
                     if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                     {
+
                         (OnNavigatePerformed, OnNavigateCanceled) = (null, null);
+
                         (OnSubmitPerformed, OnSubmitCanceled) = (null, null);
+
                         (OnCancelPerformed, OnCancelCanceled) = (null, null);
 
                         IsInitialized = false;
@@ -107,11 +118,19 @@ namespace HisaCat.HUE.Inputs
                     }
 
                     RegisterInputActionCallbacks(Instance.defaultInputActions.UI.Navigate,
-                        (started: null, performed: OnNavigatePerformed, canceled: OnNavigateCanceled));
+                        (onStarted: null, onPerformed: OnNavigatePerformedCallback, onCanceled: OnNavigateCanceledCallback));
+                    static void OnNavigatePerformedCallback(InputAction.CallbackContext ctx) => OnNavigatePerformed?.Invoke(ctx);
+                    static void OnNavigateCanceledCallback(InputAction.CallbackContext ctx) => OnNavigateCanceled?.Invoke(ctx);
+
                     RegisterInputActionCallbacks(Instance.defaultInputActions.UI.Submit,
-                        (started: null, performed: OnSubmitPerformed, canceled: OnSubmitCanceled));
+                        (onStarted: null, onPerformed: OnSubmitPerformedCallback, onCanceled: OnSubmitCanceledCallback));
+                    static void OnSubmitPerformedCallback(InputAction.CallbackContext ctx) => OnSubmitPerformed?.Invoke(ctx);
+                    static void OnSubmitCanceledCallback(InputAction.CallbackContext ctx) => OnSubmitCanceled?.Invoke(ctx);
+
                     RegisterInputActionCallbacks(Instance.defaultInputActions.UI.Cancel,
-                        (started: null, performed: OnCancelPerformed, canceled: OnCancelCanceled));
+                        (onStarted: null, onPerformed: OnCancelPerformedCallback, onCanceled: OnCancelCanceledCallback));
+                    static void OnCancelPerformedCallback(InputAction.CallbackContext ctx) => OnCancelPerformed?.Invoke(ctx);
+                    static void OnCancelCanceledCallback(InputAction.CallbackContext ctx) => OnCancelCanceled?.Invoke(ctx);
 
                     IsInitialized = true;
                 }
