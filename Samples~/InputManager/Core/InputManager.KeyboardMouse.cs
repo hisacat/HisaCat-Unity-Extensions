@@ -132,6 +132,8 @@ namespace HisaCat.HUE.Inputs
                 => Mouse.current?.position.ReadValue() ?? Vector2.zero;
             public static Vector2 GetMouseDelta()
                 => Mouse.current?.delta.ReadValue() ?? Vector2.zero;
+            public static Vector2 GetMouseScroll()
+                => Mouse.current?.scroll.ReadValue() ?? Vector2.zero;
 
             public static bool GetLeftMouseButtonDown()
                 => Mouse.current?.leftButton.wasPressedThisFrame ?? false;
