@@ -23,10 +23,8 @@ namespace HisaCat.HUE.Inputs
 #pragma warning restore IDE0051
 #endif
 
-                public static event InputActionCallbackDelegate OnMovePerformed;
-                public static event InputActionCallbackDelegate OnMoveCanceled;
-                public static event InputActionCallbackDelegate OnAttackPerformed;
-                public static event InputActionCallbackDelegate OnAttackCanceled;
+                public static event InputActionCallbackDelegate OnMovePerformed = null, OnMoveCanceled = null;
+                public static event InputActionCallbackDelegate OnAttackPerformed = null, OnAttackCanceled = null;
 
                 public static bool IsInitialized { get; private set; } = false;
                 public static void InitializeInternal()
@@ -88,9 +86,9 @@ namespace HisaCat.HUE.Inputs
 #pragma warning restore IDE0051
 #endif
 
-                public static event InputActionCallbackDelegate OnNavigateStarted;
-                public static event InputActionCallbackDelegate OnSubmitStarted;
-                public static event InputActionCallbackDelegate OnCancelStarted;
+                public static event InputActionCallbackDelegate OnNavigateStarted = null;
+                public static event InputActionCallbackDelegate OnSubmitStarted = null;
+                public static event InputActionCallbackDelegate OnCancelStarted = null;
 
                 public static bool IsInitialized { get; private set; } = false;
                 public static void InitializeInternal()
