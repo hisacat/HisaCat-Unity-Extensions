@@ -14,6 +14,21 @@ namespace HisaCat.HUE.Inputs
             {
                 if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                 {
+                    ClearInputAction(ref LeftMouseButtonAction);
+                    ClearInputAction(ref RightMouseButtonAction);
+                    ClearInputAction(ref MiddleMouseButtonAction);
+                    ClearInputAction(ref BackMouseButtonAction);
+                    ClearInputAction(ref ForwardMouseButtonAction);
+                    ClearInputAction(ref MousePositionAction);
+                    ClearInputAction(ref MouseDeltaAction);
+
+                    static void ClearInputAction(ref InputAction action)
+                    {
+                        if (action == null) return;
+                        action.Dispose();
+                        action = null;
+                    }
+
                     (OnLeftMouseButtonPerformed, OnLeftMouseButtonCanceled) = (null, null);
                     (OnRightMouseButtonPerformed, OnRightMouseButtonCanceled) = (null, null);
                     (OnMiddleMouseButtonPerformed, OnMiddleMouseButtonCanceled) = (null, null);
@@ -29,7 +44,7 @@ namespace HisaCat.HUE.Inputs
 #endif
 
             public static bool IsInitialized { get; private set; } = false;
-            public static void InitializeInternal()
+            internal static void InitializeInternal()
             {
                 if (IsInitialized)
                 {
@@ -37,27 +52,38 @@ namespace HisaCat.HUE.Inputs
                     return;
                 }
 
+                CreateMouseInputActions();
                 DelegateMouseActionDelegates();
-                
+
                 IsInitialized = true;
             }
 
             #region New Input System Wrapper Methods
-            public static readonly InputAction LeftMouseButtonAction = new("LeftMouseButton", binding: "<Mouse>/leftButton");
+            public static InputAction LeftMouseButtonAction = null;
             public static event InputActionCallbackDelegate OnLeftMouseButtonPerformed = null, OnLeftMouseButtonCanceled = null;
-            public static readonly InputAction RightMouseButtonAction = new("RightMouseButton", binding: "<Mouse>/rightButton");
+            public static InputAction RightMouseButtonAction = null;
             public static event InputActionCallbackDelegate OnRightMouseButtonPerformed = null, OnRightMouseButtonCanceled = null;
-            public static readonly InputAction MiddleMouseButtonAction = new("MiddleMouseButton", binding: "<Mouse>/middleButton");
+            public static InputAction MiddleMouseButtonAction = null;
             public static event InputActionCallbackDelegate OnMiddleMouseButtonPerformed = null, OnMiddleMouseButtonCanceled = null;
-            public static readonly InputAction BackMouseButtonAction = new("BackMouseButton", binding: "<Mouse>/backButton");
+            public static InputAction BackMouseButtonAction = null;
             public static event InputActionCallbackDelegate OnBackMouseButtonPerformed = null, OnBackMouseButtonCanceled = null;
-            public static readonly InputAction ForwardMouseButtonAction = new("ForwardMouseButton", binding: "<Mouse>/forwardButton");
+            public static InputAction ForwardMouseButtonAction = null;
             public static event InputActionCallbackDelegate OnForwardMouseButtonPerformed = null, OnForwardMouseButtonCanceled = null;
-            public static readonly InputAction MousePositionAction = new("MousePosition", binding: "<Mouse>/position");
+            public static InputAction MousePositionAction = null;
             public static event InputActionCallbackDelegate OnMousePositionPerformed = null, OnMousePositionCanceled = null;
-            public static readonly InputAction MouseDeltaAction = new("MouseDelta", binding: "<Mouse>/delta");
+            public static InputAction MouseDeltaAction = null;
             public static event InputActionCallbackDelegate OnMouseDeltaPerformed = null, OnMouseDeltaCanceled = null;
 
+            private static void CreateMouseInputActions()
+            {
+                LeftMouseButtonAction = new("LeftMouseButton", binding: "<Mouse>/leftButton");
+                RightMouseButtonAction = new("RightMouseButton", binding: "<Mouse>/rightButton");
+                MiddleMouseButtonAction = new("MiddleMouseButton", binding: "<Mouse>/middleButton");
+                BackMouseButtonAction = new("BackMouseButton", binding: "<Mouse>/backButton");
+                ForwardMouseButtonAction = new("ForwardMouseButton", binding: "<Mouse>/forwardButton");
+                MousePositionAction = new("MousePosition", binding: "<Mouse>/position");
+                MouseDeltaAction = new("MouseDelta", binding: "<Mouse>/delta");
+            }
             private static void DelegateMouseActionDelegates()
             {
                 RegisterInputActionCallbacks(LeftMouseButtonAction, (started: null, performed: OnLeftMouseButtonPerformed, canceled: OnLeftMouseButtonCanceled));
