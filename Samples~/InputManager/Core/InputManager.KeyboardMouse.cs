@@ -52,7 +52,7 @@ namespace HisaCat.HUE.Inputs
                     return;
                 }
 
-                CreateMouseInputActions();
+                CreateAndEnableMouseInputActions();
                 DelegateMouseActionDelegates();
 
                 IsInitialized = true;
@@ -74,15 +74,21 @@ namespace HisaCat.HUE.Inputs
             public static InputAction MouseDeltaAction = null;
             public static event InputActionCallbackDelegate OnMouseDeltaPerformed = null, OnMouseDeltaCanceled = null;
 
-            private static void CreateMouseInputActions()
+            private static void CreateAndEnableMouseInputActions()
             {
-                LeftMouseButtonAction = new("LeftMouseButton", binding: "<Mouse>/leftButton");
-                RightMouseButtonAction = new("RightMouseButton", binding: "<Mouse>/rightButton");
-                MiddleMouseButtonAction = new("MiddleMouseButton", binding: "<Mouse>/middleButton");
-                BackMouseButtonAction = new("BackMouseButton", binding: "<Mouse>/backButton");
-                ForwardMouseButtonAction = new("ForwardMouseButton", binding: "<Mouse>/forwardButton");
-                MousePositionAction = new("MousePosition", binding: "<Mouse>/position");
-                MouseDeltaAction = new("MouseDelta", binding: "<Mouse>/delta");
+                CreateAndEnableMouseInputAction(ref LeftMouseButtonAction, "LeftMouseButton", "<Mouse>/leftButton");
+                CreateAndEnableMouseInputAction(ref RightMouseButtonAction, "RightMouseButton", "<Mouse>/rightButton");
+                CreateAndEnableMouseInputAction(ref MiddleMouseButtonAction, "MiddleMouseButton", "<Mouse>/middleButton");
+                CreateAndEnableMouseInputAction(ref BackMouseButtonAction, "BackMouseButton", "<Mouse>/backButton");
+                CreateAndEnableMouseInputAction(ref ForwardMouseButtonAction, "ForwardMouseButton", "<Mouse>/forwardButton");
+                CreateAndEnableMouseInputAction(ref MousePositionAction, "MousePosition", "<Mouse>/position");
+                CreateAndEnableMouseInputAction(ref MouseDeltaAction, "MouseDelta", "<Mouse>/delta");
+
+                static void CreateAndEnableMouseInputAction(ref InputAction action, string name, string binding)
+                {
+                    action = new(name, binding: binding);
+                    action.Enable();
+                }
             }
             private static void DelegateMouseActionDelegates()
             {
