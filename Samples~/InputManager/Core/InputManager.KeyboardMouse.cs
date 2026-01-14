@@ -7,39 +7,103 @@ namespace HisaCat.HUE.Inputs
     {
         public static class KeyboardMouse
         {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
+            [UnityEditor.InitializeOnEnterPlayMode]
+            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
+            {
+                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+                {
+                    (OnLeftMouseButtonPerformed, OnLeftMouseButtonCanceled) = (null, null);
+                    (OnRightMouseButtonPerformed, OnRightMouseButtonCanceled) = (null, null);
+                    (OnMiddleMouseButtonPerformed, OnMiddleMouseButtonCanceled) = (null, null);
+                    (OnBackMouseButtonPerformed, OnBackMouseButtonCanceled) = (null, null);
+                    (OnForwardMouseButtonPerformed, OnForwardMouseButtonCanceled) = (null, null);
+                    (OnMousePositionPerformed, OnMousePositionCanceled) = (null, null);
+                    (OnMouseDeltaPerformed, OnMouseDeltaCanceled) = (null, null);
+
+                    IsInitialized = false;
+                }
+            }
+#pragma warning restore IDE0051
+#endif
+
+            public static bool IsInitialized { get; private set; } = false;
+            public static void InitializeInternal()
+            {
+                if (IsInitialized)
+                {
+                    Debug.LogError($"[{nameof(InputManager)}.{nameof(KeyboardMouse)}] Already initialized!");
+                    return;
+                }
+
+                DelegateMouseActionDelegates();
+                
+                IsInitialized = true;
+            }
+
             #region New Input System Wrapper Methods
+            public static readonly InputAction LeftMouseButtonAction = new("LeftMouseButton", binding: "<Mouse>/leftButton");
+            public static event InputActionCallbackDelegate OnLeftMouseButtonPerformed = null, OnLeftMouseButtonCanceled = null;
+            public static readonly InputAction RightMouseButtonAction = new("RightMouseButton", binding: "<Mouse>/rightButton");
+            public static event InputActionCallbackDelegate OnRightMouseButtonPerformed = null, OnRightMouseButtonCanceled = null;
+            public static readonly InputAction MiddleMouseButtonAction = new("MiddleMouseButton", binding: "<Mouse>/middleButton");
+            public static event InputActionCallbackDelegate OnMiddleMouseButtonPerformed = null, OnMiddleMouseButtonCanceled = null;
+            public static readonly InputAction BackMouseButtonAction = new("BackMouseButton", binding: "<Mouse>/backButton");
+            public static event InputActionCallbackDelegate OnBackMouseButtonPerformed = null, OnBackMouseButtonCanceled = null;
+            public static readonly InputAction ForwardMouseButtonAction = new("ForwardMouseButton", binding: "<Mouse>/forwardButton");
+            public static event InputActionCallbackDelegate OnForwardMouseButtonPerformed = null, OnForwardMouseButtonCanceled = null;
+            public static readonly InputAction MousePositionAction = new("MousePosition", binding: "<Mouse>/position");
+            public static event InputActionCallbackDelegate OnMousePositionPerformed = null, OnMousePositionCanceled = null;
+            public static readonly InputAction MouseDeltaAction = new("MouseDelta", binding: "<Mouse>/delta");
+            public static event InputActionCallbackDelegate OnMouseDeltaPerformed = null, OnMouseDeltaCanceled = null;
+
+            private static void DelegateMouseActionDelegates()
+            {
+                RegisterInputActionCallbacks(LeftMouseButtonAction, (started: null, performed: OnLeftMouseButtonPerformed, canceled: OnLeftMouseButtonCanceled));
+                RegisterInputActionCallbacks(RightMouseButtonAction, (started: null, performed: OnRightMouseButtonPerformed, canceled: OnRightMouseButtonCanceled));
+                RegisterInputActionCallbacks(MiddleMouseButtonAction, (started: null, performed: OnMiddleMouseButtonPerformed, canceled: OnMiddleMouseButtonCanceled));
+                RegisterInputActionCallbacks(BackMouseButtonAction, (started: null, performed: OnBackMouseButtonPerformed, canceled: OnBackMouseButtonCanceled));
+                RegisterInputActionCallbacks(ForwardMouseButtonAction, (started: null, performed: OnForwardMouseButtonPerformed, canceled: OnForwardMouseButtonCanceled));
+                RegisterInputActionCallbacks(MousePositionAction, (started: null, performed: OnMousePositionPerformed, canceled: OnMousePositionCanceled));
+                RegisterInputActionCallbacks(MouseDeltaAction, (started: null, performed: OnMouseDeltaPerformed, canceled: OnMouseDeltaCanceled));
+            }
+
             public static Vector2 GetMousePosition()
                 => Mouse.current?.position.ReadValue() ?? Vector2.zero;
+            public static Vector2 GetMouseDelta()
+                => Mouse.current?.delta.ReadValue() ?? Vector2.zero;
+
             public static bool GetLeftMouseButtonDown()
-            => Mouse.current?.leftButton.wasPressedThisFrame ?? false;
+                => Mouse.current?.leftButton.wasPressedThisFrame ?? false;
             public static bool GetLeftMouseButtonUp()
-            => Mouse.current?.leftButton.wasReleasedThisFrame ?? false;
+                => Mouse.current?.leftButton.wasReleasedThisFrame ?? false;
             public static bool GetLeftMouseButton()
-            => Mouse.current?.leftButton.isPressed ?? false;
+                => Mouse.current?.leftButton.isPressed ?? false;
             public static bool GetRightMouseButtonDown()
-            => Mouse.current?.rightButton.wasPressedThisFrame ?? false;
+                => Mouse.current?.rightButton.wasPressedThisFrame ?? false;
             public static bool GetRightMouseButtonUp()
-            => Mouse.current?.rightButton.wasReleasedThisFrame ?? false;
+                => Mouse.current?.rightButton.wasReleasedThisFrame ?? false;
             public static bool GetRightMouseButton()
-            => Mouse.current?.rightButton.isPressed ?? false;
+                => Mouse.current?.rightButton.isPressed ?? false;
             public static bool GetMiddleMouseButtonDown()
-            => Mouse.current?.middleButton.wasPressedThisFrame ?? false;
+                => Mouse.current?.middleButton.wasPressedThisFrame ?? false;
             public static bool GetMiddleMouseButtonUp()
-            => Mouse.current?.middleButton.wasReleasedThisFrame ?? false;
+                => Mouse.current?.middleButton.wasReleasedThisFrame ?? false;
             public static bool GetMiddleMouseButton()
-            => Mouse.current?.middleButton.isPressed ?? false;
+                => Mouse.current?.middleButton.isPressed ?? false;
             public static bool GetBackMouseButtonDown()
-            => Mouse.current?.backButton.wasPressedThisFrame ?? false;
+                => Mouse.current?.backButton.wasPressedThisFrame ?? false;
             public static bool GetBackMouseButtonUp()
-            => Mouse.current?.backButton.wasReleasedThisFrame ?? false;
+                => Mouse.current?.backButton.wasReleasedThisFrame ?? false;
             public static bool GetBackMouseButton()
-            => Mouse.current?.backButton.isPressed ?? false;
+                => Mouse.current?.backButton.isPressed ?? false;
             public static bool GetForwardMouseButtonDown()
-            => Mouse.current?.forwardButton.wasPressedThisFrame ?? false;
+                => Mouse.current?.forwardButton.wasPressedThisFrame ?? false;
             public static bool GetForwardMouseButtonUp()
-            => Mouse.current?.forwardButton.wasReleasedThisFrame ?? false;
+                => Mouse.current?.forwardButton.wasReleasedThisFrame ?? false;
             public static bool GetForwardMouseButton()
-            => Mouse.current?.forwardButton.isPressed ?? false;
+                => Mouse.current?.forwardButton.isPressed ?? false;
 
             public static bool GetKeyDown(Key key)
                 => Keyboard.current?[key].wasPressedThisFrame ?? false;
