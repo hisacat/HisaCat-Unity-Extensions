@@ -46,11 +46,6 @@
       "path": "Samples~/DataBindEx"
     },
     {
-      "displayName": "DOTweenEx",
-      "description": "Extensions of DOTween.\r\n- https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676\r\n- https://assetstore.unity.com/packages/tools/visual-scripting/dotween-pro-32416",
-      "path": "Samples~/DOTweenEx"
-    },
-    {
       "displayName": "SpriteEx - Built-in Render Pipeline",
       "description": "Extensions of SpriteEx for Built-in Render Pipeline.",
       "path": "Samples~/SpriteEx/BIRP"
