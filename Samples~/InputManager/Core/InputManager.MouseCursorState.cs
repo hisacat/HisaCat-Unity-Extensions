@@ -1,3 +1,4 @@
+using HisaCat.Collections;
 using HisaCat.UnityExtensions;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,8 +22,18 @@ namespace HisaCat.HUE.Inputs
                 this.LogMessage = logMessage;
                 this.StackTrace = stackTrace;
             }
+
+            internal SimpleLinkedList<MouseCursorStateTicket>.Node Node = null;
+            internal void SetNode(SimpleLinkedList<MouseCursorStateTicket>.Node node)
+            {
+                if (ConditionLog.LogError(this.Node != null, $"[{nameof(MouseCursorStateTicket)}] {nameof(SetNode)}: Node already set!"))
+                    return;
+
+                this.Node = node;
+            }
+            internal void ClearNode() => this.Node = null;
         }
-        private static LinkedList<MouseCursorStateTicket> lockMouseCursorTickets = new();
+        private static SimpleLinkedList<MouseCursorStateTicket> lockMouseCursorTickets = new();
         public static CursorLockMode CurrentLockState => lockMouseCursorTickets.Count <= 0 ? CursorLockMode.None : lockMouseCursorTickets.Last.Value.LockState;
         public static bool CurrentVisible => lockMouseCursorTickets.Count <= 0 ? true : lockMouseCursorTickets.Last.Value.Visible;
         public static MouseCursorStateTicket SetLockMouseState(object owner, CursorLockMode lockState, bool visible, string logMessage = null)
@@ -39,7 +50,8 @@ namespace HisaCat.HUE.Inputs
                 $"{stackTrace}");
 
             var ticket = new MouseCursorStateTicket(owner, lockState, visible, logMessage, stackTrace);
-            lockMouseCursorTickets.AddLast(ticket);
+            var node = lockMouseCursorTickets.AddLast(ticket);
+            ticket.SetNode(node);
 
             UpdateLockMouseCursorStatus();
 
@@ -52,7 +64,8 @@ namespace HisaCat.HUE.Inputs
                 $"StackTrace:\r\n" +
                 $"{ticket.StackTrace}");
 
-            lockMouseCursorTickets.Remove(ticket);
+            lockMouseCursorTickets.Remove(ticket.Node);
+            ticket.ClearNode();
 
             UpdateLockMouseCursorStatus();
         }
