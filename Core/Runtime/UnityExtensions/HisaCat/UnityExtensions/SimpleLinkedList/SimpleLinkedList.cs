@@ -129,6 +129,8 @@ namespace HisaCat.Collections
 
             this.Count--;
         }
+
+        [Obsolete("Use Remove(Node node) instead for better performance.")]
         public void Remove(T value)
         {
             var node = this.First;
