@@ -51,6 +51,21 @@
       "path": "Samples~/DOTweenEx"
     },
     {
+      "displayName": "SpriteEx - Built-in Render Pipeline",
+      "description": "Extensions of SpriteEx for Built-in Render Pipeline.",
+      "path": "Samples~/SpriteEx/BIRP"
+    },
+    {
+      "displayName": "SpriteEx - URP",
+      "description": "Extensions of SpriteEx for URP.",
+      "path": "Samples~/SpriteEx/URP"
+    },
+    {
+      "displayName": "SpriteEx - HDRP",
+      "description": "Extensions of SpriteEx for HDRP.",
+      "path": "Samples~/SpriteEx/HDRP"
+    },
+    {
       "displayName": "SteamworksEx",
       "description": "Extensions of Steamworks.NET.\r\n- https://github.com/rlabrecque/Steamworks.NET",
       "path": "Samples~/SteamworksEx"
