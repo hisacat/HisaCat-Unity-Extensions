@@ -163,7 +163,7 @@ namespace HisaCat.Collections
             public Node Prev { get; internal set; }
             public Node Next { get; internal set; }
 
-            public T Value { get; set; }
+            public T Value { get; private set; }
 
             public Node(T value)
             {
