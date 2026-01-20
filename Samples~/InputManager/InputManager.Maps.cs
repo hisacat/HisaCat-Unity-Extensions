@@ -27,9 +27,7 @@ namespace HisaCat.HUE.Inputs
                 {
                     if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                     {
-
                         (OnMovePerformed, OnMoveCanceled) = (null, null);
-
                         (OnAttackPerformed, OnAttackCanceled) = (null, null);
 
                         IsInitialized = false;
@@ -91,11 +89,8 @@ namespace HisaCat.HUE.Inputs
                 {
                     if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                     {
-
                         (OnNavigatePerformed, OnNavigateCanceled) = (null, null);
-
                         (OnSubmitPerformed, OnSubmitCanceled) = (null, null);
-
                         (OnCancelPerformed, OnCancelCanceled) = (null, null);
 
                         IsInitialized = false;
