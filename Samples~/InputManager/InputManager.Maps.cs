@@ -63,7 +63,7 @@ namespace HisaCat.HUE.Inputs
                     IsInitialized = true;
                 }
 
-                public static Vector2 GetMovementInput()
+                public static Vector2 GetMoveInput()
                     => Instance.defaultInputActions.Player.Move.ReadValue<Vector2>();
 
                 public static string GetAttackButtonDisplayString()
@@ -78,7 +78,7 @@ namespace HisaCat.HUE.Inputs
                 /// <summary>
                 /// This represents the horizontal and vertical values of pixels that need to move per inch for each frame.
                 /// </summary>
-                public static Vector2 GetFPSCameraLookInput()
+                public static Vector2 GetLookInput()
                     => Instance.defaultInputActions.Player.Look.ReadValue<Vector2>();
             }
 
