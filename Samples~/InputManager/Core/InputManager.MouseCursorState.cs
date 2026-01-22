@@ -1,6 +1,5 @@
 using HisaCat.Collections;
 using HisaCat.UnityExtensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace HisaCat.HUE.Inputs
@@ -9,6 +8,19 @@ namespace HisaCat.HUE.Inputs
     {
         public class MouseCursorStateTicket
         {
+#if UNITY_EDITOR
+#pragma warning disable IDE0051
+            [UnityEditor.InitializeOnEnterPlayMode]
+            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
+            {
+                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+                {
+                    lockMouseCursorTickets.Clear();
+                }
+            }
+
+#pragma warning restore IDE0051
+#endif
             public readonly object Owner = null;
             public readonly CursorLockMode LockState = CursorLockMode.None;
             public readonly bool Visible = true;
