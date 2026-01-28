@@ -1,0 +1,25 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.AINavigation",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:8c4dd21966739024fbd72155091d199e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "HUE_AI_NAVIGATION_INCLUDED"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.ai.navigation",
+            "expression": "",
+            "define": "HUE_AI_NAVIGATION_INCLUDED"
+        }
+    ],
+    "noEngineReferences": false
+}
