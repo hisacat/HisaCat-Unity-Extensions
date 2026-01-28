@@ -360,6 +360,13 @@ namespace HisaCat.UnityExtensions
         public static Vector3 Multiply(this Vector3 a, Vector3 b) => new(a.x * b.x, a.y * b.y, a.z * b.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Divide(this Vector3 a, Vector3 b) => new(a.x / b.x, a.y / b.y, a.z / b.z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
+        public static Vector3 SetX(this Vector3 v, float x) => new(x, v.y, v.z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SetY(this Vector3 v, float y) => new(v.x, y, v.z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SetZ(this Vector3 v, float z) => new(v.x, v.y, z);
     }
 
     public static class SceneExtensions
