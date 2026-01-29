@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using Unity.AI.Navigation;
-using UnityEngine;
-using UnityEngine.AI;
 
-namespace HisaCat.UnityExtensions.AI.Navigation
+namespace HisaCat.HUE.AI.Navigation
 {
     public class NavMeshSurfaceEx : NavMeshSurface
     {
