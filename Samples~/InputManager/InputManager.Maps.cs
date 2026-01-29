@@ -16,6 +16,13 @@ namespace HisaCat.HUE.Inputs
             if (delegates.onCanceled != null) action.canceled += delegates.onCanceled;
         }
 
+        private static void ClearAndDisposeInputAction(ref InputAction action)
+        {
+            if (action == null) return;
+            action.Dispose();
+            action = null;
+        }
+
         public static class Maps
         {
             public static class Player

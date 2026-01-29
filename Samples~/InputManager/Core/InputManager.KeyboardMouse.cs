@@ -14,20 +14,13 @@ namespace HisaCat.HUE.Inputs
             {
                 if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                 {
-                    ClearInputAction(ref LeftMouseButtonAction);
-                    ClearInputAction(ref RightMouseButtonAction);
-                    ClearInputAction(ref MiddleMouseButtonAction);
-                    ClearInputAction(ref BackMouseButtonAction);
-                    ClearInputAction(ref ForwardMouseButtonAction);
-                    ClearInputAction(ref MousePositionAction);
-                    ClearInputAction(ref MouseDeltaAction);
-
-                    static void ClearInputAction(ref InputAction action)
-                    {
-                        if (action == null) return;
-                        action.Dispose();
-                        action = null;
-                    }
+                    ClearAndDisposeInputAction(ref LeftMouseButtonAction);
+                    ClearAndDisposeInputAction(ref RightMouseButtonAction);
+                    ClearAndDisposeInputAction(ref MiddleMouseButtonAction);
+                    ClearAndDisposeInputAction(ref BackMouseButtonAction);
+                    ClearAndDisposeInputAction(ref ForwardMouseButtonAction);
+                    ClearAndDisposeInputAction(ref MousePositionAction);
+                    ClearAndDisposeInputAction(ref MouseDeltaAction);
 
                     (OnLeftMouseButtonPerformed, OnLeftMouseButtonCanceled) = (null, null);
                     (OnRightMouseButtonPerformed, OnRightMouseButtonCanceled) = (null, null);
