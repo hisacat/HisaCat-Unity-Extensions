@@ -64,8 +64,10 @@ namespace HisaCat.RealTimeOcclusionCulling
 
         protected virtual void LateUpdate()
         {
+            #pragma warning disable CS0162 // Unreachable code detected
             if (RTOcclusionManager.IsActivated)
                 RTOcclusionManager.UpdateCullingIfRequired();
+            #pragma warning restore CS0162 // Unreachable code detected
         }
     }
 }

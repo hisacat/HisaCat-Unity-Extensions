@@ -141,6 +141,7 @@ namespace HisaCat.RealTimeOcclusionCulling
         }
         public static void RegisterOccludee(RTOccludee occludee)
         {
+            #pragma warning disable CS0162 // Unreachable code detected
             if (RTOcclusionManager.IsActivated)
             {
                 // Set culling state to true when registering.
@@ -150,6 +151,7 @@ namespace HisaCat.RealTimeOcclusionCulling
                     culledOccludees.Add(occludee);
                 }
             }
+            #pragma warning restore CS0162 // Unreachable code detected
 
             occludees.Add(occludee);
             OccludeeAdded?.Invoke(occludee);
