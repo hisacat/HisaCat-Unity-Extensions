@@ -297,7 +297,9 @@ namespace HisaCat.HUE.Inputs
                     // case Key.OEM3: // Not exists
                     // case Key.OEM4: // Not exists
                     // case Key.OEM5: // Not exists
+                    #pragma warning disable CS0618
                     case Key.IMESelected: return KeyCode.None;
+                    #pragma warning restore CS0618
                     case Key.F13: return KeyCode.F13;
                     case Key.F14: return KeyCode.F14;
                     case Key.F15: return KeyCode.F15;
