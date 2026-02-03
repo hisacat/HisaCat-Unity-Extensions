@@ -59,7 +59,7 @@ namespace HisaCat.HUE.Collections
             this._items = new(this.hashSet);
         }
 
-        private HashSet<T> uniqueCache = new();
+        private readonly HashSet<T> uniqueCache = new();
         public void ValidateList()
         {
             this.uniqueCache.Clear();
