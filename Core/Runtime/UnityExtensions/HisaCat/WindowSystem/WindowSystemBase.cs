@@ -35,10 +35,10 @@ namespace HisaCat.HUE.UI.Windows
 
         #region Public Methods
         /// <summary>
-        /// Callback of UI Navigate started event.<br/>
+        /// Callback of UI Navigate performed event.<br/>
         /// It selects the entry Selectable of the focused window internally.
         /// </summary>
-        public void OnUINavigateStarted()
+        public void OnUINavigatePerformed()
         {
             // If there is no currently selected object, select the entry Selectable of the focused window.
             // When this function is called by a navigation key input,

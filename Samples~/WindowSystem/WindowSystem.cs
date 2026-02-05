@@ -39,8 +39,8 @@ namespace HisaCat.HUE.UI.Windows
             // Delegate ui events here.
             // ==============================
             // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigateStarted += OnUINavigateStarted;
-            // Inputs.InputManager.Maps.UI.OnCancelStarted += OnCancelStarted;
+            // Inputs.InputManager.Maps.UI.OnNavigatePerformed += OnUINavigatePerformed;
+            // Inputs.InputManager.Maps.UI.OnCancelPerformed += OnCancelPerformed;
         }
 
         protected override void Dispose()
@@ -49,15 +49,15 @@ namespace HisaCat.HUE.UI.Windows
             // Undelegate ui events here.
             // ==============================
             // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigateStarted -= OnUINavigateStarted;
-            // Inputs.InputManager.Maps.UI.OnCancelStarted -= OnCancelStarted;
+            // Inputs.InputManager.Maps.UI.OnNavigatePerformed -= OnUINavigatePerformed;
+            // Inputs.InputManager.Maps.UI.OnCancelPerformed -= OnCancelPerformed;
         }
 
         // ==============================
         // Define ui event callbacks here.
         // ==============================
         // Example:
-        // private void OnUINavigateStarted(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnUINavigateStarted();
-        // private void OnCancelStarted(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnBackButton();
+        // private void OnUINavigatePerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnUINavigatePerformed();
+        // private void OnCancelPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnBackButton();
     }
 }
