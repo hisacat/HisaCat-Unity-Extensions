@@ -61,6 +61,18 @@ namespace HisaCat.HUE.Assets
                 return asset;
             }
 
+            public static UnityEngine.ResourceManagement.ResourceProviders.SceneInstance LoadSceneSync(string key)
+            {
+                var op = UnityAddressables.LoadSceneAsync(key);
+                op.WaitForCompletion();
+                return op.Result;
+            }
+            public static AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance> LoadSceneAsync(string key)
+            {
+                var op = UnityAddressables.LoadSceneAsync(key);
+                return op;
+            }
+
             public static AsyncOperationHandle<T> LoadAsync<T>(string key) where T : Object
                 => IsComponentType<T>() ? LoadPrefabAsync<T>(key) : LoadObjectAsync<T>(key);
             private static AsyncOperationHandle<T> LoadPrefabAsync<T>(string key) where T : Object
