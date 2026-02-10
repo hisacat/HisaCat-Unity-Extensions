@@ -38,8 +38,32 @@ namespace HisaCat.HUE.DataBindEx.Editors
         {
             int count = paths.Length;
             for (int i = 0; i < count; i++)
-                paths[i] = paths[i].Replace("+", "/");
+            {
+                var path = paths[i];
 
+                // Replace + (indicating nested context classes) with / to create submenus.
+                path = path.Replace("+", "/");
+
+                // Replace `1, `2, ... (indicating generic types) with <>, <,>, ...
+                {
+                    var symbolIdx = path.IndexOf("`");
+                    if (symbolIdx > 0)
+                    {
+                        var withoutSymbolPath = path.Substring(0, symbolIdx);
+                        var genericTypeCountStr = path.Substring(symbolIdx + 1);
+                        if (int.TryParse(genericTypeCountStr, out int genericTypeCount))
+                        {
+                            withoutSymbolPath += "<";
+                            for (int j = 0; j < genericTypeCount - 1; j++)
+                                withoutSymbolPath += ",";
+                            withoutSymbolPath += ">";
+
+                            path = withoutSymbolPath;
+                        }
+                    }
+                }
+                paths[i] = path;
+            }
             return paths;
         }
     }
