@@ -90,7 +90,8 @@ namespace HisaCat.HUE.DataBindEx.Instantiators.EnumGroup
 
                     if (item.Instance == null)
                     {
-                        item.Instance = Instantiate(item.Prefab, parent);
+                        if (item.Prefab != null)
+                            item.Instance = Instantiate(item.Prefab, parent);
                     }
                     else
                     {
