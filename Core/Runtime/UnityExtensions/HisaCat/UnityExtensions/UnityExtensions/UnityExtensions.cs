@@ -1178,34 +1178,75 @@ namespace HisaCat.UnityExtensions
             }
         }
 
+
+        // {name} or {name:format}  (brace-escaped {{ }} will be protected before this runs)
+        private static readonly System.Text.RegularExpressions.Regex PlaceholderRegex = new(@"\{(?<name>[A-Za-z0-9_]+)(?<format>:[^}]*)?\}", System.Text.RegularExpressions.RegexOptions.Compiled);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NamedFormat(this string input, NamedFormatArgument[] arguments)
+        public static string NamedFormat(this string input, NamedFormatArgument[] arguments, System.IFormatProvider provider = null)
         {
-            int count = arguments.Length;
-            for (int i = 0; i < count; i++)
+            if (string.IsNullOrEmpty(input) || arguments == null || arguments.Length == 0)
+                return input;
+
+            // Build dictionary for fast lookup (last value wins)
+            var map = new Dictionary<string, object>(System.StringComparer.Ordinal);
+            for (int i = 0; i < arguments.Length; i++)
             {
-                var argument = arguments[i];
+                var a = arguments[i];
+                if (string.IsNullOrEmpty(a.Name) == false)
+                    map[a.Name] = a.Value;
+            }
 
-                var pattern = @"({" + System.Text.RegularExpressions.Regex.Escape(argument.Name) + @")+(:+.*?}|})";
-                var matches = System.Text.RegularExpressions.Regex.Matches(input, pattern);
-                var matchesCount = matches.Count;
-                for (int j = 0; j < matchesCount; j++)
+            // Protect standard escape sequences {{ }} (GUID token + collision avoidance)
+            string leftToken = MakeUniqueToken(input, "\u0002LBRACE\u0003");
+            string rightToken = MakeUniqueToken(input, "\u0002RBRACE\u0003");
+            static string MakeUniqueToken(string input, string prefix)
+            {
+                // Generate a token that will never be in the input (retry on collision)
+                string token;
+                do
                 {
-                    var match = matches[j];
-                    var capture = match.Captures.Count <= 0 ? null : match.Captures[0];
-                    if (capture == null) continue;
+                    token = prefix + System.Guid.NewGuid().ToString("N") + prefix;
+                } while (input.Contains(token, System.StringComparison.Ordinal));
+                return token;
+            }
 
-                    var format = capture.Value.Replace(argument.Name, "0");
-                    string result;
+            // Standard rule: "{{" is literal '{', "}}" is literal '}'
+            string protectedInput = input
+                .Replace("{{", leftToken, System.StringComparison.Ordinal)
+                .Replace("}}", rightToken, System.StringComparison.Ordinal);
 
-                    result = string.Format(format, argument.Value);
+            // Replace only matched placeholders
+            string replaced = PlaceholderRegex.Replace(protectedInput, evaluator);
+            string evaluator(System.Text.RegularExpressions.Match match)
+            {
+                var name = match.Groups["name"].Value;
+                if (map.TryGetValue(name, out var value) == false)
+                    return match.Value; // Keep original if no value found
 
-                    input = input.Replace(capture.Value, result);
+                var formatPart = match.Groups["format"].Success ? match.Groups["format"].Value : string.Empty;
+
+                // Convert {name[:...]} -> {0[:...]} and apply string.Format
+                string fmt = "{0" + formatPart + "}";
+                try
+                {
+                    return provider == null ? string.Format(fmt, value) : string.Format(provider, fmt, value);
+                }
+                catch (System.FormatException)
+                {
+                    // Keep original if format string is invalid
+                    return match.Value;
                 }
             }
 
-            return input;
+            // Restore protected tokens (literal braces)
+            string restored = replaced
+                .Replace(leftToken, "{", System.StringComparison.Ordinal)
+                .Replace(rightToken, "}", System.StringComparison.Ordinal);
+
+            return restored;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string NamedFormat(this string input, object p)
         {
