@@ -11,6 +11,13 @@ namespace HisaCat.HUE.DataBindEx.Extensions
 #if UNITY_EDITOR
     public static class ContextHolderExtensions
     {
+        public static void ClearContextType(this ContextHolder contextHolder)
+        {
+            var so = new UnityEditor.SerializedObject(contextHolder);
+            var prop = so.FindProperty("contextType");
+            prop.stringValue = null;
+            so.ApplyModifiedProperties();
+        }
         public static void SetContextType(this ContextHolder contextHolder, System.Type type)
         {
             var so = new UnityEditor.SerializedObject(contextHolder);
