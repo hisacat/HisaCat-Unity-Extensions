@@ -1178,7 +1178,6 @@ namespace HisaCat.UnityExtensions
             }
         }
 
-
         // {name} or {name:format}  (brace-escaped {{ }} will be protected before this runs)
         private static readonly System.Text.RegularExpressions.Regex PlaceholderRegex = new(@"\{(?<name>[A-Za-z0-9_]+)(?<format>:[^}]*)?\}", System.Text.RegularExpressions.RegexOptions.Compiled);
 
@@ -1247,8 +1246,26 @@ namespace HisaCat.UnityExtensions
             return restored;
         }
 
+        /// <summary>
+        /// Formats the string using the properties of the object.
+        /// <example>
+        /// <code>
+        /// // A. Use variable
+        /// (string name, int age) = ("John", 20);
+        /// "{name} is {age} years old.".NamedFormat(new { name, age });
+        /// 
+        /// // B. Use anonymous object
+        /// "{name} is {age} years old.".NamedFormat(new { name = "John", age = 20 });
+        /// 
+        /// // Result: "John is 20 years old."
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="input">The string to format.</param>
+        /// <param name="p">The object to format the string with.</param>
+        /// <returns>The formatted string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NamedFormat(this string input, object p)
+        public static string NamedFormat(this string input, object p, System.IFormatProvider provider = null)
         {
             var properties = System.ComponentModel.TypeDescriptor.GetProperties(p);
             int count = properties.Count;
@@ -1259,7 +1276,7 @@ namespace HisaCat.UnityExtensions
                 arguments[i] = new(prop.Name, prop.GetValue(p));
             }
 
-            return NamedFormat(input, arguments);
+            return NamedFormat(input, arguments, provider);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
