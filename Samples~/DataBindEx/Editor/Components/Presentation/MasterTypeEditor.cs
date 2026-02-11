@@ -1,5 +1,6 @@
 namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
 {
+    using HisaCat.HUE.DataBindEx.Editors;
     using HisaCat.UnityExtensions.Editors;
     using Slash.Unity.DataBind.Core.Presentation;
     using Slash.Unity.DataBind.Core.Utils;
@@ -23,10 +24,10 @@ namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
             var castingContextType = string.IsNullOrEmpty(contextType.stringValue) ? null : ReflectionUtils.FindType(contextType.stringValue);
             var parentContextType = GetParentContextType();
 
-            EditorGUILayoutExtensions.ReadOnlyTextField("Parent Type", (parentContextType == null ? "None" : parentContextType.FullName));
-            EditorGUILayout.Space();
-
+            EditorGUILayoutExtensions.ReadOnlyTextField("Parent Type", (parentContextType == null ?
+                "None" : ContextTypeDrawerEx.FormatContextTypePath(parentContextType.FullName)), expandLabelWidth: 3);
             EditorGUILayout.PropertyField(this.contextType, new GUIContent("Target Type"));
+            EditorGUILayout.Space();
 
             if (castingContextType == null)
             {
