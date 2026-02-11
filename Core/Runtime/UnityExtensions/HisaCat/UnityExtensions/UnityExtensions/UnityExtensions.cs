@@ -361,7 +361,7 @@ namespace HisaCat.UnityExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Divide(this Vector3 a, Vector3 b) => new(a.x / b.x, a.y / b.y, a.z / b.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        
+
         public static Vector3 SetX(this Vector3 v, float x) => new(x, v.y, v.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SetY(this Vector3 v, float y) => new(v.x, y, v.z);
@@ -911,7 +911,7 @@ namespace HisaCat.UnityExtensions
         /// <summary>Returns true if the index is within the range of the array.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsIndexInRange<T>(this IList<T> array, int index) => index >= 0 && index < array.Count;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SafeLength<T>(this IList<T> array) => array != null ? array.Count : 0;
     }
