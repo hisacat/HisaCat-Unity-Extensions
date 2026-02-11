@@ -33,14 +33,16 @@ namespace HisaCat.UnityExtensions.Editors
     public static class EditorGUILayoutExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ReadOnlyTextField(string label, string text)
+        public static void ReadOnlyTextField(string label, string text, GUIStyle style = null, float expandLabelWidth = 0)
         {
             EditorGUILayout.BeginHorizontal();
             {
-                if (!string.IsNullOrEmpty(label))
-                    EditorGUILayout.LabelField(label, GUILayout.Width(EditorGUIUtility.labelWidth - 4));
+                if (string.IsNullOrEmpty(label) == false)
+                {
+                    EditorGUILayout.LabelField(label, GUILayout.Width(EditorGUIUtility.labelWidth - 1 + expandLabelWidth));
+                }
 
-                var style = EditorStyles.label; //EditorStyles.textField
+                if (style == null) style = EditorStyles.label; //EditorStyles.textField
                 EditorGUILayout.SelectableLabel(text, style, GUILayout.Height(EditorGUIUtility.singleLineHeight));
             }
             EditorGUILayout.EndHorizontal();
