@@ -22,25 +22,54 @@ namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
         public override void OnInspectorGUI()
         {
             var castingContextType = string.IsNullOrEmpty(contextType.stringValue) ? null : ReflectionUtils.FindType(contextType.stringValue);
-            var parentContextType = GetParentContextType();
+            var parentContextHolder = GetParentContextHolder();
+            var parentContextType = parentContextHolder == null ? null : parentContextHolder.ContextType;
+            var parentContextTypePath = parentContextHolder == null ? null : ContextTypeDrawerEx.FormatContextTypePath(parentContextType.FullName);
 
-            EditorGUILayoutExtensions.ReadOnlyTextField("Parent Type", (parentContextType == null ?
-                "None" : ContextTypeDrawerEx.FormatContextTypePath(parentContextType.FullName)), expandLabelWidth: 3);
+            EditorGUILayoutExtensions.ReadOnlyTextField("Parent Type", parentContextTypePath, expandLabelWidth: 3);
             EditorGUILayout.PropertyField(this.contextType, new GUIContent("Target Type"));
             EditorGUILayout.Space();
 
-            if (castingContextType == null)
+            if (Application.isPlaying == false)
             {
-                EditorGUILayoutExtensions.ReadOnlyTextField("Status", "⚠️ Target type not set");
-            }
-            else if (parentContextType == null)
-            {
-                EditorGUILayoutExtensions.ReadOnlyTextField("Status", "⚠️ Parent type not set");
+                if (castingContextType == null)
+                {
+                    EditorGUILayoutExtensions.ReadOnlyTextField("Status", "⚠️ Target type not set");
+                }
+                else if (parentContextType == null)
+                {
+                    EditorGUILayoutExtensions.ReadOnlyTextField("Status", "⚠️ Parent type not set");
+                }
+                else
+                {
+                    var parentToCurrentCastingable = castingContextType.IsAssignableFrom(parentContextType);
+                    var currentToParentCastingable = parentContextType.IsAssignableFrom(castingContextType);
+                    if (parentToCurrentCastingable == false && currentToParentCastingable == false)
+                    {
+                        EditorGUILayoutExtensions.ReadOnlyTextField("Status", "❌ Incompatible");
+                    }
+                    else
+                    {
+                        if (parentToCurrentCastingable)
+                            EditorGUILayoutExtensions.ReadOnlyTextField("Status", "✔️ Compatible");
+                        else
+                            EditorGUILayoutExtensions.ReadOnlyTextField("Status", "⚠️ Unknown until runtime");
+                    }
+                }
             }
             else
             {
-                var isCastingable = parentContextType.IsAssignableFrom(castingContextType);
-                EditorGUILayoutExtensions.ReadOnlyTextField("Status", (isCastingable ? "✔️ Compatible" : "❌ Incompatible"));
+                var runtimeParentContext = parentContextHolder == null ? null : parentContextHolder.Context;
+                var runtimeParentContextType = runtimeParentContext == null ? null : runtimeParentContext.GetType();
+                var runtimeParentContextTypePath = runtimeParentContextType == null ? "null" : ContextTypeDrawerEx.FormatContextTypePath(runtimeParentContextType.FullName);
+                EditorGUILayoutExtensions.ReadOnlyTextField("Runtime Parent Type", runtimeParentContextTypePath, expandLabelWidth: 3);
+
+
+                var runtimeParentContextCastingable = castingContextType.IsAssignableFrom(runtimeParentContextType);
+                if (runtimeParentContextCastingable)
+                    EditorGUILayoutExtensions.ReadOnlyTextField("Status", "✔️ Compatible");
+                else
+                    EditorGUILayoutExtensions.ReadOnlyTextField("Status", "❌ Incompatible");
             }
 
             // createContext must be false always.
@@ -49,7 +78,7 @@ namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
             this.serializedObject.ApplyModifiedProperties();
         }
 
-        private System.Type GetParentContextType()
+        private ContextHolder GetParentContextHolder()
         {
             var component = this.target as Component;
             if (component == null) return null;
@@ -58,7 +87,7 @@ namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
             var parentContextHolder = (transform.parent == null)
                 ? null : transform.parent.GetComponentInParent<ContextHolder>(includeInactive: true);
 
-            return parentContextHolder == null ? null : parentContextHolder.ContextType;
+            return parentContextHolder;
         }
     }
 }
