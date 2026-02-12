@@ -162,17 +162,40 @@ namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
             {
                 if (memberInfo.Property != null)
                 {
+                    #region Legacy code - it hides private setter fields
+                    // var propertySetMethod = memberInfo.Property.GetSetMethod();
+                    // if (memberInfo.Property.CanWrite && propertySetMethod != null && propertySetMethod.IsPublic)
+                    // {
+                    //     var memberValue = memberInfo.Property.GetValue(obj, null);
+                    //     var newMemberValue = this.DrawMemberData(memberInfo.Name,
+                    //         memberInfo.Property.PropertyType, memberValue, level);
+                    //     if (!Equals(newMemberValue, memberValue))
+                    //     {
+                    //         memberInfo.Property.SetValue(obj, newMemberValue, null);
+                    //     }
+                    // }
+                    #endregion Legacy code - it hides private setter fields
+
+                    #region New code - Shows private setter fields
                     var propertySetMethod = memberInfo.Property.GetSetMethod();
-                    if (memberInfo.Property.CanWrite && propertySetMethod != null && propertySetMethod.IsPublic)
+                    var hasPublicSetter = memberInfo.Property.CanWrite && propertySetMethod != null && propertySetMethod.IsPublic;
+
+                    var memberValue = memberInfo.Property.GetValue(obj, null);
+                    if (hasPublicSetter)
                     {
-                        var memberValue = memberInfo.Property.GetValue(obj, null);
-                        var newMemberValue = this.DrawMemberData(memberInfo.Name,
-                            memberInfo.Property.PropertyType, memberValue, level);
-                        if (!Equals(newMemberValue, memberValue))
-                        {
+                        var newMemberValue = this.DrawMemberData(memberInfo.Name, memberInfo.Property.PropertyType, memberValue, level);
+                        if (Equals(newMemberValue, memberValue) == false)
                             memberInfo.Property.SetValue(obj, newMemberValue, null);
-                        }
                     }
+                    else
+                    {
+                        EditorGUI.BeginDisabledGroup(true);
+                        {
+                            this.DrawMemberData(memberInfo.Name, memberInfo.Property.PropertyType, memberValue, level);
+                        }
+                        EditorGUI.EndDisabledGroup();
+                    }
+                    #endregion New code - Shows private setter fields
                 }
                 else if (memberInfo.Method != null)
                 {
