@@ -181,6 +181,32 @@ namespace HisaCat.HUE.DataBindEx
             System.Action<TIDContext, TData> bindSourceToContext = null)
             where TIDContext : Slash.Unity.DataBind.Core.Data.Context, Base.IIdContext<TIDType>, new()
             where TIDType : System.IComparable
+            => UpdateIdCollectionContext(destination, (data) => new TIDContext(), source, sourceId, bindSourceToContext);
+
+        /// <summary>
+        /// Updates the destination collection context by synchronizing it with the source collection based on unique IDs.<br/>
+        /// Removes items from the destination if their ID is not present in the source collection.<br/>
+        /// Adds new items to the destination if their ID does not already exist.<br/>
+        /// Updates existing items in the destination if their ID matches an item in the source.<br/>
+        /// Ensures that all IDs in the source collection are unique.<br/>
+        /// Throws an exception if the destination or source is null.<br/>
+        /// Throws an exception if duplicate IDs are found in the source collection.<br/>
+        /// </summary>
+        /// <param name="destination">The collection context that will be modified to match the source collection.</param>
+        /// <param name="contextConstructor">A function that constructs a new context instance from the data.</param>
+        /// <param name="source">The data source that provides elements to synchronize with the destination collection.</param>
+        /// <param name="sourceId">A function that extracts the unique ID from each item in the source collection.</param>
+        /// <param name="bindSourceToContext">An optional function that applies data from the source to the corresponding context instance.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown if the destination or source is null.</exception>
+        /// <exception cref="SourceElementNullException">Thrown if duplicate IDs are found in the source collection.</exception>
+        public static void UpdateIdCollectionContext<TIDContext, TData, TIDType>
+            (Base.IdCollectionContextBase<TIDContext, TIDType> destination,
+            System.Func<TData, TIDContext> contextConstructor,
+            IEnumerable<TData> source,
+            System.Func<TData, TIDType> sourceId,
+            System.Action<TIDContext, TData> bindSourceToContext = null)
+            where TIDContext : Slash.Unity.DataBind.Core.Data.Context, Base.IIdContext<TIDType>, new()
+            where TIDType : System.IComparable
         {
             if (destination == null)
                 throw new System.ArgumentNullException($"{nameof(UpdateIdCollectionContext)}: {nameof(destination)} is null!");
@@ -226,7 +252,7 @@ namespace HisaCat.HUE.DataBindEx
 
                     if (destination.TryGetContextFromID(sourceId(curData), out var context) == false)
                     {
-                        var newContext = new TIDContext();
+                        var newContext = contextConstructor(curData);
                         newContext.ContextId = sourceId(curData);
 
                         bindSourceToContext?.Invoke(newContext, curData);
