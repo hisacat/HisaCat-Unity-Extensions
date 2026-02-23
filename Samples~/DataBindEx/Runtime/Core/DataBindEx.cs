@@ -205,7 +205,7 @@ namespace HisaCat.HUE.DataBindEx
             IEnumerable<TData> source,
             System.Func<TData, TIDType> sourceId,
             System.Action<TIDContext, TData> bindSourceToContext = null)
-            where TIDContext : Slash.Unity.DataBind.Core.Data.Context, Base.IIdContext<TIDType>, new()
+            where TIDContext : Slash.Unity.DataBind.Core.Data.Context, Base.IIdContext<TIDType>
             where TIDType : System.IComparable
         {
             if (destination == null)
