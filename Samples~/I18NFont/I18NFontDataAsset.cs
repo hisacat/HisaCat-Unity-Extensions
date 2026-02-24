@@ -84,7 +84,6 @@ namespace HisaCat.HUE.Fonts
 #endif
 
         public TMP_FontAsset BaseFont => this.m_BaseFont;
-        [Header("The Base font. Use en_US for default.")]
         [SerializeField] private TMP_FontAsset m_BaseFont = null;
         public IReadOnlyList<I18NFont> I18NFonts => this.m_I18NFonts;
         [SerializeField] private List<I18NFont> m_I18NFonts = null;

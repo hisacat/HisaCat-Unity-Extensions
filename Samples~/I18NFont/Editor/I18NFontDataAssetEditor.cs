@@ -24,6 +24,7 @@ namespace HisaCat.HUE.Fonts
             this.serializedObject.Update();
 
             var selectedFolder = EditorGUILayout.ObjectField("Auto update from folder", null, typeof(DefaultAsset), false) as DefaultAsset;
+            EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             if (selectedFolder != null)
             {
                 // Clear all existing fonts.
@@ -89,8 +90,6 @@ namespace HisaCat.HUE.Fonts
             }
 
             EditorGUILayout.PropertyField(this.m_BaseFont);
-            EditorGUILayout.Space();
-
             EditorGUILayout.HelpBox(
                 $"실제로 사용할 TMP_Font asset입니다. 비어있는 Font를 사용하세요."
                 + $"\r\n메뉴: '{I18NBaseFontGenerator.MenuItemName}'", MessageType.Info);
@@ -99,6 +98,8 @@ namespace HisaCat.HUE.Fonts
                 + "\r\n이후 나머지 'I18N Fonts' 배열에 있는 폰트가 순차적으로 추가됩니다."
                 + "\r\n두번째 Fallback으로는 기본적으로 English(LatinPlus)를 사용하고 싶을 것입니다."
                 + "\r\n그러니 English font의 순서를 되도록 항상 첫번째로 유지하세요.", MessageType.Info);
+            EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
+
             EditorGUILayout.PropertyField(this.m_I18NFonts);
 
             serializedObject.ApplyModifiedProperties();
