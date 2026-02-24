@@ -1,6 +1,6 @@
 # Empty Font
 
-이는 I18N Font등을 위한 비어있는 Font Asset입니다.
+이는 `I18N Base Font`등을 작성하기 위한 비어있는 Font Asset입니다.
 
 오픈소스인 [Adobe Blank](https://github.com/adobe-fonts/adobe-blank) 를 사용하여 제작되었습니다.
 
