@@ -5,19 +5,43 @@ using UnityEngine;
 namespace HisaCat.HUE.Fonts
 {
     /// <summary>
-    /// Update I18N Base Font fallbacks when the language changes.<br/>
-    /// Its works only in the editor environment.<br/>
-    /// This allows you to preview multilingual font application results in real time during development.
+    /// Updates I18N base font fallbacks when the language changes in the editor.<br/>
+    /// This lets you preview multilingual font results in real time during development.
     /// </summary>
     [InitializeOnLoad]
     public class I18NBaseFontUpdateOnEditor
     {
         static I18NBaseFontUpdateOnEditor()
         {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+            SubscribeToLanguageChanged();
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            // LocalizationManager clears OnLanguageChanged when entering play mode (domain reload disabled).
+            // Re-subscribe when returning to edit mode so language changes still update fonts.
+            if (state == PlayModeStateChange.EnteredEditMode)
+            {
+                SubscribeToLanguageChanged();
+            }
+        }
+
+        /// <summary>
+        /// Subscribe to <see cref="LocalizationManager.OnLanguageChanged"/> event.
+        /// </summary>
+        private static void SubscribeToLanguageChanged()
+        {
+            // Unsubscribe first so this is idempotent (safe to call multiple times).
+            LocalizationManager.OnLanguageChanged -= OnLanguageChanged;
             LocalizationManager.OnLanguageChanged += OnLanguageChanged;
         }
-        static void OnLanguageChanged(SystemLanguage prevLang, SystemLanguage curLang)
+
+        private static void OnLanguageChanged(SystemLanguage prevLang, SystemLanguage curLang)
         {
+            Debug.Log($"[{nameof(I18NBaseFontUpdateOnEditor)}] {nameof(OnLanguageChanged)}: Language changed from {prevLang} to {curLang}");
             if (EditorApplication.isPlaying == false)
             {
                 Debug.Log($"[{nameof(I18NBaseFontUpdateOnEditor)}] {nameof(OnLanguageChanged)}: Update all I18NFonts... (Language: {curLang})");
