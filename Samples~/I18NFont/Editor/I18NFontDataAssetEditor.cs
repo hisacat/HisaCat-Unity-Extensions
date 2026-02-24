@@ -92,9 +92,13 @@ namespace HisaCat.HUE.Fonts
             EditorGUILayout.Space();
 
             EditorGUILayout.HelpBox(
-                "런타임에 선택된 언어가 첫번째 Fallback으로 들어가며, 이후 다른 언어가 순차적으로 추가됩니다."
-                + "\r\n두번째 Fallback으로는 기본 English(LatinPlus)를 사용하고 싶을 것입니다."
-                + "\r\n그러니 English font의 순서를 항상 첫번째로 유지하세요.", MessageType.Info);
+                $"실제로 사용할 TMP_Font asset입니다. 비어있는 Font를 사용하세요."
+                + $"\r\n메뉴: '{I18NBaseFontGenerator.MenuItemName}'", MessageType.Info);
+            EditorGUILayout.HelpBox(
+                "'Base Font'에 런타임에 선택된 언어가 첫번째 Fallback으로 들어가며,"
+                + "\r\n이후 나머지 'I18N Fonts' 배열에 있는 폰트가 순차적으로 추가됩니다."
+                + "\r\n두번째 Fallback으로는 기본적으로 English(LatinPlus)를 사용하고 싶을 것입니다."
+                + "\r\n그러니 English font의 순서를 되도록 항상 첫번째로 유지하세요.", MessageType.Info);
             EditorGUILayout.PropertyField(this.m_I18NFonts);
 
             serializedObject.ApplyModifiedProperties();
