@@ -10,7 +10,8 @@ using UnityEngine.SceneManagement;
 namespace HisaCat.Localization
 {
     /// <summary>
-    /// NOTE: You can edit this for personal settings.
+    /// NOTE: You can edit this for personal settings.<br/>
+    /// Manage this settings with ScriptableObject.
     /// </summary>
     public static class LocalizationSettings
     {
