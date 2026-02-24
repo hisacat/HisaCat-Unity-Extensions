@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.Fonts
 {
-    [CreateAssetMenu(fileName = "I18NFontAsset", menuName = "HisaCat/I18NFontDataAsset", order = 2)]
+    [CreateAssetMenu(fileName = "I18NFontDataAsset", menuName = "HisaCat/HUE/I18N Fonts/I18N Font Data Asset", order = 2)]
     public class I18NFontDataAsset : ScriptableObject
     {
 #if UNITY_EDITOR
