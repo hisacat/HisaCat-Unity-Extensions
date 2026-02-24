@@ -1,3 +1,4 @@
+using HisaCat.HUE.Assets;
 using HisaCat.PropertyAttributes;
 using UnityEngine;
 
@@ -10,15 +11,25 @@ namespace HisaCat.HUE.Fonts
         private void Awake()
         {
             var assetOnBuild = this.m_I18NFontDataListAsset;
-            var assetOnBundle = string.IsNullOrEmpty(this.m_I18NFontDataListAssetKey) ? null :
-            HUE.Assets.AssetLoader.Addressables.LoadSync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
-
             InitializeAll(assetOnBuild);
 
-            // If the Asset on Build and the Asset on Bundle are different instances, both need to be initialized.
-            // (Manage duplicated Asset from Addressables duplicate bundle dependencies)
-            if (assetOnBundle != null && assetOnBuild.GetInstanceID() != assetOnBundle.GetInstanceID())
-                InitializeAll(assetOnBundle);
+            if (string.IsNullOrEmpty(this.m_I18NFontDataListAssetKey) == false)
+            {
+                var assetOnBundle = AssetLoader.Addressables.LoadSync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
+                if (assetOnBuild == null)
+                {
+                    Debug.LogError($"[{nameof(I18NFontInitializer)}] I18N Font Data List Asset not found in bundle! (Key: {this.m_I18NFontDataListAssetKey})");
+                }
+                else
+                {
+                    // If the asset in the build and the asset in the bundle are different instances,
+                    // each instance must be initialized.
+                    // (This handles duplicated assets caused by Addressables’ duplicate bundle dependencies.)
+                    if (assetOnBundle != null && assetOnBuild.GetInstanceID() != assetOnBundle.GetInstanceID())
+                        InitializeAll(assetOnBundle);
+                }
+
+            }
 
             static void InitializeAll(I18NFontDataListAsset asset)
             {
@@ -48,7 +59,6 @@ namespace HisaCat.HUE.Fonts
                 }
                 this.m_I18NFontDataListAssetKey = path;
             }
-
         }
 #endif
     }
