@@ -89,6 +89,7 @@ namespace HisaCat.HUE.Fonts
                 }
             }
 
+            var oldBaseFont = this.m_BaseFont.objectReferenceValue as TMP_FontAsset;
             EditorGUILayout.PropertyField(this.m_BaseFont);
             EditorGUILayout.HelpBox(
                 $"실제로 사용할 TMP_Font asset입니다. 비어있는 Font를 사용하세요."
@@ -102,7 +103,39 @@ namespace HisaCat.HUE.Fonts
 
             EditorGUILayout.PropertyField(this.m_I18NFonts);
 
-            serializedObject.ApplyModifiedProperties();
+            if (serializedObject.ApplyModifiedProperties())
+            {
+                var curBaseFont = this.m_BaseFont.objectReferenceValue as TMP_FontAsset;
+
+                bool wasAnyFallbackFontChanged = false;
+                if (oldBaseFont != null && oldBaseFont != curBaseFont)
+                {
+                    Undo.RecordObject(oldBaseFont, "Clear Base Font Fallbacks");
+                    oldBaseFont.fallbackFontAssetTable.Clear();
+                    EditorUtility.SetDirty(oldBaseFont);
+
+                    wasAnyFallbackFontChanged = true;
+                }
+
+                if (curBaseFont != null)
+                {
+                    if (this.target is not I18NFontDataAsset asset)
+                    {
+                        Debug.LogError($"[{nameof(I18NFontDataAssetEditor)}] Target '{target.name}' is not {nameof(I18NFontDataAsset)}!", target);
+                    }
+                    else
+                    {
+                        Undo.RecordObject(curBaseFont, "Update Base Font Fallbacks");
+                        I18NFontUtility.UpdateBaseFontFallbacks(asset, curBaseFont, LocalizationManager.SelectedLanguage, forceRefreshAllTmpFonts: false);
+                        EditorUtility.SetDirty(curBaseFont);
+
+                        wasAnyFallbackFontChanged = true;
+                    }
+                }
+
+                if (wasAnyFallbackFontChanged)
+                    I18NFontUtility.ForceRefreshAllTMPTextsForFallbackFonts();
+            }
         }
     }
 }
