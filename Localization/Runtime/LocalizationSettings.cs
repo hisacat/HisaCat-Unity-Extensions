@@ -1,4 +1,5 @@
 
+using HisaCat.HUE.UnityExtensions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ namespace HisaCat.HUE.Localization
             {
                 if (_settings == null)
                 {
-                    _settings = Resources.Load<LocalizationSettingsAsset>(SettingsAssetPath);
+                    LoadSettingsAsset();
                     if (_settings == null)
                     {
                         _settings = LocalizationSettingsAsset.CreateDefaultInstance();
@@ -36,6 +37,16 @@ namespace HisaCat.HUE.Localization
                 }
                 return _settings;
             }
+        }
+        public static void ReloadSettingsAsset()
+        {
+            _settings = null;
+            LoadSettingsAsset();
+        }
+        public static void LoadSettingsAsset()
+        {
+            if (ConditionLog.Log(_settings != null, $"[{nameof(LocalizationSettings)}] Settings asset already loaded.")) return;
+            _settings = Resources.Load<LocalizationSettingsAsset>(SettingsAssetPath);
         }
 
         public const string LocalizedJsonsPath = "Localization";

@@ -74,8 +74,7 @@ namespace HisaCat.HUE.Localization
         public static string Load(string localizedJsonsFolderPath, string key) => Load(LocalizationManager.SelectedLanguage, localizedJsonsFolderPath, key);
         public static string Load(SystemLanguage lang, string localizedJsonsFolderPath, string key, SystemLanguage? fallback = null)
         {
-            if (localizedTextsByPath == null)
-                localizedTextsByPath = new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
+            localizedTextsByPath ??= new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
 
             if (localizedTextsByPath.ContainsKey(localizedJsonsFolderPath) == false)
                 localizedTextsByPath.Add(localizedJsonsFolderPath, new LocalizedTexts(localizedJsonsFolderPath, LocalizationSettings.LoadJsonHandler));
