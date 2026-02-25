@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE.Localization
 {
+    [DisallowMultipleComponent]
     public class LocalizationSettingsAsset : ScriptableObject
     {
 #if UNITY_EDITOR
@@ -29,9 +30,9 @@ namespace HisaCat.HUE.Localization
 #endif
 
         public const string DefaultAssetPath = "Localization Settings";
-        public const string DefulatLocalizedJsonsPath = "Localization";
 
-        [SerializeField] private string m_LocalizedJsonsPath = DefulatLocalizedJsonsPath; public string LocalizedJsonsPath => this.m_LocalizedJsonsPath;
+        // public const string DefulatLocalizedJsonsPath = "Localization";
+        // [SerializeField] private string m_LocalizedJsonsPath = DefulatLocalizedJsonsPath; public string LocalizedJsonsPath => this.m_LocalizedJsonsPath;
 
         [SerializeField] private SystemLanguage m_DefaultLanguage = SystemLanguage.English; public SystemLanguage DefaultLanguage => this.m_DefaultLanguage;
         [SerializeField] private SystemLanguage m_FallbackLanguage = SystemLanguage.English; public SystemLanguage FallbackLanguage => this.m_FallbackLanguage;
@@ -41,7 +42,7 @@ namespace HisaCat.HUE.Localization
 
         [SerializeField] private bool m_PrintMissingLanguageLogs = true; public bool PrintMissingLanguageLogs => this.m_PrintMissingLanguageLogs;
         [SerializeField] private bool m_PrintMissingKeyLogs = true; public bool PrintMissingKeyLogs => this.m_PrintMissingKeyLogs;
-        
+
         [SerializeField] private bool m_AutoUpdateLocalizedTextOnEditor = true; public bool AutoUpdateLocalizedTextOnEditor => this.m_AutoUpdateLocalizedTextOnEditor;
 
         public static LocalizationSettingsAsset CreateDefaultInstance()

@@ -9,7 +9,7 @@ namespace HisaCat.HUE.Localization
     [CustomEditor(typeof(LocalizationSettingsAsset))]
     public class LocalizationSettingsAssetEditor : Editor
     {
-        private SerializedProperty m_LocalizedJsonsPath = null;
+        // private SerializedProperty m_LocalizedJsonsPath = null;
 
         private SerializedProperty m_DefaultLanguage = null;
         private SerializedProperty m_FallbackLanguage = null;
@@ -20,7 +20,7 @@ namespace HisaCat.HUE.Localization
         private SerializedProperty m_AutoUpdateLocalizedTextOnEditor = null;
         private void OnEnable()
         {
-            this.m_LocalizedJsonsPath = this.serializedObject.FindProperty(nameof(m_LocalizedJsonsPath));
+            // this.m_LocalizedJsonsPath = this.serializedObject.FindProperty(nameof(m_LocalizedJsonsPath));
 
             this.m_DefaultLanguage = this.serializedObject.FindProperty(nameof(m_DefaultLanguage));
             this.m_FallbackLanguage = this.serializedObject.FindProperty(nameof(m_FallbackLanguage));
@@ -34,8 +34,9 @@ namespace HisaCat.HUE.Localization
         {
             this.serializedObject.Update();
 
-            EditorGUILayout.PropertyField(this.m_LocalizedJsonsPath);
-            EditorGUILayout.HelpBox("The path where the Localized json files are located relative to the 'Resources' folder.", MessageType.Info);
+            // EditorGUILayout.PropertyField(this.m_LocalizedJsonsPath);
+            // EditorGUILayout.HelpBox("The path where the Localized json files are located relative to the 'Resources' folder.", MessageType.Info);
+            EditorGUILayout.HelpBox($"The Localized jsons must be placed at under 'Assets/Resources/{LocalizationSettings.LocalizedJsonsPath}' folder.", MessageType.Info);
 
             EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
             EditorGUILayout.PropertyField(this.m_DefaultLanguage);
