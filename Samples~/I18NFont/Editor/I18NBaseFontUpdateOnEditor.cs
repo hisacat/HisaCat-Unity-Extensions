@@ -13,20 +13,18 @@ namespace HisaCat.HUE.Fonts
     {
         static I18NBaseFontUpdateOnEditor()
         {
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            static void OnPlayModeStateChanged(PlayModeStateChange state)
+            {
+                if (state == PlayModeStateChange.EnteredEditMode)
+                {
+                // LocalizationManager clears OnLanguageChanged when entering play mode (domain reload disabled).
+                // Re-subscribe when returning to edit mode so language changes still update fonts.
+                    SubscribeToLanguageChanged();
+                }
+            }
 
             SubscribeToLanguageChanged();
-        }
-
-        private static void OnPlayModeStateChanged(PlayModeStateChange state)
-        {
-            // LocalizationManager clears OnLanguageChanged when entering play mode (domain reload disabled).
-            // Re-subscribe when returning to edit mode so language changes still update fonts.
-            if (state == PlayModeStateChange.EnteredEditMode)
-            {
-                SubscribeToLanguageChanged();
-            }
         }
 
         /// <summary>

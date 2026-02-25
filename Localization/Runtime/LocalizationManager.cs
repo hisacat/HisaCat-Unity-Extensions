@@ -3,86 +3,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace HisaCat.HUE.Localization
 {
-    public static class LocalizationSettings
-    {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-        [UnityEditor.InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-        {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-            {
-                _settings = null;
-            }
-        }
-#pragma warning restore IDE0051
-#endif
-
-        public const string SettingsAssetPath = LocalizationSettingsAsset.DefaultAssetPath;
-        private static LocalizationSettingsAsset _settings = null;
-        private static LocalizationSettingsAsset Settings
-        {
-            get
-            {
-                if (_settings == null)
-                {
-                    _settings = Resources.Load<LocalizationSettingsAsset>(SettingsAssetPath);
-                    if (_settings == null)
-                    {
-                        _settings = LocalizationSettingsAsset.CreateDefaultInstance();
-                        Debug.LogWarning($"[{nameof(LocalizationSettings)}] No settings asset found at \"Resources/{SettingsAssetPath}\". Use default instance.");
-                    }
-                }
-                return _settings;
-            }
-        }
-
-        public const string LocalizedJsonsPath = "Localization";
-        public static SystemLanguage DefaultLanguage => Settings.DefaultLanguage;
-        public static SystemLanguage FallbackLanguage => Settings.FallbackLanguage;
-        public static HashSet<SystemLanguage> SupportLanguages => Settings.SupportLanguages;
-        public static bool PrintMissingLanguageLogs => Settings.PrintMissingLanguageLogs;
-        public static bool PrintMissingKeyLogs => Settings.PrintMissingKeyLogs;
-
-        public static LocalizedTexts.LoadJsonEventHandler LoadJsonHandler { get; private set; }
-        public static void SetLoadJsonHandler(LocalizedTexts.LoadJsonEventHandler loadJsonHandler)
-        {
-            LoadJsonHandler = loadJsonHandler;
-
-            //Example of LoadJsonHandler
-            //public LocalizedTexts.LoadJsonEventHandler LoadJsonHandler = (path, lang)=>
-            //{
-            //    var jsonPath = string.IsNullOrEmpty(path) ? LocalizedTexts.GetLocaleStr(lang) : $"{path}/{LocalizedTexts.GetLocaleStr(lang)}";
-            //    var jsonAsset = Resources.Load<TextAsset>(jsonPath);
-            //    return jsonAsset == null ? null : jsonAsset.text;
-            //};
-        }
-
-#if UNITY_EDITOR
-        public const bool AutoUpdateLocalizedTextOnEditor = true;
-#endif
-    }
-
     public static class LocalizationManager
     {
-        static LocalizationManager()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.playModeStateChanged += (state) =>
-            {
-                if (state == UnityEditor.PlayModeStateChange.ExitingPlayMode)
-                    SelectedLanguage = LocalizationSettings.DefaultLanguage;
-            };
-#endif
-        }
-
 #if UNITY_EDITOR
 #pragma warning disable IDE0051
         [UnityEditor.InitializeOnEnterPlayMode]
@@ -90,78 +17,13 @@ namespace HisaCat.HUE.Localization
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
             {
-                dic = null;
+                _selectedLanguage = LocalizationSettings.DefaultLanguage;
+                OnLanguageChanged = null;
+                table = null;
             }
         }
 #pragma warning restore IDE0051
 #endif
-
-        #region Clear for editor preview
-#if UNITY_EDITOR
-        public class UpdateLocalizedTextPostprocessor : UnityEditor.AssetPostprocessor
-        {
-#if UNITY_EDITOR
-#pragma warning disable IDE0051
-            [UnityEditor.InitializeOnEnterPlayMode]
-            private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
-            {
-                if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
-                {
-                    _selectedLanguage = LocalizationSettings.DefaultLanguage;
-                    OnLanguageChanged = null;
-                    dic = null;
-                }
-            }
-#pragma warning restore IDE0051
-#endif
-
-            private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
-            {
-                foreach (var asset in importedAssets)
-                {
-                    if (asset.EndsWith(UniPath.Combine("Resources", LocalizationSettings.LocalizedJsonsPath, $"{LocalizationSettings.DefaultLanguage.ToLocaleString()}.json"), StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Clear localized text dictionary when locale json was changed.
-                        dic = null;
-
-                        DoUpdateTextsOnEditor();
-                        return;
-                    }
-                }
-            }
-        }
-
-        private static void DoUpdateTextsOnEditor()
-        {
-            if (Application.isPlaying) return;
-
-            // Force update localized texts.
-            var texts = FindInterfacesOfType<IEditorLocalizedTextUpdateable>();
-            foreach (var text in texts)
-                text.UpdateTextOnEditor();
-
-            static IEnumerable<T> FindInterfacesOfType<T>(bool includeInactive = false)
-            {
-                var scenes = new List<Scene>();
-                for (int i = 0; i < SceneManager.sceneCount; i++)
-                    scenes.Add(SceneManager.GetSceneAt(i));
-
-                // Scene texts.
-                var texts = scenes
-                    .SelectMany(e =>
-                        e.GetRootGameObjects().SelectMany(go =>
-                            go.GetComponentsInChildren<T>(includeInactive)));
-
-                // Prefab stage texts.
-                var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
-                if (prefabStage != null)
-                    texts = texts.Concat(prefabStage.scene.GetRootGameObjects().SelectMany(go => go.GetComponentsInChildren<T>(includeInactive)));
-
-                return texts;
-            }
-        }
-#endif
-        #endregion
 
         #region Language selection
         private static SystemLanguage _selectedLanguage = LocalizationSettings.DefaultLanguage;
@@ -182,10 +44,6 @@ namespace HisaCat.HUE.Localization
                 var prevLang = _selectedLanguage;
                 _selectedLanguage = value;
 
-#if UNITY_EDITOR
-                DoUpdateTextsOnEditor();
-#endif
-
                 OnLanguageChangedCallback(prevLang, _selectedLanguage);
             }
         }
@@ -197,20 +55,20 @@ namespace HisaCat.HUE.Localization
         }
         #endregion
 
-        private static Dictionary<string, LocalizedTexts> dic = null;
+        private static Dictionary<string, LocalizedTexts> table = null;
+        public static void ClearLoadedLocalizedTables() => table = null;
 
-        public static bool Exists(string key) => Exists(LocalizationManager.SelectedLanguage, key);
+        public static bool Exists(string key) => Exists(SelectedLanguage, key);
         public static bool Exists(SystemLanguage lang, string key) => Exists(lang, LocalizationSettings.LocalizedJsonsPath, key);
-        public static bool Exists(string path, string key) => Exists(LocalizationManager.SelectedLanguage, path, key);
+        public static bool Exists(string path, string key) => Exists(SelectedLanguage, path, key);
         public static bool Exists(SystemLanguage lang, string path, string key)
         {
-            if (dic == null)
-                dic = new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
+            table ??= new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
 
-            if (dic.ContainsKey(path) == false)
-                dic.Add(path, new LocalizedTexts(path, LocalizationSettings.LoadJsonHandler));
+            if (table.ContainsKey(path) == false)
+                table.Add(path, new LocalizedTexts(path, LocalizationSettings.LoadJsonHandler));
 
-            return dic[path].Exists(lang, key);
+            return table[path].Exists(lang, key);
         }
 
         public static string Load(string key) => Load(LocalizationManager.SelectedLanguage, key);
@@ -218,13 +76,13 @@ namespace HisaCat.HUE.Localization
         public static string Load(string path, string key) => Load(LocalizationManager.SelectedLanguage, path, key);
         public static string Load(SystemLanguage lang, string path, string key, SystemLanguage? fallback = null)
         {
-            if (dic == null)
-                dic = new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
+            if (table == null)
+                table = new Dictionary<string, LocalizedTexts>(StringComparer.OrdinalIgnoreCase);
 
-            if (dic.ContainsKey(path) == false)
-                dic.Add(path, new LocalizedTexts(path, LocalizationSettings.LoadJsonHandler));
+            if (table.ContainsKey(path) == false)
+                table.Add(path, new LocalizedTexts(path, LocalizationSettings.LoadJsonHandler));
 
-            return dic[path].Load(lang, key, fallback == null ? LocalizationSettings.FallbackLanguage : fallback.Value);
+            return table[path].Load(lang, key, fallback == null ? LocalizationSettings.FallbackLanguage : fallback.Value);
         }
     }
 
@@ -306,7 +164,7 @@ namespace HisaCat.HUE.Localization
             if (IsLanguageLoaded(lang) == false) LoadLanguage(lang);
 
             // return this.Dic[lang].ContainsKey(key);
-            
+
             var pairs = this.Dic[lang];
             var exists = pairs.ContainsKey(key);
             return exists;

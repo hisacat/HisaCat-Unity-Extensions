@@ -1,0 +1,18 @@
+{
+    "name": "cat.hisa.hisacat-unity-extensions.Localization.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5688c3073f6b82439535ca7ee3f04b1",
+        "GUID:7803894f88baad044ad5beee3afa77af",
+        "GUID:35063b2c115bfad47af57e2cb04f7b4f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

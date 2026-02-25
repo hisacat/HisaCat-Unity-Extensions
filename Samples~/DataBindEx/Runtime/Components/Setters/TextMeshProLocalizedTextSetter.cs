@@ -36,6 +36,7 @@ namespace HisaCat.HUE.DataBindEx.Setters
             this.OnObjectValueChanged();
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             UpdateTextOnEditor();
@@ -43,25 +44,18 @@ namespace HisaCat.HUE.DataBindEx.Setters
 
         public void UpdateTextOnEditor()
         {
-#if UNITY_EDITOR
-            if (Application.isPlaying == false && LocalizationSettings.AutoUpdateLocalizedTextOnEditor)
-            {
-                if (this.Data.Type == DataBindingType.Constant)
-                {
-                    if (this.TargetBinding.Type != DataBindingType.Reference) return;
-                    var tmp_text = this.TargetBinding.Reference as TMPro.TMP_Text;
-                    if (tmp_text != null)
-                    {
-                        var text = LocalizationManager.Load(this.Data.Constant ?? string.Empty);
-                        if (tmp_text.text != text)
-                        {
-                            UnityEditor.Undo.RecordObject(tmp_text, $"[{nameof(TextMeshProLocalizedTextSetter)}] Update text on Editor");
-                            tmp_text.text = text;
-                            UnityEditor.EditorUtility.SetDirty(tmp_text);
-                        }
-                    }
-                }
-            }
+            if (Application.isPlaying) return;
+            if (LocalizationSettings.AutoUpdateLocalizedTextOnEditor == false) return;
+
+            if (this.Data.Type != DataBindingType.Constant) return;
+            if (this.TargetBinding.Type != DataBindingType.Reference) return;
+            if (this.TargetBinding.Reference is not TMPro.TMP_Text tmp_text) return;
+
+            var text = LocalizationManager.Load(this.Data.Constant);
+            if (tmp_text.text == text) return;
+
+            tmp_text.text = text;
+            UnityEditor.EditorUtility.SetDirty(tmp_text);
 #endif
         }
     }

@@ -1134,14 +1134,6 @@ namespace HisaCat.HUE.UnityExtensions
         }
     }
 
-    public static class LocalizationExtensions
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string KeyToLocalized(this string key) => Localization.LocalizationManager.Load(key);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string KeyToLocalized(this string key, SystemLanguage language) => Localization.LocalizationManager.Load(language, key);
-    }
-
     public static class ColorExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

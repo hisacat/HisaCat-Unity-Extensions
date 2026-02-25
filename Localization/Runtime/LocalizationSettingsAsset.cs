@@ -41,6 +41,7 @@ namespace HisaCat.HUE.Localization
 
         [SerializeField] private bool m_PrintMissingLanguageLogs = true; public bool PrintMissingLanguageLogs => this.m_PrintMissingLanguageLogs;
         [SerializeField] private bool m_PrintMissingKeyLogs = true; public bool PrintMissingKeyLogs => this.m_PrintMissingKeyLogs;
+        
         [SerializeField] private bool m_AutoUpdateLocalizedTextOnEditor = true; public bool AutoUpdateLocalizedTextOnEditor => this.m_AutoUpdateLocalizedTextOnEditor;
 
         public static LocalizationSettingsAsset CreateDefaultInstance()
