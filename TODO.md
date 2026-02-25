@@ -8,4 +8,5 @@
   Automatically increment and match versions in 'package.json' and 'CHANGELOG.md'
 - [ ] Detach settings with ProjectSettings and UserSettings.
 - [ ] Make LocalizationSettings as ScriptableObject (If missing, use defualt values)
+- [ ] InputManager: Enable All InputAction maps at once.
 - [ ] ...
