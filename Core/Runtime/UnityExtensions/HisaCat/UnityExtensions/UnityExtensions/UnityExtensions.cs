@@ -2394,6 +2394,7 @@ namespace HisaCat.HUE.UnityExtensions
 
     public static class HashSetExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int AddRange<T>(this HashSet<T> hashSet, IEnumerable<T> items)
         {
             int added = 0;
@@ -2411,6 +2412,7 @@ namespace HisaCat.HUE.UnityExtensions
 
     public static class DictionaryExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
             => new ReadOnlyDictionary<TKey, TValue>(dictionary);
     }
