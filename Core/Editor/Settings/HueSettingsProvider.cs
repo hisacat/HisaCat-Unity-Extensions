@@ -22,7 +22,6 @@ namespace HisaCat.HUE.Settings
 
         private static void OnGUI(string searchContext)
         {
-
             EditorGUI.BeginChangeCheck();
             var settings = HueSettings.Instance;
             {
@@ -58,7 +57,6 @@ namespace HisaCat.HUE.Settings
                         EditorGUI.indentLevel--;
                     }
                     EditorGUI.indentLevel--;
-
 
                     EditorGUILayout.LabelField("Gizmos", EditorStyles.boldLabel);
                     EditorGUI.indentLevel++;
