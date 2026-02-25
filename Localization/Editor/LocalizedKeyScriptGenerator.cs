@@ -11,8 +11,13 @@ using UnityEngine;
 
 namespace HisaCat.HUE.Localization
 {
-    public sealed class LocalizedKeyScriptGenerator : AssetPostprocessor
+    public sealed class LocalizedKeyScriptGenerator
     {
+        public readonly static string SelfScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
+        public static readonly string SourceJsonPathFormat = $"Assets/Resources/{LocalizationSettings.LocalizedJsonsPath}/{{0}}.json";
+        public static string SourceJsonPath => string.Format(SourceJsonPathFormat, LocalizationSettings.DefaultLanguage.ToLocaleString());
+        public const string DestScriptPath = "Assets/Localization/LocalizedKey.cs";
+
         public static string GenerateLocalizedKeyClass(string json)
         {
             var dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -29,7 +34,6 @@ namespace HisaCat.HUE.Localization
 
             return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\n";
         }
-
         private class Node
         {
             public string Name { get; }
@@ -93,35 +97,21 @@ namespace HisaCat.HUE.Localization
             }
         }
 
-        public readonly static string ThisScriptPath = EditorUniPath.GetCurrentScriptAssetPath();
-        public const string SourceJsonPath = "Assets/Resources/Localization/ko_KR.json";
-        public const string DestScriptPath = "Assets/Localization/LocalizedKey.cs";
-        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        public static void GenerateLocalizedKeyScript()
         {
-            if (File.Exists(SourceJsonPath) == false)
-            {
-                // Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Source json not found at \"{SourceJsonPath}\".");
-                return;
-            }
+            Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{SourceJsonPath}\".");
+            var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(SourceJsonPath);
+            var json = jsonAsset == null ? "{}" : jsonAsset.text;
 
-            var changedAssets = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
-            if (changedAssets.ContainsAny(StringComparison.OrdinalIgnoreCase, ThisScriptPath, SourceJsonPath))
-            {
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Target json detected from \"{SourceJsonPath}\".");
-                var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(SourceJsonPath);
-                var json = jsonAsset == null ? "{}" : jsonAsset.text;
+            Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Generate...");
+            var script = GenerateLocalizedKeyClass(json);
 
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Generate...");
-                var script = GenerateLocalizedKeyClass(json);
+            Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Write script...");
+            File.WriteAllText(DestScriptPath, script);
+            Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Script generated at \"{DestScriptPath}\".");
 
-
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Write script...");
-                File.WriteAllText(DestScriptPath, script);
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Script generated at \"{DestScriptPath}\".");
-
-                AssetDatabase.Refresh();
-                Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] AssetDatabase refreshed.");
-            }
+            AssetDatabase.Refresh();
+            Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] AssetDatabase refreshed.");
         }
     }
 }
