@@ -1,6 +1,6 @@
 using UnityEngine;
 using TMPro;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 
 namespace HisaCat.HUE.Fonts
 {

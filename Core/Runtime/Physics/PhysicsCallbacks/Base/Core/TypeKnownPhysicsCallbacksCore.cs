@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using HisaCat.HUE.Collections;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEngine;
 
 namespace HisaCat.HUE.PhysicsExtension

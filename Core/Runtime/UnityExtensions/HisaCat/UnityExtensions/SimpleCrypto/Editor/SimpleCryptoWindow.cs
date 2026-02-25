@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using HisaCat.UnityExtensions;
-using HisaCat.UnityExtensions.Editors;
+using HisaCat.HUE.UnityExtensions;
+using HisaCat.HUE.UnityExtensions.Editors;
 using UnityEditor;
 using UnityEngine;
 

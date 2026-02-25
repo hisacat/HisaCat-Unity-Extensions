@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace HisaCat.UnityExtensions.Editors
+namespace HisaCat.HUE.UnityExtensions.Editors
 {
     public class FindMissingScripts : EditorWindow
     {

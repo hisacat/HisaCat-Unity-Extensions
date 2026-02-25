@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace HisaCat.UnityExtensions.Editors
+namespace HisaCat.HUE.UnityExtensions.Editors
 {
     public static class FindAllMissingSpriteInImageComponent
     {

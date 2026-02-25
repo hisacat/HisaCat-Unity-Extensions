@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace HisaCat.Localization
+namespace HisaCat.HUE.Localization
 {
     public class LocalizationSettingsWindow : EditorWindow
     {

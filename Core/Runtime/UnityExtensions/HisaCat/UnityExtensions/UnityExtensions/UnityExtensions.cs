@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 using Conditional = System.Diagnostics.ConditionalAttribute;
 
-namespace HisaCat.UnityExtensions
+namespace HisaCat.HUE.UnityExtensions
 {
     internal static class InternalChildrenUtil
     {

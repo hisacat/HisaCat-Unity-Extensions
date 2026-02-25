@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEngine;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System.Linq;
 using System.Collections.Generic;
 

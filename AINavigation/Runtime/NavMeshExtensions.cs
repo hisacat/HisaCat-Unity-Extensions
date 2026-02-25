@@ -1,5 +1,5 @@
 
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;

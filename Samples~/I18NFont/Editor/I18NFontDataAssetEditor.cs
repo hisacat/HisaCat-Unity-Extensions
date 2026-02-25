@@ -1,4 +1,4 @@
-using HisaCat.Localization;
+using HisaCat.HUE.Localization;
 using System;
 using System.Collections.Generic;
 using TMPro;

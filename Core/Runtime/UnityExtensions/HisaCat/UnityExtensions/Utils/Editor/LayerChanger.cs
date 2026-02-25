@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

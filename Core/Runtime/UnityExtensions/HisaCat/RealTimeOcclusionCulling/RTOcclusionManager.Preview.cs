@@ -1,6 +1,6 @@
 
 using HisaCat.HUE.Collections;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -1,4 +1,4 @@
-using HisaCat.Localization;
+using HisaCat.HUE.Localization;
 using UnityEditor;
 using UnityEngine;
 

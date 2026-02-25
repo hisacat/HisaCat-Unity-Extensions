@@ -1,5 +1,5 @@
-using HisaCat.Localization;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.Localization;
+using HisaCat.HUE.UnityExtensions;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;

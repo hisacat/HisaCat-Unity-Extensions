@@ -1,5 +1,5 @@
 using HisaCat.PropertyAttributes;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEngine;
 using UnityEngine.InputSystem.UI;
 

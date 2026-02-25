@@ -1,7 +1,7 @@
 namespace HisaCat.HUE.DataBindEx.Components.Presentation.Editors
 {
     using HisaCat.HUE.DataBindEx.Editors;
-    using HisaCat.UnityExtensions.Editors;
+    using HisaCat.HUE.UnityExtensions.Editors;
     using Slash.Unity.DataBind.Core.Data;
     using Slash.Unity.DataBind.Core.Presentation;
     using Slash.Unity.DataBind.Core.Utils;

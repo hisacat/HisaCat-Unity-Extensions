@@ -1,5 +1,5 @@
 using HisaCat.Sounds;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;

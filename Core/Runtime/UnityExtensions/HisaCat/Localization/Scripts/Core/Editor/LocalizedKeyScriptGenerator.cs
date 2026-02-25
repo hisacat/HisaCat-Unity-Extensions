@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 using HisaCat.IO;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-namespace HisaCat.Localization
+namespace HisaCat.HUE.Localization
 {
     public sealed class LocalizedKeyScriptGenerator : AssetPostprocessor
     {
@@ -28,7 +28,7 @@ namespace HisaCat.Localization
                 root.Add(parts, key);
             }
 
-            return $"namespace HisaCat.Localization\n{{\n{root.GenerateCode(1)}}}\n";
+            return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\n";
         }
 
         private class Node

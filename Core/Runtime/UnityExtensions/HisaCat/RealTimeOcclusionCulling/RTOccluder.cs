@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 
 namespace HisaCat.RealTimeOcclusionCulling
 {

@@ -1,5 +1,5 @@
 using HisaCat.HUE.Collections;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System.Collections.Generic;
 using UnityEngine;
 

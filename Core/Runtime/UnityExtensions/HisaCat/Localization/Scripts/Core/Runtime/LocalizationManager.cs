@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace HisaCat.Localization
+namespace HisaCat.HUE.Localization
 {
     /// <summary>
     /// NOTE: You can edit this for personal settings.<br/>

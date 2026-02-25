@@ -1,6 +1,6 @@
 #if UNITY_EDITOR && FISHNET
 using FishNet.Object;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build;

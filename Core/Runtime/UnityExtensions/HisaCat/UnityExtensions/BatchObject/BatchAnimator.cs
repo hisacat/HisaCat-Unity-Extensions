@@ -1,4 +1,4 @@
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System;
 using UnityEngine;
 

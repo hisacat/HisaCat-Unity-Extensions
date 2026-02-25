@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace HisaCat.UnityExtensions
+namespace HisaCat.HUE.UnityExtensions
 {
     public static class QualitySettingsHelper
     {

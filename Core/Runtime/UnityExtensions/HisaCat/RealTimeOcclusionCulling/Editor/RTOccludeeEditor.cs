@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using HisaCat.UnityExtensions.Editors;
+using HisaCat.HUE.UnityExtensions.Editors;
 
 namespace HisaCat.RealTimeOcclusionCulling
 {

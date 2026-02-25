@@ -4,7 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using ColorUtility = UnityEngine.ColorUtility;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 

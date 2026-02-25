@@ -3,7 +3,7 @@ using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
 using HisaCat.IO;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using System.IO;
 
 namespace HisaCat.HUE

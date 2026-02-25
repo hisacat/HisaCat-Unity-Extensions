@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
-namespace HisaCat.UnityExtensions.Editors
+namespace HisaCat.HUE.UnityExtensions.Editors
 {
     public static class EditorExtensions
     {

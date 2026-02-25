@@ -1,5 +1,5 @@
 using HisaCat.Collections;
-using HisaCat.UnityExtensions;
+using HisaCat.HUE.UnityExtensions;
 using UnityEngine;
 
 namespace HisaCat.HUE.Inputs

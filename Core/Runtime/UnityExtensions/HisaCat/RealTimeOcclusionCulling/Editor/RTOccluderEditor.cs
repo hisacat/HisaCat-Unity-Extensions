@@ -2,8 +2,8 @@
 using UnityEngine;
 using UnityEditor;
 using Unity.VisualScripting;
-using HisaCat.UnityExtensions;
-using HisaCat.UnityExtensions.Editors;
+using HisaCat.HUE.UnityExtensions;
+using HisaCat.HUE.UnityExtensions.Editors;
 
 namespace HisaCat.RealTimeOcclusionCulling
 {

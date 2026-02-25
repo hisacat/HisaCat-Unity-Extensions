@@ -1,4 +1,4 @@
-namespace HisaCat.Localization
+namespace HisaCat.HUE.Localization
 {
     public interface IEditorLocalizedTextUpdateable
     {

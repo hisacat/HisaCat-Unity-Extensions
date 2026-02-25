@@ -1,6 +1,6 @@
 namespace HisaCat.HUE.DataBindEx.Providers.Getters
 {
-    using HisaCat.Localization;
+    using HisaCat.HUE.Localization;
     using Slash.Unity.DataBind.Core.Presentation;
     using UnityEngine;
 

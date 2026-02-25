@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HisaCat.Localization
+namespace HisaCat.HUE.Localization
 {
     public static class SystemLanguageToLocaleString
     {
