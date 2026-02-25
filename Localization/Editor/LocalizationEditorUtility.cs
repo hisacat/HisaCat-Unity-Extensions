@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace HisaCat.HUE.Localization
 {
@@ -71,6 +72,35 @@ namespace HisaCat.HUE.Localization
 
             foreach (var text in texts)
                 text.UpdateTextOnEditor();
+        }
+
+        [MenuItem("HisaCat/Localization/Create Localized Texts Templates")]
+        public static void CreateTemplate()
+        {
+            var path = EditorUtility.SaveFolderPanel("Path", "Assets", "Localized");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var data = new Dictionary<string, string>();
+            for (int i = 0; i < 3; i++)
+                data.Add($"key{i}", "text");
+
+            var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+            var langs = new SystemLanguage[] { SystemLanguage.English, SystemLanguage.Korean, SystemLanguage.Japanese, SystemLanguage.ChineseSimplified, SystemLanguage.ChineseTraditional };
+            foreach (var lang in langs)
+            {
+                var filePath = System.IO.Path.Combine(path, $"{lang.ToLocaleString()}.json");
+                System.IO.File.WriteAllText(filePath, json);
+                Debug.Log($"[{nameof(LocalizationManager)}] Template for ${lang} created at ${filePath}");
+            }
+
+            EditorUtility.DisplayDialog("Localization", "Localized String Templates created and saved.", "Ok");
+            AssetDatabase.Refresh();
+            var folderAssetPath = path;
+            if (folderAssetPath.StartsWith(Application.dataPath))
+                folderAssetPath = "Assets" + folderAssetPath.Substring(Application.dataPath.Length);
+            var folderAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(folderAssetPath);
+            EditorGUIUtility.PingObject(folderAsset);
         }
     }
 }

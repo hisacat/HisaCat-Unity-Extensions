@@ -2,8 +2,6 @@ using HisaCat.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using UnityEngine;
 
 namespace HisaCat.HUE.Localization
@@ -88,37 +86,6 @@ namespace HisaCat.HUE.Localization
 
     public class LocalizedTexts
     {
-#if UNITY_EDITOR
-        [UnityEditor.MenuItem("HisaCat/Localization/Create Localized Text Templates")]
-        public static void CreateTemplate()
-        {
-            var path = UnityEditor.EditorUtility.SaveFolderPanel("Path", "Assets", "Localized");
-            if (string.IsNullOrEmpty(path))
-                return;
-
-            var data = new Dictionary<string, string>();
-            for (int i = 0; i < 3; i++)
-                data.Add($"key{i}", "text");
-
-            var json = JsonConvert.SerializeObject(data, Formatting.Indented);
-            var langs = new SystemLanguage[] { SystemLanguage.English, SystemLanguage.Korean, SystemLanguage.Japanese, SystemLanguage.ChineseSimplified, SystemLanguage.ChineseTraditional };
-            foreach (var lang in langs)
-            {
-                var filePath = System.IO.Path.Combine(path, $"{lang.ToLocaleString()}.json");
-                System.IO.File.WriteAllText(filePath, json);
-                Debug.Log($"[{nameof(LocalizationManager)}] Template for ${lang} created at ${filePath}");
-            }
-
-            UnityEditor.EditorUtility.DisplayDialog("Localization", "Localized String Templates created and saved.", "Ok");
-            UnityEditor.AssetDatabase.Refresh();
-            var folderAssetPath = path;
-            if (folderAssetPath.StartsWith(Application.dataPath))
-                folderAssetPath = "Assets" + folderAssetPath.Substring(Application.dataPath.Length);
-            var folderAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(folderAssetPath);
-            UnityEditor.EditorGUIUtility.PingObject(folderAsset);
-        }
-#endif
-
         public delegate string LoadJsonEventHandler(string localizedJsonsFolderPath, SystemLanguage lang);
 
         private readonly Dictionary<SystemLanguage, Dictionary<string, string>> localizedTextsByLanguage = null;
