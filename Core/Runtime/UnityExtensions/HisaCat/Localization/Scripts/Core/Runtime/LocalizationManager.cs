@@ -1,3 +1,4 @@
+using HisaCat.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,6 @@ using UnityEngine.SceneManagement;
 
 namespace HisaCat.HUE.Localization
 {
-    /// <summary>
-    /// NOTE: You can edit this for personal settings.<br/>
-    /// Manage this settings with ScriptableObject.
-    /// </summary>
     public static class LocalizationSettings
     {
 #if UNITY_EDITOR
@@ -20,71 +17,53 @@ namespace HisaCat.HUE.Localization
         [UnityEditor.InitializeOnEnterPlayMode]
         private static void OnEnterPlaymodeInEditor(UnityEditor.EnterPlayModeOptions options)
         {
-            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload)) { }
+            if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                _settings = null;
+            }
         }
 #pragma warning restore IDE0051
 #endif
 
-        public const string LocalizedJsonsPath = "Localization";
-        public static readonly SystemLanguage DefaultLanguage = SystemLanguage.English;
-        public static readonly SystemLanguage FallBackLanguage = SystemLanguage.English;
-        public static readonly HashSet<SystemLanguage> SupportLanguages = new()
+        public const string SettingsAssetPath = LocalizationSettingsAsset.DefaultAssetPath;
+        private static LocalizationSettingsAsset _settings = null;
+        private static LocalizationSettingsAsset Settings
         {
-            SystemLanguage.Afrikaans,
-            SystemLanguage.Arabic,
-            SystemLanguage.Belarusian,
-            SystemLanguage.Bulgarian,
-            SystemLanguage.Catalan,
-            SystemLanguage.Czech,
-            SystemLanguage.Danish,
-            SystemLanguage.German,
-            SystemLanguage.Greek,
-            SystemLanguage.English,
-            SystemLanguage.Spanish,
-            SystemLanguage.Estonian,
-            SystemLanguage.Basque,
-            SystemLanguage.Finnish,
-            SystemLanguage.Faroese,
-            SystemLanguage.French,
-            SystemLanguage.Hebrew,
-            SystemLanguage.Hindi,
-            SystemLanguage.Hungarian,
-            SystemLanguage.Indonesian,
-            SystemLanguage.Icelandic,
-            SystemLanguage.Italian,
-            SystemLanguage.Japanese,
-            SystemLanguage.Korean,
-            SystemLanguage.Lithuanian,
-            SystemLanguage.Latvian,
-            SystemLanguage.Dutch,
-            SystemLanguage.Norwegian,
-            SystemLanguage.Polish,
-            SystemLanguage.Portuguese,
-            SystemLanguage.Romanian,
-            SystemLanguage.Russian,
-            SystemLanguage.SerboCroatian,
-            SystemLanguage.Slovak,
-            SystemLanguage.Slovenian,
-            SystemLanguage.Swedish,
-            SystemLanguage.Thai,
-            SystemLanguage.Turkish,
-            SystemLanguage.Ukrainian,
-            SystemLanguage.Vietnamese,
-            SystemLanguage.ChineseSimplified,
-            SystemLanguage.ChineseTraditional,
-        };
+            get
+            {
+                if (_settings == null)
+                {
+                    _settings = Resources.Load<LocalizationSettingsAsset>(SettingsAssetPath);
+                    if (_settings == null)
+                    {
+                        _settings = LocalizationSettingsAsset.CreateDefaultInstance();
+                        Debug.LogWarning($"[{nameof(LocalizationSettings)}] No settings asset found at \"Resources/{SettingsAssetPath}\". Use default instance.");
+                    }
+                }
+                return _settings;
+            }
+        }
 
-        public const bool PrintMissingLanguageLogs = true;
-        public const bool PrintMissingKeyLogs = true;
+        public const string LocalizedJsonsPath = "Localization";
+        public static SystemLanguage DefaultLanguage => Settings.DefaultLanguage;
+        public static SystemLanguage FallbackLanguage => Settings.FallbackLanguage;
+        public static HashSet<SystemLanguage> SupportLanguages => Settings.SupportLanguages;
+        public static bool PrintMissingLanguageLogs => Settings.PrintMissingLanguageLogs;
+        public static bool PrintMissingKeyLogs => Settings.PrintMissingKeyLogs;
 
-        public static readonly LocalizedTexts.LoadJsonEventHandler LoadJsonHandler = null;
-        //Example of LoadJsonHandler
-        //public static readonly LocalizedTexts.LoadJsonEventHandler LoadJsonHandler = (path, lang)=>
-        //{
-        //    var jsonPath = string.IsNullOrEmpty(path) ? LocalizedTexts.GetLocaleStr(lang) : $"{path}/{LocalizedTexts.GetLocaleStr(lang)}";
-        //    var jsonAsset = Resources.Load<TextAsset>(jsonPath);
-        //    return jsonAsset == null ? null : jsonAsset.text;
-        //};
+        public static LocalizedTexts.LoadJsonEventHandler LoadJsonHandler { get; private set; }
+        public static void SetLoadJsonHandler(LocalizedTexts.LoadJsonEventHandler loadJsonHandler)
+        {
+            LoadJsonHandler = loadJsonHandler;
+
+            //Example of LoadJsonHandler
+            //public LocalizedTexts.LoadJsonEventHandler LoadJsonHandler = (path, lang)=>
+            //{
+            //    var jsonPath = string.IsNullOrEmpty(path) ? LocalizedTexts.GetLocaleStr(lang) : $"{path}/{LocalizedTexts.GetLocaleStr(lang)}";
+            //    var jsonAsset = Resources.Load<TextAsset>(jsonPath);
+            //    return jsonAsset == null ? null : jsonAsset.text;
+            //};
+        }
 
 #if UNITY_EDITOR
         public const bool AutoUpdateLocalizedTextOnEditor = true;
@@ -140,7 +119,7 @@ namespace HisaCat.HUE.Localization
             {
                 foreach (var asset in importedAssets)
                 {
-                    if (asset.EndsWith($"Resources/{LocalizationSettings.LocalizedJsonsPath}/{LocalizationSettings.DefaultLanguage.ToLocaleString()}.json", StringComparison.OrdinalIgnoreCase))
+                    if (asset.EndsWith(UniPath.Combine("Resources", LocalizationSettings.LocalizedJsonsPath, $"{LocalizationSettings.DefaultLanguage.ToLocaleString()}.json"), StringComparison.OrdinalIgnoreCase))
                     {
                         // Clear localized text dictionary when locale json was changed.
                         dic = null;
@@ -245,7 +224,7 @@ namespace HisaCat.HUE.Localization
             if (dic.ContainsKey(path) == false)
                 dic.Add(path, new LocalizedTexts(path, LocalizationSettings.LoadJsonHandler));
 
-            return dic[path].Load(lang, key, fallback == null ? LocalizationSettings.FallBackLanguage : fallback.Value);
+            return dic[path].Load(lang, key, fallback == null ? LocalizationSettings.FallbackLanguage : fallback.Value);
         }
     }
 
@@ -296,7 +275,7 @@ namespace HisaCat.HUE.Localization
 
         public string DefaultLoadJsonEventHandler(string path, SystemLanguage lang)
         {
-            var jsonPath = string.IsNullOrEmpty(path) ? lang.ToLocaleString() : $"{path}/{lang.ToLocaleString()}";
+            var jsonPath = string.IsNullOrEmpty(path) ? lang.ToLocaleString() : UniPath.Combine(path, lang.ToLocaleString());
             var jsonAsset = Resources.Load<TextAsset>(jsonPath);
             return jsonAsset == null ? null : jsonAsset.text;
         }
@@ -326,7 +305,11 @@ namespace HisaCat.HUE.Localization
             // Load if target language not exists in dictionary.
             if (IsLanguageLoaded(lang) == false) LoadLanguage(lang);
 
-            return this.Dic[lang].ContainsKey(key);
+            // return this.Dic[lang].ContainsKey(key);
+            
+            var pairs = this.Dic[lang];
+            var exists = pairs.ContainsKey(key);
+            return exists;
         }
 
         public string Load(SystemLanguage lang, string key, SystemLanguage fallbackLang)
