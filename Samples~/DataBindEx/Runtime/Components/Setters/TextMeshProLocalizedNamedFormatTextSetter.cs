@@ -24,6 +24,7 @@ namespace HisaCat.HUE.DataBindEx.Setters
         }
 
         public NamedFormatArgument[] Arguments;
+        [SerializeField] private bool m_ResolveJosaTokensForKorean = true;
         protected override void UpdateTargetValue(TMPro.TMP_Text target, string value)
         {
             value = LocalizationManager.Load(value);
@@ -37,6 +38,12 @@ namespace HisaCat.HUE.DataBindEx.Setters
                     namedFormatArguments[i] = new(argument.Name, argument.Argument.Value);
                 }
                 value = value.NamedFormat(namedFormatArguments);
+
+                if (LocalizationManager.SelectedLanguage == SystemLanguage.Korean)
+                {
+                    if (this.m_ResolveJosaTokensForKorean)
+                        value = KoreanUtility.JosaHelper.ResolveJosaTokens(value);
+                }
             }
             target.SetText(value ?? string.Empty);
         }

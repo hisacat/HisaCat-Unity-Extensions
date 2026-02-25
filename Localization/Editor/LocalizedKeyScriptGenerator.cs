@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using HisaCat.IO;
 using HisaCat.HUE.UnityExtensions;
 using Newtonsoft.Json;
@@ -126,4 +125,3 @@ namespace HisaCat.HUE.Localization
         }
     }
 }
-#endif

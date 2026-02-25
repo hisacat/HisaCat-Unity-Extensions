@@ -13,7 +13,7 @@ namespace HisaCat.HUE.Localization
                 if (asset.EndsWith(UniPath.Combine("Resources", LocalizationSettings.LocalizedJsonsPath, $"{LocalizationSettings.DefaultLanguage.ToLocaleString()}.json"), System.StringComparison.OrdinalIgnoreCase))
                 {
                     // Clear localized text dictionary when locale json was changed.
-                    LocalizationManager.ClearLoadedLocalizedTables();
+                    LocalizationManager.ClearLoadedLocalizedTexts();
 
                     LocalizationEditorUtility.UpdateIEditorLocalizedTexts();
                     return;
