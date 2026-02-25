@@ -191,7 +191,6 @@ namespace HisaCat.HUE.Localization
             // 기본적으로 한국어 조사 치환은 "{item}%이가% 필요합니다." 등의 문자열에 대해
             // NamedFormat 이후의 결과에 대해서 사용해야 함으로,
             // 여기서 전역으로 처리할 필요는 없습니다.
-            // If language is Korean, resolve josa tokens
             // if (lang == SystemLanguage.Korean)
             //     value = KoreanUtility.JosaHelper.ResolveJosaTokens(value);
 
