@@ -19,7 +19,7 @@ namespace HisaCat.Mise
 
         private void Awake()
         {
-            this.frameDurations = new float[m_SampleSize];
+            this.frameDurations = new float[this.m_SampleSize];
 
             if (this.m_DontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
