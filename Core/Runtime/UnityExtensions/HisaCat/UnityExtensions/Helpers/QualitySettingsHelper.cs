@@ -1,4 +1,5 @@
 
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace HisaCat.HUE.UnityExtensions
@@ -11,6 +12,8 @@ namespace HisaCat.HUE.UnityExtensions
             EveryVBlank = 1,
             EverySecondVBlank = 2,
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetVSyncCount(VSyncCount vSyncCount)
         {
             QualitySettings.vSyncCount = (int)vSyncCount;
