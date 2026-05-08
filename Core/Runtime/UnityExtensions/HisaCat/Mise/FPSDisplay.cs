@@ -12,6 +12,7 @@ namespace HisaCat.Mise
         [SerializeField] private float m_FontSize = 20f;
         [SerializeField] private Color m_TextColor = Color.white;
         [SerializeField] private Color m_BackgroundColor = Color.black.WithAlpha(0.5f);
+        [SerializeField] private Vector2 m_Position = Vector2.zero; // (0,0)=BottomLeft, (1,1)=TopRight
 
         private float[] frameDurations;
         private int sampleIndex = 0;
@@ -43,7 +44,15 @@ namespace HisaCat.Mise
         private GUIContent contentForCalcSize = null;
 
 #if UNITY_EDITOR
-        void OnValidate() => this.contentChanged = true;
+        void OnValidate()
+        {
+            this.contentChanged = true;
+
+            var position = this.m_Position;
+            position.x = Mathf.Clamp01(position.x);
+            position.y = Mathf.Clamp01(position.y);
+            this.m_Position = position;
+        }
 #endif
         private void OnGUI()
         {
@@ -78,16 +87,27 @@ namespace HisaCat.Mise
 
             float padding = 5 * scale;
             (float width, float height) = (this.textSize.x, this.textSize.y);
+            float boxWidth = width + padding * 2;
+            float boxHeight = height + padding * 2;
+
+            Vector2 normalizedPosition = new(
+                Mathf.Clamp01(this.m_Position.x),
+                Mathf.Clamp01(this.m_Position.y)
+            );
+            Vector2 guiPosition = new(
+                (Screen.width - boxWidth) * normalizedPosition.x,
+                (Screen.height - boxHeight) * (1f - normalizedPosition.y)
+            );
 
             // Draw background
             {
-                Rect rect = new(0, 0, width + padding * 2, height + padding * 2);
+                Rect rect = new(guiPosition.x, guiPosition.y, boxWidth, boxHeight);
                 GUI.Box(rect, string.Empty, this.backgroundStyle);
             }
 
             // Draw text
             {
-                Rect rect = new(padding, padding, width, height);
+                Rect rect = new(guiPosition.x + padding, guiPosition.y + padding, width, height);
                 GUI.Label(rect, formatFps(fps), this.labelStyle);
             }
 
