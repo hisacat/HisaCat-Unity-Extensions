@@ -18,5 +18,12 @@ namespace HisaCat.HUE.InputSystemExtensions
         }
         public static GameObject GetMousePointerOverGameObject(this InputSystemUIInputModule inputModule)
             => inputModule.GetPointerOverGameObject(Mouse.current.deviceId);
+
+        /// <summary>
+        /// In general, the pointer ID corresponds to the device ID<br/>
+        /// See: https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.UI.InputSystemUIInputModule.html#UnityEngine_InputSystem_UI_InputSystemUIInputModule_IsPointerOverGameObject_System_Int32_
+        /// </summary>
+        public static bool IsMousePointerOverGameObject(this InputSystemUIInputModule inputModule)
+            => inputModule.IsPointerOverGameObject(Mouse.current.deviceId);
     }
 }
