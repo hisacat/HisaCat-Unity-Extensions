@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HisaCat
 {
-    public static class AnimationPlayUnscaledTime
+    public static class AnimationExtensions
     {
         public static IEnumerator PlayUnscaledTimeRoutine(this Animation animation, string clipName)
             => PlayAnimationUnscaledTimeRoutine(animation, clipName);

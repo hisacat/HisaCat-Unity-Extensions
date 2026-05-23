@@ -29,7 +29,7 @@ namespace HisaCat
         }
         private IEnumerator PlayRoutine()
         {
-            yield return AnimationPlayUnscaledTime.PlayAnimationUnscaledTimeRoutine(this.m_Animation, this.m_Animation.clip.name);
+            yield return AnimationExtensions.PlayUnscaledTimeRoutine(this.m_Animation, this.m_Animation.clip.name);
             this.curPlayCoroutine = null;
         }
     }
