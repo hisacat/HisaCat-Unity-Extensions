@@ -83,7 +83,7 @@ namespace HisaCat.HUE.DataBindEx.Setters
 
             tmp_text.text = text;
             UnityEditor.EditorUtility.SetDirty(tmp_text);
-#endif
         }
+#endif
     }
 }
