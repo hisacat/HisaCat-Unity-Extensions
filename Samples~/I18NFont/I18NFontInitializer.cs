@@ -25,8 +25,15 @@ namespace HisaCat.HUE.Fonts
                     // If the asset in the build and the asset in the bundle are different instances,
                     // each instance must be initialized.
                     // (This handles duplicated assets caused by Addressables’ duplicate bundle dependencies.)
+#if UNITY_6000_4_OR_NEWER
+                    // GetInstanceID is deprecated in Unity 6.4 or newer.
+                    // https://docs.unity3d.com/6000.4/Documentation/ScriptReference/Object.GetInstanceID.html
+                    if (assetOnBundle != null && assetOnBuild.GetEntityId() != assetOnBundle.GetInstanceID())
+                        InitializeAll(assetOnBundle);
+#else
                     if (assetOnBundle != null && assetOnBuild.GetInstanceID() != assetOnBundle.GetInstanceID())
                         InitializeAll(assetOnBundle);
+#endif
                 }
 
             }
@@ -34,7 +41,13 @@ namespace HisaCat.HUE.Fonts
             static void InitializeAll(I18NFontDataListAsset asset)
             {
                 asset.InitializeAll();
+#if UNITY_6000_4_OR_NEWER
+                // GetInstanceID is deprecated in Unity 6.4 or newer.
+                // https://docs.unity3d.com/6000.4/Documentation/ScriptReference/Object.GetInstanceID.html
+                Debug.Log($"[{nameof(I18NFontInitializer)}] Initialize {asset.name} ({asset.GetEntityId()})");
+#else
                 Debug.Log($"[{nameof(I18NFontInitializer)}] Initialize {asset.name} ({asset.GetInstanceID()})");
+#endif
             }
         }
 

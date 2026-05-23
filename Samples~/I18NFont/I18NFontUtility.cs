@@ -47,8 +47,14 @@ namespace HisaCat.HUE.Fonts
             TMP_ResourceManager.ClearFontAssetGlyphCache();
 
             // Force update TextMeshPro components mesh.
-            // * Without this, font will does not updated in Build environment
+            // * Without this, font will does not updated in Build environment      
+#if UNITY_6000_4_OR_NEWER
+            // FindObjectsSortMode is deprecated in Unity 6.4 or newer.
+            // https://docs.unity3d.com/6000.4/Documentation/ScriptReference/Object.FindObjectsByType.html
+            var tmpTexts = Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include);
+#else
             var tmpTexts = Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+#endif
             var tmpTextsCount = tmpTexts.Length;
             for (int i = 0; i < tmpTextsCount; i++)
             {
