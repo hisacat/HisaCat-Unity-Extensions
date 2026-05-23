@@ -21,7 +21,9 @@ public static class ManagedDebugEditor
     [OnOpenAsset(callbackOrder: int.MinValue)]
     private static bool OnOpenAsset(int instanceID, int line)
     {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+        if (EditorUtility.EntityIdToObject(EntityId.FromULong((ulong)instanceID)) is not MonoScript monoScript) return false;
+#elif UNITY_6000_0_OR_NEWER
         if (EditorUtility.EntityIdToObject(instanceID) is not MonoScript monoScript) return false;
 #else
         if (EditorUtility.InstanceIDToObject(instanceID) is not MonoScript monoScript) return false;

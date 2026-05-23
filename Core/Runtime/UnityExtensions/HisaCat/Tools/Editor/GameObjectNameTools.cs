@@ -69,7 +69,11 @@ namespace HisaCat.Tools
 
             var targets = Selection.gameObjects;
             targets = targets.Where(e => e != null)
-                .OrderBy(e => e.transform.parent == null ? -1 : e.transform.parent.GetInstanceID())
+#if UNITY_6000_4_OR_NEWER
+                .OrderBy(e => e.transform.parent == null ? 0 : EntityId.ToULong(e.transform.parent.GetEntityId()))
+#else
+                .OrderBy(e => e.transform.parent == null ? 0 : e.transform.parent.GetInstanceID())
+#endif
                 .ThenBy(e => e.transform.GetSiblingIndex()).ToArray();
             var leftTargets = new HashSet<GameObject>(targets);
             foreach (var target in targets)

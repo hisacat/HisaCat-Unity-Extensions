@@ -328,7 +328,11 @@ namespace HisaCat.Sounds
             get
             {
                 if (currentAudioListner == null)
+#if UNITY_6000_4_OR_NEWER
+                    currentAudioListner = FindAnyObjectByType<AudioListener>();
+#else
                     currentAudioListner = FindFirstObjectByType<AudioListener>();
+#endif
 
                 return currentAudioListner == null ? Vector3.zero : currentAudioListner.transform.position;
             }

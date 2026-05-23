@@ -69,7 +69,11 @@ namespace HisaCat.Tools
                     {
                         if (prop.propertyType == SerializedPropertyType.ObjectReference)
                         {
+#if UNITY_6000_4_OR_NEWER
+                            if (prop.objectReferenceValue == null && prop.objectReferenceEntityIdValue != EntityId.None)
+#else
                             if (prop.objectReferenceValue == null && prop.objectReferenceInstanceIDValue != 0)
+#endif
                             {
                                 Debug.Log($"Missing Object Reference found in \"{go.name}\". Component: \"{comp.GetType().Name}\" Property: \"{prop.displayName}\"\r\nPath: {go.transform.GetFullPath()}", go);
                                 missingCount++;
