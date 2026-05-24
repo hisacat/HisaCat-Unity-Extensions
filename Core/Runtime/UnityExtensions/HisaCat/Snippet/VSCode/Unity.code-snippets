@@ -83,5 +83,12 @@
             "#endif"
         ],
         "description": "Creates OnEnterPlaymodeInEditor function."
+    },
+    "Aggressive Inlining Attribute": {
+        "prefix": "aggin",
+        "body": [
+            "[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]$0"
+        ],
+        "description": "Inserts MethodImpl(MethodImplOptions.AggressiveInlining)"
     }
 }
