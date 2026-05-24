@@ -44,7 +44,7 @@ namespace HisaCat.RealTimeOcclusionCulling
         {
             if (instance != this)
             {
-                Debug.LogError($"[{nameof(RTOcclusionProcessor)}] Instance already exists! Instance will be destroyed.");
+                Debug.LogError($"[{nameof(RTOcclusionProcessor)}] Instance already exists! It will be destroyed.");
                 Destroy(this.gameObject);
                 return;
             }
