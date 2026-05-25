@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 using UnityAddressables = UnityEngine.AddressableAssets.Addressables;
 
 namespace HisaCat.HUE.Assets
@@ -61,17 +62,33 @@ namespace HisaCat.HUE.Assets
                 return asset;
             }
 
-            public static UnityEngine.ResourceManagement.ResourceProviders.SceneInstance LoadSceneSync(string key)
+            public static SceneInstance LoadSceneSync(string key)
+                => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key));
+            public static SceneInstance LoadSceneSync(object key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100, SceneReleaseMode releaseMode = SceneReleaseMode.ReleaseSceneWhenSceneUnloaded)
+                => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority, releaseMode));
+            public static SceneInstance LoadSceneSync(object key, LoadSceneMode loadMode, SceneReleaseMode releaseMode, bool activateOnLoad = true, int priority = 100)
+                => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key, loadMode, releaseMode, activateOnLoad, priority));
+            public static SceneInstance LoadSceneSync(object key, LoadSceneParameters loadSceneParameters, bool activateOnLoad = true, int priority = 100)
+                => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key, loadSceneParameters, activateOnLoad, priority));
+            public static SceneInstance LoadSceneSync(object key, LoadSceneParameters loadSceneParameters, SceneReleaseMode releaseMode, bool activateOnLoad = true, int priority = 100)
+                => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key, loadSceneParameters, releaseMode, activateOnLoad, priority));
+            private static T WaitAsyncOp<T>(System.Func<AsyncOperationHandle<T>> createOp)
             {
-                var op = UnityAddressables.LoadSceneAsync(key);
+                var op = createOp.Invoke();
                 op.WaitForCompletion();
                 return op.Result;
             }
-            public static AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance> LoadSceneAsync(string key)
-            {
-                var op = UnityAddressables.LoadSceneAsync(key);
-                return op;
-            }
+
+            public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(string key)
+                => UnityAddressables.LoadSceneAsync(key);
+            public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(object key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100, SceneReleaseMode releaseMode = SceneReleaseMode.ReleaseSceneWhenSceneUnloaded)
+                => UnityAddressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority, releaseMode);
+            public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(object key, LoadSceneMode loadMode, SceneReleaseMode releaseMode, bool activateOnLoad = true, int priority = 100)
+                => UnityAddressables.LoadSceneAsync(key, loadMode, releaseMode, activateOnLoad, priority);
+            public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(object key, LoadSceneParameters loadSceneParameters, bool activateOnLoad = true, int priority = 100)
+                => UnityAddressables.LoadSceneAsync(key, loadSceneParameters, activateOnLoad, priority);
+            public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(object key, LoadSceneParameters loadSceneParameters, SceneReleaseMode releaseMode, bool activateOnLoad = true, int priority = 100)
+                => UnityAddressables.LoadSceneAsync(key, loadSceneParameters, releaseMode, activateOnLoad, priority);
 
             public static AsyncOperationHandle<T> LoadAsync<T>(string key) where T : Object
                 => IsComponentType<T>() ? LoadPrefabAsync<T>(key) : LoadObjectAsync<T>(key);
