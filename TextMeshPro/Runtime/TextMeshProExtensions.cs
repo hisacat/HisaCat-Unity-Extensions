@@ -223,6 +223,13 @@ namespace HisaCat.HUE
             if (sliceEndExclusiveIndex <= sliceStartIndex + 1 || sliceEndExclusiveIndex >= text.Length)
                 return sliceEndExclusiveIndex;
 
+            // 핵심 규칙:
+            // 1) 먼저 "가장 많이 들어가는 위치"를 찾는다.
+            // 2) 그 위치가 실제로 단어 중간일 때만 boundary 모드로 뒤로 스냅한다.
+            // (즉, 공백/줄바꿈/구두점 경계에서 끝났다면 되돌리지 않는다.)
+            if (IsSplitInsideWord(text, sliceEndExclusiveIndex) == false)
+                return sliceEndExclusiveIndex;
+
             var searchEnd = sliceEndExclusiveIndex - 1;
             var searchStart = sliceStartIndex;
             var searchLength = searchEnd - searchStart + 1;
@@ -257,6 +264,46 @@ namespace HisaCat.HUE
             }
 
             return sliceEndExclusiveIndex;
+        }
+
+        /// <summary>
+        /// 분할 인덱스(<paramref name="splitIndex"/>)가 "단어 중간"인지 여부를 반환합니다.
+        /// </summary>
+        /// <remarks>
+        /// 이 값이 <c>true</c>인 경우에만 <see cref="SplitBoundaryMode"/> 규칙을 적용해 공백/줄바꿈 경계로 "뒤로 스냅"합니다.<br/>
+        /// 즉, 이미 공백·줄바꿈·구두점 같은 자연스러운 경계에서 끊긴 경우에는
+        /// 최대한 많은 문자를 페이지에 넣는 원칙(1)을 지키기 위해 되돌리지 않습니다.
+        /// </remarks>
+        private static bool IsSplitInsideWord(string text, int splitIndex)
+        {
+            if (splitIndex <= 0 || splitIndex >= text.Length)
+                return false;
+
+            var previousChar = text[splitIndex - 1];
+            var nextChar = text[splitIndex];
+
+            return IsWordCharacter(previousChar) && IsWordCharacter(nextChar);
+        }
+
+        /// <summary>
+        /// "단어를 구성하는 문자"인지 여부를 반환합니다.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="IsSplitInsideWord"/>에서 분할 위치 앞뒤가 둘 다 단어 문자이면 "단어 중간에서 잘림"으로 보고,
+        /// <see cref="SplitBoundaryMode"/>에 따라 공백·줄바꿈 쪽으로 되돌립니다.<br/>
+        /// <br/>
+        /// 영문·숫자(<see cref="char.IsLetterOrDigit"/>)는 단어 문자이며,
+        /// 밑줄(<c>_</c>)은 <c>A_B</c>, <c>USER_NAME</c>처럼 식별자 형태의 토큰을 한 덩어리로 취급하기 위해 포함합니다.
+        /// 공백·줄바꿈·구두점(<c>.</c>, <c>!</c> 등)은 단어 문자가 아니므로, 그 앞뒤에서 끊기면 스냅 없이 최대 길이를 유지합니다.
+        /// </remarks>
+        private static bool IsWordCharacter(char character)
+        {
+            if (char.IsLetterOrDigit(character)) return true;
+            return character switch
+            {
+                '_' => true,
+                _ => false,
+            };
         }
 
         /// <summary>
