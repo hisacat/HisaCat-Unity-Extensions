@@ -110,6 +110,7 @@ namespace HisaCat.HUE
                 if (sliceStartIndex >= text.Length)
                     break;
 
+                // 레이아웃 한도 안에 들어가는, sliceStart 이후 최대 길이(리치 텍스트 안전 인덱스 기준).
                 var sliceEndExclusiveIndex = FindMaxFittingEndIndex(
                     textMeshPro,
                     text,
@@ -119,6 +120,7 @@ namespace HisaCat.HUE
                     maxPageWidth,
                     maxPageHeight);
 
+                // boundaryMode 에 맞춰 공백·줄바꿈 경계로 끝 위치를 뒤로 스냅(없으면 FindMax 결과 유지).
                 sliceEndExclusiveIndex = AdjustSliceEndToWordBoundary(
                     text,
                     sliceStartIndex,
@@ -126,6 +128,7 @@ namespace HisaCat.HUE
                     safeSliceEndIndices,
                     boundaryMode);
 
+                // [무한 루프 방지]
                 // 더 쪼갤 수 없음(끝 인덱스가 시작 이하)
                 // sliceEnd <= sliceStart 이면 sliceStart = sliceEnd 대입 후 같은 위치에서 while 을 또 돌아 무한 루프.
                 // 남은 원문 전체를 마지막 페이지로 넣고 반환(overflow 는 있을 수 있으나 원문 유실 없음).
