@@ -126,6 +126,27 @@ namespace HisaCat.HUE
                     safeSliceEndIndices,
                     boundaryMode);
 
+                // 더 쪼갤 수 없음(끝 인덱스가 시작 이하)
+                // sliceEnd <= sliceStart 이면 sliceStart = sliceEnd 대입 후 같은 위치에서 while 을 또 돌아 무한 루프.
+                // 남은 원문 전체를 마지막 페이지로 넣고 반환(overflow 는 있을 수 있으나 원문 유실 없음).
+                if (sliceEndExclusiveIndex <= sliceStartIndex)
+                {
+                    Debug.LogWarning(
+                        $"[{nameof(TextMeshProExtensions)}.{nameof(SplitTextIntoPages)}] "
+                        + $"Cannot advance page slice (start={sliceStartIndex}, end={sliceEndExclusiveIndex}, "
+                        + $"boundaryMode={boundaryMode}, textLength={text.Length}). "
+                        + "Appending remaining text as the final page.",
+                        textMeshPro);
+
+                    pages.Add(RichTextSliceHelper.BuildPageText(
+                        text,
+                        sliceStartIndex,
+                        text.Length,
+                        inheritedOpenTags));
+
+                    return pages;
+                }
+
                 pages.Add(RichTextSliceHelper.BuildPageText(
                     text,
                     sliceStartIndex,
