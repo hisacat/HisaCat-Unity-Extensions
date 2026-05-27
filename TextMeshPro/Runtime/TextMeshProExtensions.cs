@@ -12,6 +12,25 @@ namespace HisaCat.HUE
     public static class TextMeshProExtensions
     {
         /// <summary>
+        /// 페이지 분할 시 "어디에서 끊을지"의 우선순위를 제어합니다.
+        /// </summary>
+        public enum SplitBoundaryMode
+        {
+            /// <summary>
+            /// 기존 동작 유지: 우선 줄바꿈(<c>\n</c>) 위치로 스냅하고, 없으면 공백(<c>' '</c>)으로 스냅합니다.
+            /// </summary>
+            NewLineThenSpace = 0,
+            /// <summary>
+            /// 공백(<c>' '</c>) 위치에서만 끊습니다.(<c>\n</c>은 경계로 스냅하지 않습니다)
+            /// </summary>
+            SpaceOnly = 1,
+            /// <summary>
+            /// 줄바꿈(<c>\n</c>) 위치에서만 끊습니다. (공백은 경계로 스냅하지 않습니다)
+            /// </summary>
+            NewLineOnly = 2
+        }
+
+        /// <summary>
         /// <see cref="TMP_Text.GetPreferredValues"/> 결과와 한도 크기를 비교할 때 허용하는 부동소수점 오차입니다.
         /// </summary>
         private const float PreferredSizeComparisonEpsilon = 0.01f;
@@ -51,7 +70,7 @@ namespace HisaCat.HUE
             // margin: (left, top, right, bottom)
             var maxPageWidth = Mathf.Max(0f, textRect.width - textMeshPro.margin.x - textMeshPro.margin.z);
             var maxPageHeight = Mathf.Max(0f, textRect.height - textMeshPro.margin.y - textMeshPro.margin.w);
-            return SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight);
+            return SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight, SplitBoundaryMode.NewLineThenSpace);
         }
 
         /// <summary>
@@ -72,6 +91,28 @@ namespace HisaCat.HUE
             string text,
             float maxPageWidth,
             float maxPageHeight)
+            => SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight, SplitBoundaryMode.NewLineThenSpace);
+
+        /// <summary>
+        /// 지정한 가로·세로 한도(픽셀) 안에 overflow 없이 들어가도록 <paramref name="text"/>를 분할합니다.
+        /// </summary>
+        /// <param name="textMeshPro">측정에 사용할 TMP 컴포넌트.</param>
+        /// <param name="text">분할할 원본 문자열.</param>
+        /// <param name="maxPageWidth">한 페이지가 차지할 수 있는 최대 가로 크기(픽셀).</param>
+        /// <param name="maxPageHeight">한 페이지가 차지할 수 있는 최대 세로 크기(픽셀).</param>
+        /// <param name="boundaryMode">
+        /// 경계 스냅 규칙.
+        /// <list type="bullet">
+        /// <item><description><see cref="SplitBoundaryMode.SpaceOnly"/>: 공백에서만 끊음</description></item>
+        /// <item><description><see cref="SplitBoundaryMode.NewLineThenSpace"/>: \n 우선, 없으면 공백</description></item>
+        /// </list>
+        /// </param>
+        public static List<string> SplitTextIntoPages(
+            TMP_Text textMeshPro,
+            string text,
+            float maxPageWidth,
+            float maxPageHeight,
+            SplitBoundaryMode boundaryMode)
         {
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
@@ -104,7 +145,8 @@ namespace HisaCat.HUE
                     text,
                     sliceStartIndex,
                     sliceEndExclusiveIndex,
-                    safeSliceEndIndices);
+                    safeSliceEndIndices,
+                    boundaryMode);
 
                 pages.Add(RichTextSliceHelper.BuildPageText(
                     text,
@@ -197,7 +239,8 @@ namespace HisaCat.HUE
             string text,
             int sliceStartIndex,
             int sliceEndExclusiveIndex,
-            List<int> safeSliceEndIndices)
+            List<int> safeSliceEndIndices,
+            SplitBoundaryMode boundaryMode)
         {
             if (sliceEndExclusiveIndex <= sliceStartIndex + 1 || sliceEndExclusiveIndex >= text.Length)
                 return sliceEndExclusiveIndex;
@@ -206,25 +249,33 @@ namespace HisaCat.HUE
             var searchStart = sliceStartIndex;
             var searchLength = searchEnd - searchStart + 1;
 
-            var lastNewlineIndex = text.LastIndexOf('\n', searchEnd, searchLength);
-            if (lastNewlineIndex >= sliceStartIndex)
+            if (boundaryMode == SplitBoundaryMode.NewLineThenSpace
+                || boundaryMode == SplitBoundaryMode.NewLineOnly)
             {
-                var newlineEndExclusive = lastNewlineIndex + 1;
-                var safeNewlineEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
-                    safeSliceEndIndices,
-                    newlineEndExclusive);
-                if (safeNewlineEnd > sliceStartIndex)
-                    return safeNewlineEnd;
+                var lastNewlineIndex = text.LastIndexOf('\n', searchEnd, searchLength);
+                if (lastNewlineIndex >= sliceStartIndex)
+                {
+                    var newlineEndExclusive = lastNewlineIndex + 1;
+                    var safeNewlineEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
+                        safeSliceEndIndices,
+                        newlineEndExclusive);
+                    if (safeNewlineEnd > sliceStartIndex)
+                        return safeNewlineEnd;
+                }
             }
 
-            var lastSpaceIndex = text.LastIndexOf(' ', searchEnd, searchLength);
-            if (lastSpaceIndex > sliceStartIndex)
+            if (boundaryMode == SplitBoundaryMode.NewLineThenSpace
+                || boundaryMode == SplitBoundaryMode.SpaceOnly)
             {
-                var safeSpaceEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
-                    safeSliceEndIndices,
-                    lastSpaceIndex);
-                if (safeSpaceEnd > sliceStartIndex)
-                    return safeSpaceEnd;
+                var lastSpaceIndex = text.LastIndexOf(' ', searchEnd, searchLength);
+                if (lastSpaceIndex > sliceStartIndex)
+                {
+                    var safeSpaceEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
+                        safeSliceEndIndices,
+                        lastSpaceIndex);
+                    if (safeSpaceEnd > sliceStartIndex)
+                        return safeSpaceEnd;
+                }
             }
 
             return sliceEndExclusiveIndex;
