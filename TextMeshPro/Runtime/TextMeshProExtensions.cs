@@ -42,16 +42,16 @@ namespace HisaCat.HUE
         /// TMP가 지원하지 않는 커스텀 태그·잘못된 마크업은 파서가 예측하지 못할 수 있습니다.
         /// </para>
         /// </remarks>
-        public static List<string> SplitTextByDisplayableLength(TMP_Text textMeshPro, string text)
+        public static List<string> SplitTextIntoPages(TMP_Text textMeshPro, string text)
         {
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
 
             var textRect = textMeshPro.rectTransform.rect;
             // margin: (left, top, right, bottom)
-            var displayableWidth = Mathf.Max(0f, textRect.width - textMeshPro.margin.x - textMeshPro.margin.z);
-            var displayableHeight = Mathf.Max(0f, textRect.height - textMeshPro.margin.y - textMeshPro.margin.w);
-            return SplitTextByDisplayableLength(textMeshPro, text, displayableWidth, displayableHeight);
+            var maxPageWidth = Mathf.Max(0f, textRect.width - textMeshPro.margin.x - textMeshPro.margin.z);
+            var maxPageHeight = Mathf.Max(0f, textRect.height - textMeshPro.margin.y - textMeshPro.margin.w);
+            return SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight);
         }
 
         /// <summary>
@@ -59,29 +59,29 @@ namespace HisaCat.HUE
         /// </summary>
         /// <param name="textMeshPro">측정에 사용할 TMP 컴포넌트.</param>
         /// <param name="text">분할할 원본 문자열.</param>
-        /// <param name="displayableWidth">한 조각이 차지할 수 있는 최대 가로 크기(픽셀).</param>
-        /// <param name="displayableHeight">한 조각이 차지할 수 있는 최대 세로 크기(픽셀).</param>
+        /// <param name="maxPageWidth">한 조각이 차지할 수 있는 최대 가로 크기(픽셀).</param>
+        /// <param name="maxPageHeight">한 페이지가 차지할 수 있는 최대 세로 크기(픽셀).</param>
         /// <returns>순서대로 표시할 문자열 조각 목록.</returns>
         /// <remarks>
         /// 각 조각은 <see cref="TMP_Text.GetPreferredValues(string, float, float)"/>로 측정했을 때
-        /// <paramref name="displayableWidth"/>·<paramref name="displayableHeight"/>를 넘지 않는 최대 길이로 잘립니다.
+        /// <paramref name="maxPageWidth"/>·<paramref name="maxPageHeight"/>를 넘지 않는 최대 길이로 잘립니다.
         /// 가능한 경우 공백·줄바꿈 앞에서 끊어 단어 중간 분할을 줄입니다.
         /// </remarks>
-        public static List<string> SplitTextByDisplayableLength(
+        public static List<string> SplitTextIntoPages(
             TMP_Text textMeshPro,
             string text,
-            float displayableWidth,
-            float displayableHeight)
+            float maxPageWidth,
+            float maxPageHeight)
         {
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
 
-            if (displayableWidth <= PreferredSizeComparisonEpsilon
-                || displayableHeight <= PreferredSizeComparisonEpsilon)
+            if (maxPageWidth <= PreferredSizeComparisonEpsilon
+                || maxPageHeight <= PreferredSizeComparisonEpsilon)
                 return new List<string> { text };
 
-            var safeSliceEndIndices = RichTextSliceHelper.CollectSafeExclusiveEndIndices(text);
-            var displayableChunks = new List<string>();
+            var safeSliceEndIndices = RichTextSliceHelper.CollectRichTextSafeSplitIndices(text);
+            var pages = new List<string>();
             var sliceStartIndex = 0;
             IReadOnlyList<string> inheritedOpenTags = Array.Empty<string>();
 
@@ -91,14 +91,14 @@ namespace HisaCat.HUE
                 if (sliceStartIndex >= text.Length)
                     break;
 
-                var sliceEndExclusiveIndex = FindMaxFittingSliceEndExclusiveIndex(
+                var sliceEndExclusiveIndex = FindMaxFittingEndIndex(
                     textMeshPro,
                     text,
                     sliceStartIndex,
                     inheritedOpenTags,
                     safeSliceEndIndices,
-                    displayableWidth,
-                    displayableHeight);
+                    maxPageWidth,
+                    maxPageHeight);
 
                 sliceEndExclusiveIndex = AdjustSliceEndToWordBoundary(
                     text,
@@ -106,27 +106,27 @@ namespace HisaCat.HUE
                     sliceEndExclusiveIndex,
                     safeSliceEndIndices);
 
-                displayableChunks.Add(RichTextSliceHelper.BuildDisplayableChunk(
+                pages.Add(RichTextSliceHelper.BuildPageText(
                     text,
                     sliceStartIndex,
                     sliceEndExclusiveIndex,
                     inheritedOpenTags));
 
-                inheritedOpenTags = RichTextSliceHelper.GetOpenTagsAtExclusiveEnd(text, sliceEndExclusiveIndex);
+                inheritedOpenTags = RichTextSliceHelper.GetActiveOpenTagsBeforeIndex(text, sliceEndExclusiveIndex);
                 sliceStartIndex = sliceEndExclusiveIndex;
             }
 
-            return displayableChunks;
+            return pages;
         }
 
-        private static int FindMaxFittingSliceEndExclusiveIndex(
+        private static int FindMaxFittingEndIndex(
             TMP_Text textMeshPro,
             string text,
             int sliceStartIndex,
             IReadOnlyList<string> inheritedOpenTags,
             List<int> safeSliceEndIndices,
-            float displayableWidth,
-            float displayableHeight)
+            float maxPageWidth,
+            float maxPageHeight)
         {
             var candidateStart = safeSliceEndIndices.BinarySearch(sliceStartIndex + 1);
             if (candidateStart < 0)
@@ -145,14 +145,14 @@ namespace HisaCat.HUE
                 var candidateIndex = (searchRangeLow + searchRangeHigh) >> 1;
                 var candidateEndExclusiveIndex = safeSliceEndIndices[candidateIndex];
 
-                if (DoesDisplayableChunkFitInDisplayArea(
+                if (DoesPageFitInBounds(
                         textMeshPro,
                         text,
                         sliceStartIndex,
                         candidateEndExclusiveIndex,
                         inheritedOpenTags,
-                        displayableWidth,
-                        displayableHeight))
+                        maxPageWidth,
+                        maxPageHeight))
                 {
                     bestEndExclusiveIndex = candidateEndExclusiveIndex;
                     searchRangeLow = candidateIndex + 1;
@@ -169,28 +169,28 @@ namespace HisaCat.HUE
             return safeSliceEndIndices[candidateStart];
         }
 
-        private static bool DoesDisplayableChunkFitInDisplayArea(
+        private static bool DoesPageFitInBounds(
             TMP_Text textMeshPro,
             string text,
             int sliceStartIndex,
             int sliceEndExclusiveIndex,
             IReadOnlyList<string> inheritedOpenTags,
-            float displayableWidth,
-            float displayableHeight)
+            float maxPageWidth,
+            float maxPageHeight)
         {
             if (sliceEndExclusiveIndex <= sliceStartIndex)
                 return false;
 
-            var displayableChunk = RichTextSliceHelper.BuildDisplayableChunk(
+            var pageText = RichTextSliceHelper.BuildPageText(
                 text,
                 sliceStartIndex,
                 sliceEndExclusiveIndex,
                 inheritedOpenTags);
 
-            var preferredSize = textMeshPro.GetPreferredValues(displayableChunk, displayableWidth, displayableHeight);
+            var preferredSize = textMeshPro.GetPreferredValues(pageText, maxPageWidth, maxPageHeight);
 
-            return preferredSize.x <= displayableWidth + PreferredSizeComparisonEpsilon
-                && preferredSize.y <= displayableHeight + PreferredSizeComparisonEpsilon;
+            return preferredSize.x <= maxPageWidth + PreferredSizeComparisonEpsilon
+                && preferredSize.y <= maxPageHeight + PreferredSizeComparisonEpsilon;
         }
 
         private static int AdjustSliceEndToWordBoundary(
@@ -235,7 +235,7 @@ namespace HisaCat.HUE
         /// </summary>
         private static class RichTextSliceHelper
         {
-            public static List<int> CollectSafeExclusiveEndIndices(string text)
+            public static List<int> CollectRichTextSafeSplitIndices(string text)
             {
                 var safeEnds = new List<int> { 0 };
                 if (string.IsNullOrEmpty(text))
@@ -287,24 +287,24 @@ namespace HisaCat.HUE
                     : text.Length;
             }
 
-            public static string BuildDisplayableChunk(
+            public static string BuildPageText(
                 string text,
                 int sliceStartIndex,
                 int sliceEndExclusiveIndex,
                 IReadOnlyList<string> inheritedOpenTags)
             {
-                var chunkBuilder = new StringBuilder();
+                var pageTextBuilder = new StringBuilder();
 
-                AppendOpeningTags(chunkBuilder, inheritedOpenTags);
-                chunkBuilder.Append(text, sliceStartIndex, sliceEndExclusiveIndex - sliceStartIndex);
+                AppendOpeningTags(pageTextBuilder, inheritedOpenTags);
+                pageTextBuilder.Append(text, sliceStartIndex, sliceEndExclusiveIndex - sliceStartIndex);
 
-                var openTagsAtSliceEnd = GetOpenTagsAtExclusiveEnd(text, sliceEndExclusiveIndex);
-                AppendClosingTags(chunkBuilder, openTagsAtSliceEnd);
+                var openTagsAtSliceEnd = GetActiveOpenTagsBeforeIndex(text, sliceEndExclusiveIndex);
+                AppendClosingTags(pageTextBuilder, openTagsAtSliceEnd);
 
-                return chunkBuilder.ToString();
+                return pageTextBuilder.ToString();
             }
 
-            public static List<string> GetOpenTagsAtExclusiveEnd(string text, int exclusiveEndIndex)
+            public static List<string> GetActiveOpenTagsBeforeIndex(string text, int exclusiveEndIndex)
             {
                 var openTags = new List<string>();
                 if (string.IsNullOrEmpty(text) || exclusiveEndIndex <= 0)
