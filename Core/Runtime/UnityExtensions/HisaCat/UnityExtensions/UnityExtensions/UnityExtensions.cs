@@ -966,8 +966,13 @@ namespace HisaCat.HUE.UnityExtensions
         {
             if (args == null) throw new System.ArgumentNullException(nameof(args));
             if (args.Length == 0) throw new System.ArgumentException($"At least one {nameof(RandomTableArg<T>.row)} is required.", nameof(args));
+            if (args.Any(e => e.weight < 0)) throw new System.ArgumentException($"All {nameof(RandomTableArg<T>.weight)} values must be non-negative.", nameof(args));
 
             var weightSum = args.Sum(e => e.weight);
+
+            // If all weights are zero, fall back to uniform random selection.
+            if (weightSum <= 0) return args[Random.Range(0, args.Length)].row;
+
             var weightTarget = Random.Range(0, weightSum);
             foreach (var current in args)
             {
