@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace HisaCat.HUE
         /// overflow 없이 표시 가능한 크기로 <paramref name="text"/>를 순서대로 잘라 반환합니다.
         /// </summary>
         /// <param name="textMeshPro">측정에 사용할 TMP 컴포넌트. 인스펙터에 설정된 스타일이 그대로 반영됩니다.</param>
-        /// <param name="text">분할할 원본 문자열.</param>
+        /// <param name="text">분할할 원본 문자열. TMP 리치 텍스트 태그를 포함할 수 있습니다.</param>
         /// <returns>
         /// 화면에 순서대로 넣을 수 있는 문자열 조각 목록.
         /// 빈 문자열이면 빈 목록을 반환합니다.
@@ -34,8 +35,11 @@ namespace HisaCat.HUE
         /// 호출 전 <c>Canvas.ForceUpdateCanvases()</c>로 레이아웃을 갱신하는 것을 권장합니다.
         /// </para>
         /// <para>
-        /// 리치 텍스트(&lt;color&gt; 등)는 문자 인덱스 기준으로 자르므로 태그가 깨질 수 있습니다.
-        /// 태그가 포함된 문자열은 태그 단위 분할 등 별도 처리가 필요합니다.
+        /// 리치 텍스트(&lt;color&gt;, &lt;size&gt; 등)는 태그 중간이 아닌 경계에서만 자르며,
+        /// 조각 끝에서는 열린 태그를 닫고 다음 조각 앞에서 동일 스타일 태그를 다시 엽니다.
+        /// </para>
+        /// <para>
+        /// TMP가 지원하지 않는 커스텀 태그·잘못된 마크업은 파서가 예측하지 못할 수 있습니다.
         /// </para>
         /// </remarks>
         public static List<string> SplitTextByDisplayableLength(TMP_Text textMeshPro, string text)
@@ -72,125 +76,387 @@ namespace HisaCat.HUE
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
 
-            // 측정 불가능한 영역이면 분할 없이 원문 전체를 한 덩어리로 반환합니다.
             if (displayableWidth <= PreferredSizeComparisonEpsilon
                 || displayableHeight <= PreferredSizeComparisonEpsilon)
                 return new List<string> { text };
 
+            var safeSliceEndIndices = RichTextSliceHelper.CollectSafeExclusiveEndIndices(text);
             var displayableChunks = new List<string>();
             var sliceStartIndex = 0;
+            IReadOnlyList<string> inheritedOpenTags = Array.Empty<string>();
 
             while (sliceStartIndex < text.Length)
             {
-                var remainingCharacterCount = text.Length - sliceStartIndex;
+                sliceStartIndex = RichTextSliceHelper.AdvanceToSafeSliceStartIndex(text, sliceStartIndex, safeSliceEndIndices);
+                if (sliceStartIndex >= text.Length)
+                    break;
 
-                // 이진 탐색으로 "영역 안에 들어가는 최대 글자 수"를 구합니다.
-                var fittingCharacterCount = FindMaxFittingCharacterCount(
+                var sliceEndExclusiveIndex = FindMaxFittingSliceEndExclusiveIndex(
                     textMeshPro,
                     text,
                     sliceStartIndex,
-                    remainingCharacterCount,
+                    inheritedOpenTags,
+                    safeSliceEndIndices,
                     displayableWidth,
                     displayableHeight);
 
-                // 단어·줄 중간보다 공백/줄바꿈 앞에서 끊는 편이 읽기 좋습니다.
-                fittingCharacterCount = AdjustSliceEndToWordBoundary(text, sliceStartIndex, fittingCharacterCount);
+                sliceEndExclusiveIndex = AdjustSliceEndToWordBoundary(
+                    text,
+                    sliceStartIndex,
+                    sliceEndExclusiveIndex,
+                    safeSliceEndIndices);
 
-                displayableChunks.Add(text.Substring(sliceStartIndex, fittingCharacterCount));
-                sliceStartIndex += fittingCharacterCount;
+                displayableChunks.Add(RichTextSliceHelper.BuildDisplayableChunk(
+                    text,
+                    sliceStartIndex,
+                    sliceEndExclusiveIndex,
+                    inheritedOpenTags));
+
+                inheritedOpenTags = RichTextSliceHelper.GetOpenTagsAtExclusiveEnd(text, sliceEndExclusiveIndex);
+                sliceStartIndex = sliceEndExclusiveIndex;
             }
 
             return displayableChunks;
         }
 
-        /// <summary>
-        /// <paramref name="text"/>의 <paramref name="sliceStartIndex"/>부터
-        /// 최대 <paramref name="maxCandidateCharacterCount"/>글자 중,
-        /// <paramref name="displayableWidth"/>×<paramref name="displayableHeight"/> 안에 들어가는 가장 긴 길이를 반환합니다.
-        /// </summary>
-        private static int FindMaxFittingCharacterCount(
+        private static int FindMaxFittingSliceEndExclusiveIndex(
             TMP_Text textMeshPro,
             string text,
             int sliceStartIndex,
-            int maxCandidateCharacterCount,
+            IReadOnlyList<string> inheritedOpenTags,
+            List<int> safeSliceEndIndices,
             float displayableWidth,
             float displayableHeight)
         {
-            if (maxCandidateCharacterCount <= 0) return 0;
+            var candidateStart = safeSliceEndIndices.BinarySearch(sliceStartIndex + 1);
+            if (candidateStart < 0)
+                candidateStart = ~candidateStart;
 
-            var searchRangeLow = 1;
-            var searchRangeHigh = maxCandidateCharacterCount;
-            var maxFittingCharacterCount = 0;
+            var candidateEnd = safeSliceEndIndices.Count - 1;
+            if (candidateStart > candidateEnd)
+                return Mathf.Min(sliceStartIndex + 1, text.Length);
+
+            var searchRangeLow = candidateStart;
+            var searchRangeHigh = candidateEnd;
+            var bestEndExclusiveIndex = sliceStartIndex;
 
             while (searchRangeLow <= searchRangeHigh)
             {
-                var candidateCharacterCount = (searchRangeLow + searchRangeHigh) >> 1;
+                var candidateIndex = (searchRangeLow + searchRangeHigh) >> 1;
+                var candidateEndExclusiveIndex = safeSliceEndIndices[candidateIndex];
 
-                if (DoesTextSliceFitInDisplayArea(
+                if (DoesDisplayableChunkFitInDisplayArea(
                         textMeshPro,
                         text,
                         sliceStartIndex,
-                        candidateCharacterCount,
+                        candidateEndExclusiveIndex,
+                        inheritedOpenTags,
                         displayableWidth,
                         displayableHeight))
                 {
-                    maxFittingCharacterCount = candidateCharacterCount;
-                    searchRangeLow = candidateCharacterCount + 1;
+                    bestEndExclusiveIndex = candidateEndExclusiveIndex;
+                    searchRangeLow = candidateIndex + 1;
                 }
                 else
                 {
-                    searchRangeHigh = candidateCharacterCount - 1;
+                    searchRangeHigh = candidateIndex - 1;
                 }
             }
 
-            // 한 글자도 영역보다 크면(폰트·설정 문제) 무한 루프를 막기 위해 최소 1글자는 진행합니다.
-            return maxFittingCharacterCount > 0 ? maxFittingCharacterCount : 1;
+            if (bestEndExclusiveIndex > sliceStartIndex)
+                return bestEndExclusiveIndex;
+
+            return safeSliceEndIndices[candidateStart];
         }
 
-        /// <summary>
-        /// 후보 문자열을 TMP로 레이아웃 측정했을 때 지정 영역을 넘지 않는지 확인합니다.
-        /// </summary>
-        private static bool DoesTextSliceFitInDisplayArea(
+        private static bool DoesDisplayableChunkFitInDisplayArea(
             TMP_Text textMeshPro,
             string text,
             int sliceStartIndex,
-            int characterCount,
+            int sliceEndExclusiveIndex,
+            IReadOnlyList<string> inheritedOpenTags,
             float displayableWidth,
             float displayableHeight)
         {
-            var candidateText = text.Substring(sliceStartIndex, characterCount);
-            var preferredSize = textMeshPro.GetPreferredValues(candidateText, displayableWidth, displayableHeight);
+            if (sliceEndExclusiveIndex <= sliceStartIndex)
+                return false;
+
+            var displayableChunk = RichTextSliceHelper.BuildDisplayableChunk(
+                text,
+                sliceStartIndex,
+                sliceEndExclusiveIndex,
+                inheritedOpenTags);
+
+            var preferredSize = textMeshPro.GetPreferredValues(displayableChunk, displayableWidth, displayableHeight);
 
             return preferredSize.x <= displayableWidth + PreferredSizeComparisonEpsilon
                 && preferredSize.y <= displayableHeight + PreferredSizeComparisonEpsilon;
         }
 
-        /// <summary>
-        /// 이진 탐색으로 구한 잘림 위치를, 가능하면 줄바꿈·공백 직전으로 당깁니다.
-        /// </summary>
-        /// <param name="text">원본 문자열.</param>
-        /// <param name="sliceStartIndex">현재 조각의 시작 인덱스.</param>
-        /// <param name="fittingCharacterCount">영역에 맞는 최대 글자 수(조정 전).</param>
-        /// <returns>실제로 잘라낼 글자 수.</returns>
-        private static int AdjustSliceEndToWordBoundary(string text, int sliceStartIndex, int fittingCharacterCount)
+        private static int AdjustSliceEndToWordBoundary(
+            string text,
+            int sliceStartIndex,
+            int sliceEndExclusiveIndex,
+            List<int> safeSliceEndIndices)
         {
-            // 마지막 조각이거나 한 글자뿐이면 조정하지 않습니다.
-            if (fittingCharacterCount <= 1 || sliceStartIndex + fittingCharacterCount >= text.Length)
-                return fittingCharacterCount;
+            if (sliceEndExclusiveIndex <= sliceStartIndex + 1 || sliceEndExclusiveIndex >= text.Length)
+                return sliceEndExclusiveIndex;
 
-            var sliceEndExclusiveIndex = sliceStartIndex + fittingCharacterCount;
+            var searchEnd = sliceEndExclusiveIndex - 1;
+            var searchStart = sliceStartIndex;
+            var searchLength = searchEnd - searchStart + 1;
 
-            // 우선 명시적 줄바꿈(\n) 앞에서 끊습니다.
-            var lastNewlineIndex = text.LastIndexOf('\n', sliceEndExclusiveIndex - 1, fittingCharacterCount);
+            var lastNewlineIndex = text.LastIndexOf('\n', searchEnd, searchLength);
             if (lastNewlineIndex >= sliceStartIndex)
-                return lastNewlineIndex - sliceStartIndex + 1;
+            {
+                var newlineEndExclusive = lastNewlineIndex + 1;
+                var safeNewlineEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
+                    safeSliceEndIndices,
+                    newlineEndExclusive);
+                if (safeNewlineEnd > sliceStartIndex)
+                    return safeNewlineEnd;
+            }
 
-            // 다음으로 공백 앞에서 끊습니다. (공백 문자는 다음 조각으로 넘깁니다)
-            var lastSpaceIndex = text.LastIndexOf(' ', sliceEndExclusiveIndex - 1, fittingCharacterCount);
+            var lastSpaceIndex = text.LastIndexOf(' ', searchEnd, searchLength);
             if (lastSpaceIndex > sliceStartIndex)
-                return lastSpaceIndex - sliceStartIndex;
+            {
+                var safeSpaceEnd = RichTextSliceHelper.FindNearestSafeEndAtOrBefore(
+                    safeSliceEndIndices,
+                    lastSpaceIndex);
+                if (safeSpaceEnd > sliceStartIndex)
+                    return safeSpaceEnd;
+            }
 
-            return fittingCharacterCount;
+            return sliceEndExclusiveIndex;
+        }
+
+        /// <summary>
+        /// TMP 리치 텍스트 마크업을 고려한 분할·태그 스택 유틸리티입니다.
+        /// </summary>
+        private static class RichTextSliceHelper
+        {
+            public static List<int> CollectSafeExclusiveEndIndices(string text)
+            {
+                var safeEnds = new List<int> { 0 };
+                if (string.IsNullOrEmpty(text))
+                    return safeEnds;
+
+                var isInsideTag = false;
+                for (var characterIndex = 0; characterIndex < text.Length; characterIndex++)
+                {
+                    var character = text[characterIndex];
+
+                    if (character == '<')
+                    {
+                        isInsideTag = true;
+                        continue;
+                    }
+
+                    if (isInsideTag)
+                    {
+                        if (character == '>')
+                        {
+                            isInsideTag = false;
+                            TryAddSafeEnd(safeEnds, characterIndex + 1);
+                        }
+
+                        continue;
+                    }
+
+                    TryAddSafeEnd(safeEnds, characterIndex + 1);
+                }
+
+                TryAddSafeEnd(safeEnds, text.Length);
+                return safeEnds;
+            }
+
+            public static int AdvanceToSafeSliceStartIndex(
+                string text,
+                int sliceStartIndex,
+                List<int> safeSliceEndIndices)
+            {
+                if (sliceStartIndex <= 0 || IsSafeSliceIndex(text, sliceStartIndex))
+                    return sliceStartIndex;
+
+                var nextIndex = safeSliceEndIndices.BinarySearch(sliceStartIndex);
+                if (nextIndex < 0)
+                    nextIndex = ~nextIndex;
+
+                return nextIndex < safeSliceEndIndices.Count
+                    ? safeSliceEndIndices[nextIndex]
+                    : text.Length;
+            }
+
+            public static string BuildDisplayableChunk(
+                string text,
+                int sliceStartIndex,
+                int sliceEndExclusiveIndex,
+                IReadOnlyList<string> inheritedOpenTags)
+            {
+                var chunkBuilder = new StringBuilder();
+
+                AppendOpeningTags(chunkBuilder, inheritedOpenTags);
+                chunkBuilder.Append(text, sliceStartIndex, sliceEndExclusiveIndex - sliceStartIndex);
+
+                var openTagsAtSliceEnd = GetOpenTagsAtExclusiveEnd(text, sliceEndExclusiveIndex);
+                AppendClosingTags(chunkBuilder, openTagsAtSliceEnd);
+
+                return chunkBuilder.ToString();
+            }
+
+            public static List<string> GetOpenTagsAtExclusiveEnd(string text, int exclusiveEndIndex)
+            {
+                var openTags = new List<string>();
+                if (string.IsNullOrEmpty(text) || exclusiveEndIndex <= 0)
+                    return openTags;
+
+                var parseLength = Mathf.Clamp(exclusiveEndIndex, 0, text.Length);
+                var characterIndex = 0;
+
+                while (characterIndex < parseLength)
+                {
+                    if (text[characterIndex] != '<')
+                    {
+                        characterIndex++;
+                        continue;
+                    }
+
+                    var tagEndIndex = text.IndexOf('>', characterIndex + 1);
+                    if (tagEndIndex < 0 || tagEndIndex >= parseLength)
+                        break;
+
+                    var fullTag = text.Substring(characterIndex, tagEndIndex - characterIndex + 1);
+                    ApplyTagToStack(openTags, fullTag);
+                    characterIndex = tagEndIndex + 1;
+                }
+
+                return openTags;
+            }
+
+            public static int FindNearestSafeEndAtOrBefore(List<int> safeSliceEndIndices, int targetEndExclusiveIndex)
+            {
+                var index = safeSliceEndIndices.BinarySearch(targetEndExclusiveIndex);
+                if (index >= 0)
+                    return safeSliceEndIndices[index];
+
+                index = ~index - 1;
+                return index >= 0 ? safeSliceEndIndices[index] : 0;
+            }
+
+            private static void ApplyTagToStack(List<string> openTags, string fullTag)
+            {
+                if (string.IsNullOrEmpty(fullTag) || fullTag[0] != '<')
+                    return;
+
+                var innerTag = fullTag.Substring(1, fullTag.Length - 2).Trim();
+                if (innerTag.Length == 0)
+                    return;
+
+                if (innerTag[0] == '/')
+                {
+                    var closingTagName = GetTagName(innerTag.Substring(1));
+                    for (var tagIndex = openTags.Count - 1; tagIndex >= 0; tagIndex--)
+                    {
+                        if (GetTagName(openTags[tagIndex]) == closingTagName)
+                        {
+                            openTags.RemoveAt(tagIndex);
+                            break;
+                        }
+                    }
+
+                    return;
+                }
+
+                if (IsSelfClosingTag(innerTag))
+                    return;
+
+                openTags.Add(fullTag);
+            }
+
+            private static bool IsSelfClosingTag(string innerTag)
+            {
+                if (innerTag.EndsWith("/", StringComparison.Ordinal))
+                    return true;
+
+                switch (GetTagName(innerTag))
+                {
+                    case "br":
+                    case "BR":
+                    case "cr":
+                    case "CR":
+                    case "zwsp":
+                    case "ZWSP":
+                    case "nobr":
+                    case "NOBR":
+                    case "page":
+                    case "PAGE":
+                    case "sprite":
+                    case "SPRITE":
+                    case "angle":
+                    case "ANGLE":
+                    case "hash":
+                    case "HASH":
+                    case "space":
+                    case "SPACE":
+                    case "u":
+                    case "U":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            private static string GetTagName(string tagContentOrFullTag)
+            {
+                var content = tagContentOrFullTag.Trim();
+                if (content.StartsWith("<", StringComparison.Ordinal))
+                    content = content.Substring(1, content.Length - 2).Trim();
+
+                content = content.TrimStart('/');
+                var delimiterIndex = content.IndexOfAny(new[] { ' ', '=', '"' });
+                return delimiterIndex < 0
+                    ? content
+                    : content.Substring(0, delimiterIndex);
+            }
+
+            private static void AppendOpeningTags(StringBuilder builder, IReadOnlyList<string> openTags)
+            {
+                for (var tagIndex = 0; tagIndex < openTags.Count; tagIndex++)
+                    builder.Append(openTags[tagIndex]);
+            }
+
+            private static void AppendClosingTags(StringBuilder builder, IReadOnlyList<string> openTags)
+            {
+                for (var tagIndex = openTags.Count - 1; tagIndex >= 0; tagIndex--)
+                {
+                    builder.Append("</");
+                    builder.Append(GetTagName(openTags[tagIndex]));
+                    builder.Append('>');
+                }
+            }
+
+            private static bool IsSafeSliceIndex(string text, int index)
+            {
+                if (index <= 0 || index >= text.Length)
+                    return true;
+
+                var isInsideTag = false;
+                for (var characterIndex = 0; characterIndex < index; characterIndex++)
+                {
+                    if (text[characterIndex] == '<')
+                        isInsideTag = true;
+                    else if (text[characterIndex] == '>')
+                        isInsideTag = false;
+                }
+
+                return isInsideTag == false;
+            }
+
+            private static void TryAddSafeEnd(List<int> safeEnds, int exclusiveEndIndex)
+            {
+                if (safeEnds.Count == 0 || safeEnds[safeEnds.Count - 1] != exclusiveEndIndex)
+                    safeEnds.Add(exclusiveEndIndex);
+            }
         }
     }
 }
