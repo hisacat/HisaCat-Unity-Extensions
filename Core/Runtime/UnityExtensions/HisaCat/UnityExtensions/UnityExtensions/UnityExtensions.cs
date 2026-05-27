@@ -977,7 +977,7 @@ namespace HisaCat.HUE.UnityExtensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T PickRandomTable<T>(IEnumerable<T> table, System.Func<T, float> getWeight)
+        public static T PickRandomTable<T>(this IEnumerable<T> table, System.Func<T, float> getWeight)
             => PickRandomTable(table.Select(e => new RandomTableArg<T>() { weight = getWeight(e), row = e }).ToArray());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
