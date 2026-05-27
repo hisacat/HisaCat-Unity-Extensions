@@ -964,6 +964,9 @@ namespace HisaCat.HUE.UnityExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T PickRandomTable<T>(params RandomTableArg<T>[] args)
         {
+            if (args == null) throw new System.ArgumentNullException(nameof(args));
+            if (args.Length == 0) throw new System.ArgumentException($"At least one {nameof(RandomTableArg<T>.row)} is required.", nameof(args));
+
             var weightSum = args.Sum(e => e.weight);
             var weightTarget = Random.Range(0, weightSum);
             foreach (var current in args)
