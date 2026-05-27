@@ -6,9 +6,7 @@ using UnityEngine;
 
 namespace HisaCat.HUE
 {
-    /// <summary>
-    /// TextMesh Pro 텍스트 측정·분할 관련 확장 메서드입니다.
-    /// </summary>
+    /// <summary> TextMesh Pro 텍스트를 레이아웃 기준으로 페이지 단위 분할하는 확장 메서드입니다. </summary>
     public static class TextMeshProExtensions
     {
         /// <summary>
@@ -17,7 +15,7 @@ namespace HisaCat.HUE
         public enum SplitBoundaryMode
         {
             /// <summary>
-            /// 기존 동작 유지: 우선 줄바꿈(<c>\n</c>) 위치로 스냅하고, 없으면 공백(<c>' '</c>)으로 스냅합니다.
+            /// 기본 동작: 우선 줄바꿈(<c>\n</c>) 위치로 스냅하고, 없으면 공백(<c>' '</c>)으로 스냅합니다.
             /// </summary>
             NewLineThenSpace = 0,
             /// <summary>
@@ -30,19 +28,17 @@ namespace HisaCat.HUE
             NewLineOnly = 2
         }
 
-        /// <summary>
-        /// <see cref="TMP_Text.GetPreferredValues"/> 결과와 한도 크기를 비교할 때 허용하는 부동소수점 오차입니다.
-        /// </summary>
+        /// <summary> <see cref="TMP_Text.GetPreferredValues(string, float, float)"/> 결과와 한도 크기를 비교할 때 허용하는 부동소수점 오차입니다. </summary>
         private const float PreferredSizeComparisonEpsilon = 0.01f;
 
         /// <summary>
         /// <paramref name="textMeshPro"/>의 RectTransform·margin·폰트·줄바꿈 설정을 기준으로,
-        /// overflow 없이 표시 가능한 크기로 <paramref name="text"/>를 순서대로 잘라 반환합니다.
+        /// overflow 없이 표시 가능한 크기로 <paramref name="text"/>를 페이지 단위로 잘라 반환합니다.
         /// </summary>
         /// <param name="textMeshPro">측정에 사용할 TMP 컴포넌트. 인스펙터에 설정된 스타일이 그대로 반영됩니다.</param>
         /// <param name="text">분할할 원본 문자열. TMP 리치 텍스트 태그를 포함할 수 있습니다.</param>
         /// <returns>
-        /// 화면에 순서대로 넣을 수 있는 문자열 조각 목록.
+        /// 화면에 순서대로 넣을 수 있는 페이지 텍스트 목록입니다.
         /// 빈 문자열이면 빈 목록을 반환합니다.
         /// </returns>
         /// <remarks>
@@ -61,7 +57,7 @@ namespace HisaCat.HUE
         /// TMP가 지원하지 않는 커스텀 태그·잘못된 마크업은 파서가 예측하지 못할 수 있습니다.
         /// </para>
         /// </remarks>
-        public static List<string> SplitTextIntoPages(TMP_Text textMeshPro, string text)
+        public static List<string> SplitTextIntoPages(TMP_Text textMeshPro, string text, SplitBoundaryMode boundaryMode = SplitBoundaryMode.NewLineThenSpace)
         {
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
@@ -70,28 +66,8 @@ namespace HisaCat.HUE
             // margin: (left, top, right, bottom)
             var maxPageWidth = Mathf.Max(0f, textRect.width - textMeshPro.margin.x - textMeshPro.margin.z);
             var maxPageHeight = Mathf.Max(0f, textRect.height - textMeshPro.margin.y - textMeshPro.margin.w);
-            return SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight, SplitBoundaryMode.NewLineThenSpace);
+            return SplitTextIntoPages(textMeshPro, text, boundaryMode, maxPageWidth, maxPageHeight);
         }
-
-        /// <summary>
-        /// 지정한 가로·세로 한도(픽셀) 안에 overflow 없이 들어가도록 <paramref name="text"/>를 분할합니다.
-        /// </summary>
-        /// <param name="textMeshPro">측정에 사용할 TMP 컴포넌트.</param>
-        /// <param name="text">분할할 원본 문자열.</param>
-        /// <param name="maxPageWidth">한 조각이 차지할 수 있는 최대 가로 크기(픽셀).</param>
-        /// <param name="maxPageHeight">한 페이지가 차지할 수 있는 최대 세로 크기(픽셀).</param>
-        /// <returns>순서대로 표시할 문자열 조각 목록.</returns>
-        /// <remarks>
-        /// 각 조각은 <see cref="TMP_Text.GetPreferredValues(string, float, float)"/>로 측정했을 때
-        /// <paramref name="maxPageWidth"/>·<paramref name="maxPageHeight"/>를 넘지 않는 최대 길이로 잘립니다.
-        /// 가능한 경우 공백·줄바꿈 앞에서 끊어 단어 중간 분할을 줄입니다.
-        /// </remarks>
-        public static List<string> SplitTextIntoPages(
-            TMP_Text textMeshPro,
-            string text,
-            float maxPageWidth,
-            float maxPageHeight)
-            => SplitTextIntoPages(textMeshPro, text, maxPageWidth, maxPageHeight, SplitBoundaryMode.NewLineThenSpace);
 
         /// <summary>
         /// 지정한 가로·세로 한도(픽셀) 안에 overflow 없이 들어가도록 <paramref name="text"/>를 분할합니다.
@@ -101,18 +77,20 @@ namespace HisaCat.HUE
         /// <param name="maxPageWidth">한 페이지가 차지할 수 있는 최대 가로 크기(픽셀).</param>
         /// <param name="maxPageHeight">한 페이지가 차지할 수 있는 최대 세로 크기(픽셀).</param>
         /// <param name="boundaryMode">
-        /// 경계 스냅 규칙.
+        /// 페이지를 자를 때 우선적으로 맞출 경계 유형입니다.
         /// <list type="bullet">
         /// <item><description><see cref="SplitBoundaryMode.SpaceOnly"/>: 공백에서만 끊음</description></item>
-        /// <item><description><see cref="SplitBoundaryMode.NewLineThenSpace"/>: \n 우선, 없으면 공백</description></item>
+        /// <item><description><see cref="SplitBoundaryMode.NewLineThenSpace"/>: 줄바꿈 우선, 없으면 공백</description></item>
+        /// <item><description><see cref="SplitBoundaryMode.NewLineOnly"/>: 줄바꿈에서만 끊음</description></item>
         /// </list>
+        /// 공백·줄바꿈이 전혀 없는 경우에는 <paramref name="boundaryMode"/>와 무관하게 글자 기준으로 잘립니다.
         /// </param>
-        public static List<string> SplitTextIntoPages(
+        private static List<string> SplitTextIntoPages(
             TMP_Text textMeshPro,
             string text,
+            SplitBoundaryMode boundaryMode,
             float maxPageWidth,
-            float maxPageHeight,
-            SplitBoundaryMode boundaryMode)
+            float maxPageHeight)
         {
             if (textMeshPro == null) throw new ArgumentNullException(nameof(textMeshPro));
             if (string.IsNullOrEmpty(text)) return new List<string>();
