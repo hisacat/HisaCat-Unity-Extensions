@@ -4,6 +4,7 @@ using UnityEngine;
 namespace HisaCat.HUE
 {
     [ExecuteAlways]
+    [RequireComponent(typeof(RectTransform))]
     public class TextMeshProUGUILastCharacterFollower : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI m_Target = null;
