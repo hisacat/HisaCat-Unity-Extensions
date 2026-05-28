@@ -491,19 +491,19 @@ namespace HisaCat.HUE.UnityExtensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void PlayOrRestartCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator)
+        public static void RestartCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator)
         {
-            if (coroutine != null) { monoBehaviour.StopCoroutine(coroutine); coroutine = null; }
+            if (coroutine != null) monoBehaviour.StopCoroutine(coroutine);
             coroutine = monoBehaviour.StartCoroutine(enumerator);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void PlayOrStopCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
+        public static void StartOrStopCoroutine(this MonoBehaviour monoBehaviour, ref Coroutine coroutine, IEnumerator enumerator, bool start, bool restartIfAlreadyStarted)
         {
-            if (play)
+            if (start)
             {
-                if (coroutine != null && restartIfAlreadyPlaying == false) return;
+                if (coroutine != null && restartIfAlreadyStarted == false) return;
 
-                PlayOrRestartCoroutine(monoBehaviour, ref coroutine, enumerator);
+                RestartCoroutine(monoBehaviour, ref coroutine, enumerator);
                 return;
             }
             else

@@ -54,10 +54,10 @@ namespace HisaCat
             instance.StopCoroutine(coroutine);
         }
 
-        public static void PlayOrRestartCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
-            => instance.PlayOrRestartCoroutine(ref coroutine, enumerator);
-        public static void PlayOrStopCoroutine(ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
-            => instance.PlayOrStopCoroutine(ref coroutine, enumerator, play, restartIfAlreadyPlaying);
+        public static void RestartCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
+            => instance.RestartCoroutine(ref coroutine, enumerator);
+        public static void StartOrStopCoroutine(ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
+            => instance.StartOrStopCoroutine(ref coroutine, enumerator, play, restartIfAlreadyPlaying);
 
         public static void LoadImageFromURL(Texture2D texture, string url, Action<Texture2D> onLoaded)
         {
