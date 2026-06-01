@@ -11,11 +11,23 @@ namespace HisaCat.HUE
         [SerializeField] private Vector3 m_Offset = Vector3.zero;
         [SerializeField] private bool m_ForceMeshUpdate = false;
         private RectTransform rectTransform = null;
+        private DrivenRectTransformTracker tracker;
 
         private void Awake()
         {
             this.rectTransform = this.GetComponent<RectTransform>();
         }
+
+        private void OnEnable()
+        {
+            this.tracker.Clear();
+            this.tracker.Add(this, this.rectTransform, DrivenTransformProperties.AnchoredPosition3D);
+        }
+        private void OnDisable()
+        {
+            this.tracker.Clear();
+        }
+
         private void LateUpdate()
         {
             UpdatePosition();
