@@ -4,11 +4,24 @@ using UnityEngine.UI;
 
 namespace HisaCat.UGUI
 {
-    [AddComponentMenu("HisaCat/UGUI/Layout/Layout Group Child Aspect Ratio Fitter")]
+    /// <summary>
+    /// Provides aspect-ratio-based preferred layout size for Unity UI layout groups.
+    /// </summary>
+    /// <remarks>
+    /// This component does not directly modify the <see cref="RectTransform"/>.
+    /// Instead, it reports <see cref="ILayoutElement.preferredWidth"/> or
+    /// <see cref="ILayoutElement.preferredHeight"/> so that a parent layout group
+    /// can size this element while preserving the desired aspect ratio.
+    ///
+    /// This is useful when a child of <see cref="HorizontalLayoutGroup"/> or
+    /// <see cref="VerticalLayoutGroup"/> needs to keep an aspect ratio without
+    /// fighting the parent layout group like <see cref="AspectRatioFitter"/> can.
+    /// </remarks>
+    [AddComponentMenu("HisaCat/UGUI/Layout/Aspect Ratio Layout Element")]
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
     [DisallowMultipleComponent]
-    public class LayoutGroupChildAspectRatioFitter : UIBehaviour, ILayoutElement
+    public class AspectRatioLayoutElement : UIBehaviour, ILayoutElement
     {
         /// <summary>
         /// Determines which preferred size is calculated from the opposite axis.
@@ -133,9 +146,9 @@ namespace HisaCat.UGUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutGroupChildAspectRatioFitter"/> class.
+        /// Initializes a new instance of the <see cref="AspectRatioLayoutElement"/> class.
         /// </summary>
-        protected LayoutGroupChildAspectRatioFitter() { }
+        protected AspectRatioLayoutElement() { }
 
 #if UNITY_EDITOR
         /// <summary>

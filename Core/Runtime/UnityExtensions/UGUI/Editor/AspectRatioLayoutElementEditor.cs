@@ -1,30 +1,31 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HisaCat.UGUI
 {
-    [CustomEditor(typeof(LayoutGroupChildAspectRatioFitter))]
+    /// <summary>
+    /// Custom inspector for <see cref="AspectRatioLayoutElement"/>.
+    /// </summary>
+    [CustomEditor(typeof(AspectRatioLayoutElement))]
     [CanEditMultipleObjects]
-    public class LayoutGroupChildAspectRatioFitterEditor : Editor
+    public class AspectRatioLayoutElementEditor : Editor
     {
-        private SerializedProperty m_AspectModeProperty;
-        private SerializedProperty m_AspectRatioProperty;
-        private SerializedProperty m_LayoutPriorityProperty;
+        private SerializedProperty m_AspectMode;
+        private SerializedProperty m_AspectRatio;
+        private SerializedProperty m_LayoutPriority;
 
         /// <summary>
         /// Caches serialized properties.
         /// </summary>
         private void OnEnable()
         {
-            m_AspectModeProperty = serializedObject.FindProperty("m_AspectMode");
-            m_AspectRatioProperty = serializedObject.FindProperty("m_AspectRatio");
-            m_LayoutPriorityProperty = serializedObject.FindProperty("m_LayoutPriority");
+            this.m_AspectMode = this.serializedObject.FindProperty(nameof(this.m_AspectMode));
+            this.m_AspectRatio = this.serializedObject.FindProperty(nameof(this.m_AspectRatio));
+            this.m_LayoutPriority = this.serializedObject.FindProperty(nameof(this.m_LayoutPriority));
         }
 
         /// <summary>
@@ -32,11 +33,11 @@ namespace HisaCat.UGUI
         /// </summary>
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            this.serializedObject.Update();
 
             DrawProperties();
 
-            serializedObject.ApplyModifiedProperties();
+            this.serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
 
@@ -50,19 +51,19 @@ namespace HisaCat.UGUI
         private void DrawProperties()
         {
             EditorGUILayout.PropertyField(
-                m_AspectModeProperty,
+                this.m_AspectMode,
                 new GUIContent(
                     "Aspect Mode",
                     "Determines which preferred size is calculated from the opposite axis."));
 
             EditorGUILayout.PropertyField(
-                m_AspectRatioProperty,
+                this.m_AspectRatio,
                 new GUIContent(
                     "Aspect Ratio",
                     "Width divided by height. For example, 16:9 is 16 / 9."));
 
             EditorGUILayout.PropertyField(
-                m_LayoutPriorityProperty,
+                this.m_LayoutPriority,
                 new GUIContent(
                     "Layout Priority",
                     "Priority used when multiple ILayoutElement components exist on the same object."));
@@ -74,16 +75,16 @@ namespace HisaCat.UGUI
         private void DrawCalculatedPreferredSize()
         {
             var elements = targets
-                .OfType<LayoutGroupChildAspectRatioFitter>()
+                .OfType<AspectRatioLayoutElement>()
                 .Where(e => e != null)
                 .ToArray();
 
             var widthElements = elements
-                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.HeightControlsWidth)
+                .Where(e => e.aspectMode == AspectRatioLayoutElement.AspectMode.HeightControlsWidth)
                 .ToArray();
 
             var heightElements = elements
-                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.WidthControlsHeight)
+                .Where(e => e.aspectMode == AspectRatioLayoutElement.AspectMode.WidthControlsHeight)
                 .ToArray();
 
             EditorGUILayout.LabelField("Calculated Preferred Size", EditorStyles.boldLabel);
@@ -166,7 +167,7 @@ namespace HisaCat.UGUI
         private void DrawValidationHelpBoxes()
         {
             var elements = targets
-                .OfType<LayoutGroupChildAspectRatioFitter>()
+                .OfType<AspectRatioLayoutElement>()
                 .Where(e => e != null)
                 .ToArray();
 
@@ -197,8 +198,8 @@ namespace HisaCat.UGUI
             EditorGUILayout.HelpBox(
                 BuildCountMessage(
                     ignoredCount,
-                    "Selected object is ignored by layout, so LayoutGroupChildAspectRatioFitter will not affect its parent layout.",
-                    "Some selected objects are ignored by layout, so LayoutGroupChildAspectRatioFitter will not affect their parent layouts."),
+                    "Selected object is ignored by layout, so AspectRatioLayoutElement will not affect its parent layout.",
+                    "Some selected objects are ignored by layout, so AspectRatioLayoutElement will not affect their parent layouts."),
                 MessageType.Warning);
         }
 
@@ -254,7 +255,7 @@ namespace HisaCat.UGUI
         {
             var missingWidthGroups = contexts
                 .Where(e => !e.isIgnoredByLayout)
-                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.HeightControlsWidth)
+                .Where(e => e.aspectMode == AspectRatioLayoutElement.AspectMode.HeightControlsWidth)
                 .Where(e => e.parentLayoutGroup != null)
                 .Where(e => e.parentLayoutGroup.isActiveAndEnabled)
                 .Where(e => !e.parentLayoutGroup.childControlWidth)
@@ -272,7 +273,7 @@ namespace HisaCat.UGUI
 
             var missingHeightGroups = contexts
                 .Where(e => !e.isIgnoredByLayout)
-                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.WidthControlsHeight)
+                .Where(e => e.aspectMode == AspectRatioLayoutElement.AspectMode.WidthControlsHeight)
                 .Where(e => e.parentLayoutGroup != null)
                 .Where(e => e.parentLayoutGroup.isActiveAndEnabled)
                 .Where(e => !e.parentLayoutGroup.childControlHeight)
@@ -315,19 +316,19 @@ namespace HisaCat.UGUI
         }
 
         /// <summary>
-        /// Stores layout validation data for a selected <see cref="LayoutGroupChildAspectRatioFitter"/>.
+        /// Stores layout validation data for a selected <see cref="AspectRatioLayoutElement"/>.
         /// </summary>
         private readonly struct LayoutValidationContext
         {
             /// <summary>
             /// Selected aspect ratio layout element.
             /// </summary>
-            public readonly LayoutGroupChildAspectRatioFitter element;
+            public readonly AspectRatioLayoutElement element;
 
             /// <summary>
             /// Aspect mode of the selected element.
             /// </summary>
-            public readonly LayoutGroupChildAspectRatioFitter.AspectMode aspectMode;
+            public readonly AspectRatioLayoutElement.AspectMode aspectMode;
 
             /// <summary>
             /// Whether this child is ignored by the parent layout group.
@@ -347,8 +348,8 @@ namespace HisaCat.UGUI
             /// <param name="isIgnoredByLayout">Whether this child is ignored by layout.</param>
             /// <param name="parentLayoutGroup">Parent horizontal or vertical layout group.</param>
             private LayoutValidationContext(
-                LayoutGroupChildAspectRatioFitter element,
-                LayoutGroupChildAspectRatioFitter.AspectMode aspectMode,
+                AspectRatioLayoutElement element,
+                AspectRatioLayoutElement.AspectMode aspectMode,
                 bool isIgnoredByLayout,
                 HorizontalOrVerticalLayoutGroup parentLayoutGroup)
             {
@@ -359,11 +360,11 @@ namespace HisaCat.UGUI
             }
 
             /// <summary>
-            /// Creates validation context from an <see cref="LayoutGroupChildAspectRatioFitter"/>.
+            /// Creates validation context from an <see cref="AspectRatioLayoutElement"/>.
             /// </summary>
             /// <param name="element">Element to validate.</param>
             /// <returns>Created validation context.</returns>
-            public static LayoutValidationContext Create(LayoutGroupChildAspectRatioFitter element)
+            public static LayoutValidationContext Create(AspectRatioLayoutElement element)
             {
                 var isIgnoredByLayout = IsIgnoredByLayout(element);
 
@@ -384,7 +385,7 @@ namespace HisaCat.UGUI
             /// </summary>
             /// <param name="element">Element to check.</param>
             /// <returns><c>true</c> if ignored by layout; otherwise, <c>false</c>.</returns>
-            private static bool IsIgnoredByLayout(LayoutGroupChildAspectRatioFitter element)
+            private static bool IsIgnoredByLayout(AspectRatioLayoutElement element)
             {
                 // LayoutGroup ignores a child when any ILayoutIgnorer on the child
                 // reports ignoreLayout == true.
