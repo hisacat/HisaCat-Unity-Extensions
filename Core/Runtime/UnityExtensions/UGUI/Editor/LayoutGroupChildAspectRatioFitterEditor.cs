@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using Unity.VisualScripting;
@@ -12,102 +13,386 @@ namespace HisaCat.UGUI
     [CanEditMultipleObjects]
     public class LayoutGroupChildAspectRatioFitterEditor : Editor
     {
+        private SerializedProperty m_AspectModeProperty;
+        private SerializedProperty m_AspectRatioProperty;
+        private SerializedProperty m_LayoutPriorityProperty;
+
+        /// <summary>
+        /// Caches serialized properties.
+        /// </summary>
+        private void OnEnable()
+        {
+            m_AspectModeProperty = serializedObject.FindProperty("m_AspectMode");
+            m_AspectRatioProperty = serializedObject.FindProperty("m_AspectRatio");
+            m_LayoutPriorityProperty = serializedObject.FindProperty("m_LayoutPriority");
+        }
+
+        /// <summary>
+        /// Draws the inspector GUI.
+        /// </summary>
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            serializedObject.Update();
 
-            var comp = target as LayoutGroupChildAspectRatioFitter;
+            DrawProperties();
 
-            var targetComps = this.targets.Select(e => e as LayoutGroupChildAspectRatioFitter);
-            var widthComps = targetComps.Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.HeightControlsWidth);
-            var heightComps = targetComps.Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.WidthControlsHeight);
-            var (widthCompsCount, heightCompsCount) = (widthComps.Count(), heightComps.Count());
+            serializedObject.ApplyModifiedProperties();
 
-            #region Draw Calculated Preferred Size
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Calculated Preferred Size");
+
+            DrawCalculatedPreferredSize();
+            DrawValidationHelpBoxes();
+        }
+
+        /// <summary>
+        /// Draws editable serialized properties.
+        /// </summary>
+        private void DrawProperties()
+        {
+            EditorGUILayout.PropertyField(
+                m_AspectModeProperty,
+                new GUIContent(
+                    "Aspect Mode",
+                    "Determines which preferred size is calculated from the opposite axis."));
+
+            EditorGUILayout.PropertyField(
+                m_AspectRatioProperty,
+                new GUIContent(
+                    "Aspect Ratio",
+                    "Width divided by height. For example, 16:9 is 16 / 9."));
+
+            EditorGUILayout.PropertyField(
+                m_LayoutPriorityProperty,
+                new GUIContent(
+                    "Layout Priority",
+                    "Priority used when multiple ILayoutElement components exist on the same object."));
+        }
+
+        /// <summary>
+        /// Draws read-only preferred size values calculated by selected components.
+        /// </summary>
+        private void DrawCalculatedPreferredSize()
+        {
+            var elements = targets
+                .OfType<LayoutGroupChildAspectRatioFitter>()
+                .Where(e => e != null)
+                .ToArray();
+
+            var widthElements = elements
+                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.HeightControlsWidth)
+                .ToArray();
+
+            var heightElements = elements
+                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.WidthControlsHeight)
+                .ToArray();
+
+            EditorGUILayout.LabelField("Calculated Preferred Size", EditorStyles.boldLabel);
+
+            using (new EditorGUI.IndentLevelScope())
             {
-                EditorGUI.indentLevel++;
+                if (widthElements.Length == 0 && heightElements.Length == 0)
                 {
-                    void DrawReadonlyTextField(string label, string text)
+                    using (new EditorGUI.DisabledScope(true))
                     {
-                        EditorGUI.BeginDisabledGroup(true);
-                        EditorGUILayout.TextField(label, text);
-                        EditorGUI.EndDisabledGroup();
+                        EditorGUILayout.TextField("Preferred Size", "Not Provided");
                     }
 
-                    if (widthCompsCount > 0)
+                    return;
+                }
+
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    if (widthElements.Length > 0)
                     {
-                        EditorGUI.showMixedValue = widthComps.GroupBy(e => e.preferredWidth).Count() > 1;
-                        DrawReadonlyTextField("Preferred Width", widthComps.First().preferredWidth.ToString());
-                        EditorGUI.showMixedValue = false;
+                        DrawReadonlyFloatField(
+                            "Preferred Width",
+                            widthElements.Select(e => e.preferredWidth));
                     }
-                    if (heightCompsCount > 0)
+
+                    if (heightElements.Length > 0)
                     {
-                        EditorGUI.showMixedValue = heightComps.GroupBy(e => e.preferredHeight).Count() > 1;
-                        DrawReadonlyTextField("Preferred Height", heightComps.First().preferredHeight.ToString());
-                        EditorGUI.showMixedValue = false;
+                        DrawReadonlyFloatField(
+                            "Preferred Height",
+                            heightElements.Select(e => e.preferredHeight));
                     }
                 }
-                EditorGUI.indentLevel--;
             }
-            #endregion Draw Calculated Preferred Size
+        }
 
-            Behaviour group = null;
-            HorizontalLayoutGroup hGroup = null;
-            VerticalLayoutGroup vGroup = null;
-            {
-                var ignorer = comp.GetComponent<ILayoutIgnorer>();
-                if (ignorer == null || ignorer.ignoreLayout == false)
-                {
-                    RectTransform parent = comp.transform.parent as RectTransform;
-                    if (parent != null)
-                    {
-                        group = parent.GetComponent<ILayoutGroup>() as Behaviour;
-                        switch (group)
-                        {
-                            case HorizontalLayoutGroup _group:
-                                hGroup = _group;
-                                break;
-                            case VerticalLayoutGroup _group:
-                                vGroup = _group;
-                                break;
-                        }
-                    }
-                }
-            }
+        /// <summary>
+        /// Draws a disabled float field that supports mixed values.
+        /// </summary>
+        /// <param name="label">Field label.</param>
+        /// <param name="values">Values from selected components.</param>
+        private static void DrawReadonlyFloatField(string label, IEnumerable<float> values)
+        {
+            var valueArray = values.ToArray();
 
-            if (hGroup == null && vGroup == null)
-            {
-                EditorGUILayout.HelpBox("Parent does not have a horizontal or vertical layout group component. This component should be a child of a horizontal or vertical layout group.", MessageType.Warning);
+            if (valueArray.Length == 0)
                 return;
-            }
 
-            bool controlChildWidth = false;
-            bool controlChildHeight = false;
+            var previousMixedValue = EditorGUI.showMixedValue;
+
+            EditorGUI.showMixedValue = HasMixedFloatValues(valueArray);
+            EditorGUILayout.FloatField(label, valueArray[0]);
+
+            EditorGUI.showMixedValue = previousMixedValue;
+        }
+
+        /// <summary>
+        /// Determines whether the given float values should be displayed as mixed.
+        /// </summary>
+        /// <param name="values">Float values to compare.</param>
+        /// <returns><c>true</c> when values are different; otherwise, <c>false</c>.</returns>
+        private static bool HasMixedFloatValues(float[] values)
+        {
+            if (values.Length <= 1)
+                return false;
+
+            var firstValue = values[0];
+
+            for (var i = 1; i < values.Length; i++)
             {
-                if (hGroup != null)
-                {
-                    controlChildWidth = hGroup.childControlWidth;
-                    controlChildHeight = hGroup.childControlHeight;
-                }
-                else if (vGroup != null)
-                {
-                    controlChildWidth = vGroup.childControlWidth;
-                    controlChildHeight = vGroup.childControlHeight;
-                }
+                if (!Mathf.Approximately(firstValue, values[i]))
+                    return true;
             }
 
-            if (widthCompsCount > 0 && controlChildWidth == false)
+            return false;
+        }
+
+        /// <summary>
+        /// Draws warnings for common invalid layout configurations.
+        /// </summary>
+        private void DrawValidationHelpBoxes()
+        {
+            var elements = targets
+                .OfType<LayoutGroupChildAspectRatioFitter>()
+                .Where(e => e != null)
+                .ToArray();
+
+            if (elements.Length == 0)
+                return;
+
+            var contexts = elements
+                .Select(LayoutValidationContext.Create)
+                .ToArray();
+
+            DrawIgnoredLayoutWarning(contexts);
+            DrawMissingParentLayoutGroupWarning(contexts);
+            DrawDisabledParentLayoutGroupWarning(contexts);
+            DrawMissingControlChildSizeWarning(contexts);
+        }
+
+        /// <summary>
+        /// Draws a warning when selected elements are ignored by layout.
+        /// </summary>
+        /// <param name="contexts">Validation contexts.</param>
+        private static void DrawIgnoredLayoutWarning(LayoutValidationContext[] contexts)
+        {
+            var ignoredCount = contexts.Count(e => e.isIgnoredByLayout);
+
+            if (ignoredCount <= 0)
+                return;
+
+            EditorGUILayout.HelpBox(
+                BuildCountMessage(
+                    ignoredCount,
+                    "Selected object is ignored by layout, so LayoutGroupChildAspectRatioFitter will not affect its parent layout.",
+                    "Some selected objects are ignored by layout, so LayoutGroupChildAspectRatioFitter will not affect their parent layouts."),
+                MessageType.Warning);
+        }
+
+        /// <summary>
+        /// Draws a warning when there is no supported parent layout group.
+        /// </summary>
+        /// <param name="contexts">Validation contexts.</param>
+        private static void DrawMissingParentLayoutGroupWarning(LayoutValidationContext[] contexts)
+        {
+            var invalidContexts = contexts
+                .Where(e => !e.isIgnoredByLayout)
+                .Where(e => e.parentLayoutGroup == null)
+                .ToArray();
+
+            if (invalidContexts.Length <= 0)
+                return;
+
+            EditorGUILayout.HelpBox(
+                BuildCountMessage(
+                    invalidContexts.Length,
+                    "Parent does not have a HorizontalLayoutGroup or VerticalLayoutGroup. This component should be used as a child of a supported layout group.",
+                    "Some selected objects do not have a HorizontalLayoutGroup or VerticalLayoutGroup parent. This component should be used as a child of a supported layout group."),
+                MessageType.Warning);
+        }
+
+        /// <summary>
+        /// Draws a warning when the parent layout group exists but is disabled.
+        /// </summary>
+        /// <param name="contexts">Validation contexts.</param>
+        private static void DrawDisabledParentLayoutGroupWarning(LayoutValidationContext[] contexts)
+        {
+            var disabledGroups = contexts
+                .Where(e => !e.isIgnoredByLayout)
+                .Where(e => e.parentLayoutGroup != null)
+                .Where(e => !e.parentLayoutGroup.isActiveAndEnabled)
+                .Select(e => e.parentLayoutGroup)
+                .Distinct()
+                .ToArray();
+
+            if (disabledGroups.Length <= 0)
+                return;
+
+            EditorGUILayout.HelpBox(
+                $"Parent LayoutGroup is disabled or inactive: {FormatObjectNames(disabledGroups)}",
+                MessageType.Warning);
+        }
+
+        /// <summary>
+        /// Draws warnings when the parent layout group does not control the required child size axis.
+        /// </summary>
+        /// <param name="contexts">Validation contexts.</param>
+        private static void DrawMissingControlChildSizeWarning(LayoutValidationContext[] contexts)
+        {
+            var missingWidthGroups = contexts
+                .Where(e => !e.isIgnoredByLayout)
+                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.HeightControlsWidth)
+                .Where(e => e.parentLayoutGroup != null)
+                .Where(e => e.parentLayoutGroup.isActiveAndEnabled)
+                .Where(e => !e.parentLayoutGroup.childControlWidth)
+                .Select(e => e.parentLayoutGroup)
+                .Distinct()
+                .ToArray();
+
+            if (missingWidthGroups.Length > 0)
+            {
                 EditorGUILayout.HelpBox(
-                    $"For Aspect Mode '{comp.aspectMode}' to work properly, " +
-                    $"please enable 'Control Child Size' - 'Width' option in the parent LayoutGroup '{group.name}'.",
+                    "Aspect Mode 'Height Controls Width' requires the parent LayoutGroup to enable " +
+                    $"'Control Child Size - Width': {FormatObjectNames(missingWidthGroups)}",
                     MessageType.Warning);
-            if (heightCompsCount > 0 && controlChildHeight == false)
+            }
+
+            var missingHeightGroups = contexts
+                .Where(e => !e.isIgnoredByLayout)
+                .Where(e => e.aspectMode == LayoutGroupChildAspectRatioFitter.AspectMode.WidthControlsHeight)
+                .Where(e => e.parentLayoutGroup != null)
+                .Where(e => e.parentLayoutGroup.isActiveAndEnabled)
+                .Where(e => !e.parentLayoutGroup.childControlHeight)
+                .Select(e => e.parentLayoutGroup)
+                .Distinct()
+                .ToArray();
+
+            if (missingHeightGroups.Length > 0)
+            {
                 EditorGUILayout.HelpBox(
-                    $"For Aspect Mode '{comp.aspectMode}' to work properly, " +
-                    $"please enable 'Control Child Size' - 'Height' option in the parent LayoutGroup '{group.name}'.",
+                    "Aspect Mode 'Width Controls Height' requires the parent LayoutGroup to enable " +
+                    $"'Control Child Size - Height': {FormatObjectNames(missingHeightGroups)}",
                     MessageType.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Builds a singular or plural message depending on count.
+        /// </summary>
+        /// <param name="count">Number of affected objects.</param>
+        /// <param name="singular">Message used when count is one.</param>
+        /// <param name="plural">Message used when count is greater than one.</param>
+        /// <returns>The selected message.</returns>
+        private static string BuildCountMessage(int count, string singular, string plural)
+        {
+            return count == 1 ? singular : plural;
+        }
+
+        /// <summary>
+        /// Formats Unity object names for warning messages.
+        /// </summary>
+        /// <param name="objects">Objects to format.</param>
+        /// <returns>Comma-separated object names.</returns>
+        private static string FormatObjectNames(Object[] objects)
+        {
+            if (objects == null || objects.Length == 0)
+                return "None";
+
+            return string.Join(", ", objects.Select(e => $"'{e.name}'"));
+        }
+
+        /// <summary>
+        /// Stores layout validation data for a selected <see cref="LayoutGroupChildAspectRatioFitter"/>.
+        /// </summary>
+        private readonly struct LayoutValidationContext
+        {
+            /// <summary>
+            /// Selected aspect ratio layout element.
+            /// </summary>
+            public readonly LayoutGroupChildAspectRatioFitter element;
+
+            /// <summary>
+            /// Aspect mode of the selected element.
+            /// </summary>
+            public readonly LayoutGroupChildAspectRatioFitter.AspectMode aspectMode;
+
+            /// <summary>
+            /// Whether this child is ignored by the parent layout group.
+            /// </summary>
+            public readonly bool isIgnoredByLayout;
+
+            /// <summary>
+            /// Parent horizontal or vertical layout group.
+            /// </summary>
+            public readonly HorizontalOrVerticalLayoutGroup parentLayoutGroup;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="LayoutValidationContext"/> struct.
+            /// </summary>
+            /// <param name="element">Selected aspect ratio layout element.</param>
+            /// <param name="aspectMode">Aspect mode of the selected element.</param>
+            /// <param name="isIgnoredByLayout">Whether this child is ignored by layout.</param>
+            /// <param name="parentLayoutGroup">Parent horizontal or vertical layout group.</param>
+            private LayoutValidationContext(
+                LayoutGroupChildAspectRatioFitter element,
+                LayoutGroupChildAspectRatioFitter.AspectMode aspectMode,
+                bool isIgnoredByLayout,
+                HorizontalOrVerticalLayoutGroup parentLayoutGroup)
+            {
+                this.element = element;
+                this.aspectMode = aspectMode;
+                this.isIgnoredByLayout = isIgnoredByLayout;
+                this.parentLayoutGroup = parentLayoutGroup;
+            }
+
+            /// <summary>
+            /// Creates validation context from an <see cref="LayoutGroupChildAspectRatioFitter"/>.
+            /// </summary>
+            /// <param name="element">Element to validate.</param>
+            /// <returns>Created validation context.</returns>
+            public static LayoutValidationContext Create(LayoutGroupChildAspectRatioFitter element)
+            {
+                var isIgnoredByLayout = IsIgnoredByLayout(element);
+
+                var parentTransform = element.transform.parent as RectTransform;
+                var parentLayoutGroup = parentTransform != null
+                    ? parentTransform.GetComponent<HorizontalOrVerticalLayoutGroup>()
+                    : null;
+
+                return new LayoutValidationContext(
+                    element,
+                    element.aspectMode,
+                    isIgnoredByLayout,
+                    parentLayoutGroup);
+            }
+
+            /// <summary>
+            /// Determines whether the given element is ignored by its parent layout group.
+            /// </summary>
+            /// <param name="element">Element to check.</param>
+            /// <returns><c>true</c> if ignored by layout; otherwise, <c>false</c>.</returns>
+            private static bool IsIgnoredByLayout(LayoutGroupChildAspectRatioFitter element)
+            {
+                // LayoutGroup ignores a child when any ILayoutIgnorer on the child
+                // reports ignoreLayout == true.
+                var ignorers = element.GetComponents<MonoBehaviour>()
+                    .OfType<ILayoutIgnorer>();
+
+                return ignorers.Any(e => e.ignoreLayout);
+            }
         }
     }
 }
