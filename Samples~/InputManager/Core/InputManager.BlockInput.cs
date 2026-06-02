@@ -27,9 +27,9 @@ namespace HisaCat.HUE.Inputs
             stackTrace = StackTraceUtility.ExtractStackTrace();
 #endif
 
-            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(SetBlockInput)}: From {(owner == null ? "null" : owner.ToString())}\r\n" +
-                $"LogMessage: {logMessage}\r\n" +
-                $"StackTrace:\r\n" +
+            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(SetBlockInput)}: From {(owner == null ? "null" : owner.ToString())}\n" +
+                $"LogMessage: {logMessage}\n" +
+                $"StackTrace:\n" +
                 $"{stackTrace}");
 
             var ticket = new BlockInputTicket(owner, logMessage, stackTrace);
@@ -41,9 +41,9 @@ namespace HisaCat.HUE.Inputs
         }
         public static void ClearBlockInput(BlockInputTicket ticket)
         {
-            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearBlockInput)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\r\n" +
-                $"LogMessage: {ticket.LogMessage}\r\n" +
-                $"StackTrace:\r\n" +
+            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearBlockInput)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\n" +
+                $"LogMessage: {ticket.LogMessage}\n" +
+                $"StackTrace:\n" +
                 $"{ticket.StackTrace}");
 
             blockInputTickets.Remove(ticket);

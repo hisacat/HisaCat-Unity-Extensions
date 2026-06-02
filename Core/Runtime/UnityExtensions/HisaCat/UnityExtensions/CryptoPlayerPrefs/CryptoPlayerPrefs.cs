@@ -11,7 +11,7 @@ namespace HisaCat
         private static void PrintRandomKeys16()
         {
             var keys = string.Empty;
-            for (int i = 0; i < 16; i++) keys += $"{RandomExtensions.GenerateRandomASCIIString(16)}\r\n";
+            for (int i = 0; i < 16; i++) keys += $"{RandomExtensions.GenerateRandomASCIIString(16)}\n";
             Debug.Log($"<b>[{nameof(CryptoPlayerPrefs)}]</b> {nameof(PrintRandomKeys16)}: {keys}");
         }
         [UnityEditor.MenuItem("HisaCat/CryptoPlayerPrefs/Print Hash Salt")]

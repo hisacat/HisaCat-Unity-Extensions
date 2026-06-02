@@ -133,7 +133,7 @@ namespace HisaCat.HUE.Localization
                             "確定", "是", "否", "確認", "取消");
                         break;
                 }
-                var json = JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n";
+                var json = JsonConvert.SerializeObject(data, Formatting.Indented) + "\n";
 
                 var filePath = System.IO.Path.Combine(path, $"{lang.ToLocaleString()}.json");
                 System.IO.File.WriteAllText(filePath, json);

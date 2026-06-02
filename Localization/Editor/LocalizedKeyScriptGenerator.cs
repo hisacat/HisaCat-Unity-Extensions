@@ -33,7 +33,7 @@ namespace HisaCat.HUE.Localization
                 root.Add(parts, key);
             }
 
-            return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\r\n";
+            return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\n";
         }
         private class Node
         {

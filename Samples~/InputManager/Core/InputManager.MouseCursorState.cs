@@ -56,9 +56,9 @@ namespace HisaCat.HUE.Inputs
             stackTrace = StackTraceUtility.ExtractStackTrace();
 #endif
 
-            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(SetLockMouseState)}: From {(owner == null ? "null" : owner.ToString())}\r\n" +
-                $"LogMessage: {logMessage}\r\n" +
-                $"StackTrace:\r\n" +
+            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(SetLockMouseState)}: From {(owner == null ? "null" : owner.ToString())}\n" +
+                $"LogMessage: {logMessage}\n" +
+                $"StackTrace:\n" +
                 $"{stackTrace}");
 
             var ticket = new MouseCursorStateTicket(owner, lockState, visible, logMessage, stackTrace);
@@ -71,9 +71,9 @@ namespace HisaCat.HUE.Inputs
         }
         public static void ClearLockMouseState(MouseCursorStateTicket ticket)
         {
-            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearLockMouseState)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\r\n" +
-                $"LogMessage: {ticket.LogMessage}\r\n" +
-                $"StackTrace:\r\n" +
+            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearLockMouseState)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\n" +
+                $"LogMessage: {ticket.LogMessage}\n" +
+                $"StackTrace:\n" +
                 $"{ticket.StackTrace}");
 
             lockMouseCursorTickets.Remove(ticket.Node);

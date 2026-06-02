@@ -300,10 +300,9 @@ namespace HisaCat.SimpleObjectPool
                         // * RemoveFromPool를 호출하지 않아도 로직상으로 문제가 없도록 설계되었으나, RemoveFromPool를 호출하는것이 Performance측면에서 유리함.
                         // * 로직상 문제가 없도록 설계된 로직: 여기서 missing이 감지되면, 해당 instance reference를 pool list에서 제거하고, Spawn을 재귀로 재호출한다.
                         Debug.LogError($"[{nameof(SimpleObjectPoolManager)}] {nameof(Spawn)}: ObjectPool instance is <color=red>missing or destroyed!</color> <b>(more info messages...)</b>" +
-                            "\r\nMake sure if <b>this instance <color=red>destroy</color> manually</b>, call <b><color=green>\"RemoveFromPool\"</color></b> function." +
-                            "\r\nIt will be remove from pool automatically, but destroy pool instance without <b><color=green>\"RemoveFromPool\"</color></b> function wiil be get <b>bad performance.</b>" +
-                            $"\r\nCurrent type: <b>{type.Name}</b> ({type.FullName})" +
-                            "\r\n");
+                            "\nMake sure if <b>this instance <color=red>destroy</color> manually</b>, call <b><color=green>\"RemoveFromPool\"</color></b> function." +
+                            "\nIt will be remove from pool automatically, but destroy pool instance without <b><color=green>\"RemoveFromPool\"</color></b> function wiil be get <b>bad performance.</b>" +
+                            $"\nCurrent type: <b>{type.Name}</b> ({type.FullName})");
 
                         objectPool.RemovePoolInstance(poolInstance);
                         return Spawn(target, uid, position, rotation, parent);

@@ -35,7 +35,7 @@ namespace HisaCat.HUE
             {
                 Debug.Log(
                     $"{nameof(HUE)}: defines added within player settings."
-                    + $"\r\n {string.Join("\r\n", addedDefineList.ToArray().Select(e => $"- {e}"))}");
+                    + $"\n {string.Join("\n", addedDefineList.ToArray().Select(e => $"- {e}"))}");
             }
         }
     }

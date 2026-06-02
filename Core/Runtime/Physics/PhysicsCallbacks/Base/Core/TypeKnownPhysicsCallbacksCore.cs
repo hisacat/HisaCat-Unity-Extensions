@@ -282,7 +282,7 @@ namespace HisaCat.HUE.PhysicsExtension
                     {
                         ManagedDebug.LogWarning(
                             $"[{nameof(TypeKnownPhysicsCallbacksCore<TTarget, TCollider, TCollision>)}]"
-                            + " Failed to find destroyed collider from caching.\r\n"
+                            + " Failed to find destroyed collider from caching.\n"
                             + "Trying to find from staying dictionary values. This may cause performance issue.");
 
                         using (var enumerator = stayTargets.GetEnumerator())
