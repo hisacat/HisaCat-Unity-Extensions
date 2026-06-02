@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using System.Text;
 
 namespace HisaCat.HUE.Localization
 {
@@ -32,7 +33,7 @@ namespace HisaCat.HUE.Localization
                 root.Add(parts, key);
             }
 
-            return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\n";
+            return $"namespace HisaCat.HUE.Localization\n{{\n{root.GenerateCode(1)}}}\r\n";
         }
         private class Node
         {
@@ -67,25 +68,27 @@ namespace HisaCat.HUE.Localization
 
             public string GenerateCode(int indent = 0)
             {
+                var sb = new StringBuilder();
+                GenerateCode(sb, indent);
+                return sb.ToString();
+            }
+            private void GenerateCode(StringBuilder sb, int indent = 0)
+            {
                 var indentation = new string(' ', indent * 4);
-                var code = "";
-
-                if (!string.IsNullOrEmpty(Key))
+                if (string.IsNullOrEmpty(Key) == false)
                 {
-                    code += $"{indentation}public const string {NormalizeName(Name)} = \"{Key}\";\n";
+                    sb.AppendLine($"{indentation}public const string {NormalizeName(Name)} = \"{Key}\";");
                 }
                 else
                 {
-                    code += $"{indentation}public static class {NormalizeName(Name)}\n";
-                    code += $"{indentation}{{\n";
+                    sb.AppendLine($"{indentation}public static class {NormalizeName(Name)}");
+                    sb.AppendLine($"{indentation}{{");
                     foreach (var child in Children.Values)
                     {
-                        code += child.GenerateCode(indent + 1);
+                        child.GenerateCode(sb, indent + 1);
                     }
-                    code += $"{indentation}}}\n";
+                    sb.AppendLine($"{indentation}}}");
                 }
-
-                return code;
             }
 
             private string NormalizeName(string name)

@@ -17,6 +17,7 @@ namespace HisaCat.RealTimeOcclusionCulling
         private void OnGUI()
         {
             if (!showStats) return;
+            if (Event.current.type != EventType.Repaint) return;
 
             if (textStyle == null)
             {
@@ -43,37 +44,37 @@ namespace HisaCat.RealTimeOcclusionCulling
             GUI.Label(new Rect(position.x, position.y, 400, 400), displayText, textStyle);
         }
 
+        private readonly System.Text.StringBuilder sb = new();
         private string GetDisplayText(RTOcclusionManager.CullingStats stats)
         {
-            string text = $"<b>RTOcclusion Performance</b>\n";
-
             // 성능에 따라 색상 변경
-            string timeColor = stats.LastUpdateTimeMs < 2f ? "lime" :
-                              stats.LastUpdateTimeMs < 5f ? "yellow" : "red";
-            text += $"Update Time: <color={timeColor}>{stats.LastUpdateTimeMs:F2}ms</color>\n";
-            text += $"\n";
+            string timeColor = stats.LastUpdateTimeMs < 2f ? "lime"
+                             : stats.LastUpdateTimeMs < 5f ? "yellow" : "red";
 
-            text += $"Occludees: {stats.CulledOccludees}/{stats.TotalOccludees} culled\n";
-            text += $"Occluders: {stats.CulledOccluders}/{stats.TotalOccluders} culled\n";
+            sb.Clear();
+            sb.AppendLine("<b>RTOcclusion Performance</b>")
+              .AppendLine($"Update Time: <color={timeColor}>{stats.LastUpdateTimeMs:F2}ms</color>")
+              .AppendLine()
+              .AppendLine($"Occludees: {stats.CulledOccludees}/{stats.TotalOccludees} culled")
+              .AppendLine($"Occluders: {stats.CulledOccluders}/{stats.TotalOccluders} culled");
 
             if (showDetailedStats)
             {
-                text += $"\n";
-                text += $"Occluders: {stats.TotalOccluders}\n";
-                text += $"Visible Cells: {stats.VisibleCells}\n";
-                text += $"\n";
+                sb.AppendLine()
+                  .AppendLine($"Occluders: {stats.TotalOccluders}")
+                  .AppendLine($"Visible Cells: {stats.VisibleCells}")
+                  .AppendLine();
 
                 float cullingRate = stats.TotalOccludees > 0
-                    ? (stats.CulledOccludees / (float)stats.TotalOccludees * 100f)
-                    : 0f;
-                text += $"Culling Rate: <color=cyan>{cullingRate:F1}%</color>\n";
+                    ? stats.CulledOccludees / (float)stats.TotalOccludees * 100f : 0f;
+                sb.AppendLine($"Culling Rate: <color=cyan>{cullingRate:F1}%</color>");
 
                 // 예상 절감 렌더링 비용
-                text += $"\n<b>Performance Gain:</b>\n";
-                text += $"Saved Draw Calls: ~{stats.CulledOccludees}\n";
+                sb.AppendLine()
+                  .AppendLine($"<b>Performance Gain:</b>")
+                  .AppendLine($"Saved Draw Calls: ~{stats.CulledOccludees}");
             }
-
-            return text;
+            return sb.ToString();
         }
     }
 }
