@@ -32,6 +32,8 @@ namespace HisaCat.HUE.Localization
                     if (_settings == null)
                     {
                         _settings = LocalizationSettingsAsset.CreateDefaultInstance();
+                        // TODO: 리소스가 존재하는 상태로 프로젝트를 최초 열 때 경고가 뜨는 것 수정.
+                        // 아마 처음 열 때에는 해당 리소스가 LoadSettingsAsset():Resources.Load 에 의해 불러와지지 않는 것으로 추정됨.
                         Debug.LogWarning($"[{nameof(LocalizationSettings)}] No settings asset found at \"Resources/{SettingsAssetPath}\". Use default instance.");
                     }
                 }
