@@ -110,7 +110,9 @@ namespace HisaCat.HUE.Localization
             var script = GenerateLocalizedKeyClass(json);
 
             Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Write script...");
-            File.WriteAllText(DestScriptPath, script);
+            var file = new FileInfo(DestScriptPath);
+            file.Directory.Create(); // This method does nothing if directory already exists.
+            File.WriteAllText(file.FullName, script);
             Debug.Log($"[{nameof(LocalizedKeyScriptGenerator)}] Script generated at \"{DestScriptPath}\".");
 
             AssetDatabase.Refresh();
