@@ -32,8 +32,12 @@ namespace HisaCat.HUE.Localization
                     if (_settings == null)
                     {
                         _settings = LocalizationSettingsAsset.CreateDefaultInstance();
-                        // TODO: 리소스가 존재하는 상태로 프로젝트를 최초 열 때 경고가 뜨는 것 수정.
-                        // 아마 처음 열 때에는 해당 리소스가 LoadSettingsAsset():Resources.Load 에 의해 불러와지지 않는 것으로 추정됨.
+                        // TODO: 설정 어셋이 존재하는데도 불구하고
+                        // 프로젝트를 최초 열 때 (cold start / git clean -dfx 이후 등) 에는 Resources.Load에 의해 설정 어셋이 불러와지지 않는다.
+                        // 'InitializeOnLoad' 나 static field를 통해서 Resources의 indexing이 완료되기 전에 LoadSettingsAsset():Resources.Load가 호출되어
+                        // 생기는 이슈인 것으로 판단된다.
+                        // 이는 cold start 시에만 발생하는 warning임으로, 첫 프로젝트 구동 이후와 빌드와는 관련이 없기에 우선순위는 낮은 이슈이다.
+                        // 또한 이를 수정하기 위해서는 차라리 전체적으로 이 Localization 관련 코드를 리펙토링하는 것이 더 나을 수 있다.
                         Debug.LogWarning($"[{nameof(LocalizationSettings)}] No settings asset found at \"Resources/{SettingsAssetPath}\". Use default instance.");
                     }
                 }
