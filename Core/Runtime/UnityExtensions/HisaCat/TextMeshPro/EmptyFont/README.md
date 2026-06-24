@@ -16,6 +16,7 @@
    > Packing Method: `Fast` (기본값)  
    > Atlas Resolution: `8x8`  
    > Character Set: `Custom Range`  
+   > Atlas Resolution: `8x8`  
    > Character Sequence (Decimal): 빈칸  
    > Render Mode: `SDFAA` (기본값)  
    > Get Font Features: `False` (기본값)
