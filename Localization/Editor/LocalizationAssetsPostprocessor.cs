@@ -42,7 +42,6 @@ namespace HisaCat.HUE.Localization
 
                 // Update localized texts.
                 LocalizationEditorUtility.UpdateIEditorLocalizedTexts();
-                return;
             }
 
             // If localized settings asset was moved or deleted.
@@ -51,6 +50,8 @@ namespace HisaCat.HUE.Localization
                 // Reset last default language.
                 LastDefaultLanguage = SystemLanguage.Unknown;
             }
+
+            bool wasDefaultLanguageChanged = LastDefaultLanguage != LocalizationSettings.DefaultLanguage;
 
             // If localized settings asset was modified.
             if (modifiedAssets.Any(isLocalizedSettingsAsset))
@@ -62,18 +63,17 @@ namespace HisaCat.HUE.Localization
                 LocalizationManager.ClearLoadedLocalizedTexts();
 
                 // If default language was changed.
-                if (LastDefaultLanguage != LocalizationSettings.DefaultLanguage)
+                if (wasDefaultLanguageChanged)
                 {
                     Debug.Log($"[{nameof(LocalizationAssetsPostprocessor)}] Default language changed from \"{LastDefaultLanguage}\" to \"{LocalizationSettings.DefaultLanguage}\".");
                     LastDefaultLanguage = LocalizationSettings.DefaultLanguage;
-
-                    // Generate localized key script.
-                    LocalizedKeyScriptGenerator.GenerateLocalizedKeyScript();
                 }
             }
 
             // Generate localized key script if required.
-            if (modifiedAssets.ContainsAny(StringComparison.OrdinalIgnoreCase, LocalizedKeyScriptGenerator.SelfScriptPath, LocalizedKeyScriptGenerator.SourceJsonPath))
+            if (wasDefaultLanguageChanged ||
+                modifiedAssets.ContainsAny(StringComparison.OrdinalIgnoreCase,
+                LocalizedKeyScriptGenerator.SelfScriptPath, LocalizedKeyScriptGenerator.SourceJsonPath))
             {
                 // Generate localized key script.
                 LocalizedKeyScriptGenerator.GenerateLocalizedKeyScript();
