@@ -354,6 +354,22 @@ namespace HisaCat.HUE.UnityExtensions
         }
     }
 
+    public static class Vector2Extensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 Multiply(this Vector2 a, Vector2 b) => new(a.x * b.x, a.y * b.y);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 Divide(this Vector2 a, Vector2 b) => new(a.x / b.x, a.y / b.y);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 All(float val) => new(val, val);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 SetX(this Vector2 v, float x) => new(x, v.y);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 SetY(this Vector2 v, float y) => new(v.x, y);
+    }
+
     public static class Vector3Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -367,6 +383,10 @@ namespace HisaCat.HUE.UnityExtensions
         public static Vector3 SetY(this Vector3 v, float y) => new(v.x, y, v.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SetZ(this Vector3 v, float z) => new(v.x, v.y, z);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 All(float val) => new(val, val, val);
+
     }
 
     public static class SceneExtensions
