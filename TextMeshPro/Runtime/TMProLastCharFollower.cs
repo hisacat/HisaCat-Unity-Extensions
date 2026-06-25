@@ -1,3 +1,4 @@
+using HisaCat.HUE.UnityExtensions;
 using TMPro;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ namespace HisaCat.HUE
 {
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
-    public class TextMeshProUGUILastCharacterFollower : MonoBehaviour
+    public class TMProLastCharFollower : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI m_Target = null;
         [SerializeField] private Vector3 m_Offset = Vector3.zero;
@@ -16,6 +17,7 @@ namespace HisaCat.HUE
         private void Awake()
         {
             this.rectTransform = this.GetComponent<RectTransform>();
+            if (this.m_Target == null) Debug.LogError($"[{nameof(TMProLastCharFollower)}] {this.name}: Target is not set", this);
         }
 
         private void OnEnable()
