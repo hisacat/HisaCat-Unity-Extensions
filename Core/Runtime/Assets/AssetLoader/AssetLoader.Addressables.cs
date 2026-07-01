@@ -13,6 +13,7 @@ namespace HisaCat.HUE.Assets
     {
         public static class Addressables
         {
+#if !UNITY_WEBGL // WebGL does not support 'WaitForCompletion'
             public static bool KeyExists(string key, System.Type type)
             {
                 var op = UnityAddressables.LoadResourceLocationsAsync(key, type);
@@ -20,6 +21,7 @@ namespace HisaCat.HUE.Assets
                 op.Release();
                 return locations.Count > 0;
             }
+#endif
             public static AsyncOperationHandle<IList<IResourceLocation>> KeyExistsAsync(string key, System.Type type)
             {
                 var locationOp = UnityAddressables.LoadResourceLocationsAsync(key, type);
@@ -40,6 +42,7 @@ namespace HisaCat.HUE.Assets
             private static bool IsComponentType<T>() where T : Object
                 => typeof(T).IsSubclassOf(typeof(Component)) || typeof(T) == typeof(Component);
 
+#if !UNITY_WEBGL // WebGL does not support 'WaitForCompletion'
             public static T LoadSync<T>(string key) where T : Object
                 => IsComponentType<T>() ? LoadPrefabSync<T>(key) : LoadObjectSync<T>(key);
             private static T LoadPrefabSync<T>(string key) where T : Object
@@ -61,7 +64,9 @@ namespace HisaCat.HUE.Assets
                 T asset = op.WaitForCompletion();
                 return asset;
             }
+#endif
 
+#if !UNITY_WEBGL // WebGL does not support 'WaitForCompletion'
             public static SceneInstance LoadSceneSync(string key)
                 => WaitAsyncOp(() => UnityAddressables.LoadSceneAsync(key));
             public static SceneInstance LoadSceneSync(object key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true, int priority = 100, SceneReleaseMode releaseMode = SceneReleaseMode.ReleaseSceneWhenSceneUnloaded)
@@ -78,6 +83,7 @@ namespace HisaCat.HUE.Assets
                 op.WaitForCompletion();
                 return op.Result;
             }
+#endif
 
             public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(string key)
                 => UnityAddressables.LoadSceneAsync(key);
