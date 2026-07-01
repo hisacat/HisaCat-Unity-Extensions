@@ -171,8 +171,11 @@ namespace HisaCat.HUE.UI.Windows
         }
         public static IEnumerator PreloadAllWindowPrefabsRoutine()
         {
-            var windowPaths = new List<string>();
-            foreach (var windowType in WindowTypesDic.Values)
+            // Enumerate the dictionary once so that the type/path order stays consistent
+            // with the loaded windows returned below (which preserve the requested order).
+            var windowTypes = new List<System.Type>(WindowTypesDic.Values);
+            var windowPaths = new List<string>(windowTypes.Count);
+            foreach (var windowType in windowTypes)
                 windowPaths.Add(Instance.GetDefaultWindowPath(windowType));
 
             IList<WindowBase> windows = null;
@@ -182,9 +185,36 @@ namespace HisaCat.HUE.UI.Windows
             }
 
             int loadedCount = 0;
-            foreach (var window in windows)
+            for (int i = 0; i < windowPaths.Count; i++)
             {
-                if (window != null) loadedCount++;
+                (var windowType, var windowPath) = (windowTypes[i], windowPaths[i]);
+
+                var window = (windows != null && i < windows.Count) ? windows[i] : null;
+                if (window == null) continue;
+
+                // Validate the loaded type just like the synchronous LoadWindowPrefab path does,
+                // so the cache content is identical regardless of how it was populated.
+                var expectedType = windowType;
+                var loadedWindowType = window.GetType();
+                if (loadedWindowType != expectedType)
+                {
+                    Debug.LogError(
+                        $"[{nameof(WindowSystemBase)}] {nameof(PreloadAllWindowPrefabsRoutine)}: Window '{window.name}' type '{loadedWindowType.Name}' is not '{expectedType.Name}'."
+                        + $"\r\nPath: '{windowPath}'");
+                    continue;
+                }
+
+                // Cache the preloaded prefab so later (synchronous) LoadWindowPrefab calls resolve
+                // from cache instead of triggering a load. This is mandatory on WebGL, where
+                // synchronous Addressable loading (WaitForCompletion) is not supported at all.
+                // Use the indexer instead of Add to stay safe against duplicate/re-preload calls.
+                if (Instance.resourcesWindowCache.ContainsKey(windowPath))
+                {
+                    Debug.LogError($"[{nameof(WindowSystemBase)}] {nameof(PreloadAllWindowPrefabsRoutine)}: Window '{window.name}' path '{windowPath}' is already preloaded.");
+                    continue;
+                }
+                Instance.resourcesWindowCache.Add(windowPath, window);
+                loadedCount++;
             }
             Debug.Log($"[{nameof(WindowSystemBase)}] {loadedCount} of {WindowTypesDic.Count} window prefabs preloaded.");
 
