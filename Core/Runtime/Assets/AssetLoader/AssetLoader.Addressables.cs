@@ -153,33 +153,6 @@ namespace HisaCat.HUE.Assets
                 => IsComponentType<T>() ? LoadManyPrefabOrderedAsync<T>(keys) : LoadManyObjectOrderedAsync<T>(keys);
             private static AsyncOperationHandle<IList<T>> LoadManyPrefabOrderedAsync<T>(IList<string> keys) where T : Object
             {
-                // Legacy code
-                // var handles = new List<AsyncOperationHandle<T>>();
-
-                // foreach (var key in keys)
-                // {
-                //     AsyncOperationHandle<T> handle;
-
-                //     if (KeyExists(key, typeof(GameObject)) == false)
-                //     {
-                //         handle = UnityAddressables.ResourceManager.CreateCompletedOperation<T>(null, null);
-                //     }
-                //     else
-                //     {
-                //         var goHandle = UnityAddressables.LoadAssetAsync<GameObject>(key);
-                //         handle = UnityAddressables.ResourceManager.CreateChainOperation(goHandle, (goOp) =>
-                //         {
-                //             T component = null;
-                //             if (goOp.Result != null) component = goOp.Result.GetComponent<T>();
-                //             return UnityAddressables.ResourceManager.CreateCompletedOperation(component, null);
-                //         });
-                //     }
-
-                //     handles.Add(handle);
-                // }
-
-                // return CreateGroupOperation(handles);
-
                 // Reuse the async single-loader so the key existence check stays asynchronous.
                 // (KeyExists relies on WaitForCompletion, which is not supported on WebGL.)
                 var handles = new List<AsyncOperationHandle<T>>();
@@ -190,23 +163,6 @@ namespace HisaCat.HUE.Assets
 
             private static AsyncOperationHandle<IList<T>> LoadManyObjectOrderedAsync<T>(IList<string> keys) where T : Object
             {
-                // Legacy code
-                // var handles = new List<AsyncOperationHandle<T>>();
-
-                // foreach (var key in keys)
-                // {
-                //     AsyncOperationHandle<T> handle;
-
-                //     if (KeyExists(key, typeof(T)) == false)
-                //         handle = UnityAddressables.ResourceManager.CreateCompletedOperation<T>(null, null);
-                //     else
-                //         handle = UnityAddressables.LoadAssetAsync<T>(key);
-
-                //     handles.Add(handle);
-                // }
-
-                // return CreateGroupOperation(handles);
-
                 // Reuse the async single-loader so the key existence check stays asynchronous.
                 // (KeyExists relies on WaitForCompletion, which is not supported on WebGL.)
                 var handles = new List<AsyncOperationHandle<T>>();
