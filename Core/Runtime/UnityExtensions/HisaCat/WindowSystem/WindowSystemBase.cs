@@ -125,7 +125,7 @@ namespace HisaCat.HUE.UI.Windows
         private readonly Dictionary<string, System.Type> windowTypesDic = new();
         public static Dictionary<string, System.Type> WindowTypesDic { get { return Instance == null ? null : Instance.windowTypesDic; } }
 
-        private readonly Dictionary<string, WindowBase> resourcesWindowCache = new();
+        private readonly Dictionary<string, WindowBase> loadedWindowPrefabsCache = new();
 
         #region Reflection
         private void LoadAllWindowTypes()
@@ -208,12 +208,12 @@ namespace HisaCat.HUE.UI.Windows
                 // from cache instead of triggering a load. This is mandatory on WebGL, where
                 // synchronous Addressable loading (WaitForCompletion) is not supported at all.
                 // Use the indexer instead of Add to stay safe against duplicate/re-preload calls.
-                if (Instance.resourcesWindowCache.ContainsKey(windowPath))
+                if (Instance.loadedWindowPrefabsCache.ContainsKey(windowPath))
                 {
                     Debug.LogError($"[{nameof(WindowSystemBase)}] {nameof(PreloadAllWindowPrefabsRoutine)}: Window '{window.name}' path '{windowPath}' is already preloaded.");
                     continue;
                 }
-                Instance.resourcesWindowCache.Add(windowPath, window);
+                Instance.loadedWindowPrefabsCache.Add(windowPath, window);
                 loadedCount++;
             }
             Debug.Log($"[{nameof(WindowSystemBase)}] {loadedCount} of {WindowTypesDic.Count} window prefabs preloaded.");
@@ -266,8 +266,8 @@ namespace HisaCat.HUE.UI.Windows
             var windowPath = string.IsNullOrEmpty(specialPath) ?
                 GetDefaultWindowPath_Internal(type) : $"Windows/{specialPath}";
 
-            if (Instance.resourcesWindowCache.ContainsKey(windowPath))
-                return Instance.resourcesWindowCache[windowPath];
+            if (Instance.loadedWindowPrefabsCache.ContainsKey(windowPath))
+                return Instance.loadedWindowPrefabsCache[windowPath];
 
             var window = LoadWindowBasePrefabFrom_Internal(windowPath);
             if (window != null)
@@ -282,7 +282,7 @@ namespace HisaCat.HUE.UI.Windows
                 }
             }
 
-            Instance.resourcesWindowCache.Add(windowPath, window);
+            Instance.loadedWindowPrefabsCache.Add(windowPath, window);
             return window;
         }
 
