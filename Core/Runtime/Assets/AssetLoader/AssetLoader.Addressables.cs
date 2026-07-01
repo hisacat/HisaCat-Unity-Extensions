@@ -105,9 +105,14 @@ namespace HisaCat.HUE.Assets
                     AsyncOperationHandle<T> handleComponentExtraction(AsyncOperationHandle<GameObject> gameObjectOp)
                     {
                         var gameObject = gameObjectOp.Result;
-                        if (gameObject.TryGetComponent<T>(out var component) == false)
+                        if (gameObject == null)
                         {
-                            Debug.LogWarning($"{nameof(Addressables)}: Component '{typeof(T).Name}' not found in GameObject '{gameObject.name}'.");
+                            Debug.LogWarning($"{nameof(Addressables)}: GameObject '{key}' not found.");
+                            return UnityAddressables.ResourceManager.CreateCompletedOperation<T>(null, null);
+                        }
+                        if (gameObject.TryGetComponent(out T component) == false)
+                        {
+                            Debug.LogWarning($"{nameof(Addressables)}: Component '{typeof(T).Name}' not found in key: {key}. GameObject: {gameObject.name}");
                             return UnityAddressables.ResourceManager.CreateCompletedOperation<T>(null, null);
                         }
                         return UnityAddressables.ResourceManager.CreateCompletedOperation<T>(component, null);
