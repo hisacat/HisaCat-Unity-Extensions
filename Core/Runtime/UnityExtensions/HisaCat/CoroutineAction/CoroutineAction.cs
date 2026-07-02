@@ -41,6 +41,7 @@ namespace HisaCat
                 {
                     // If the application is quitting, do not create a new instance.
                     if (ApplicationUtils.IsQuitting()) return null;
+                    Debug.Log($"[{nameof(CoroutineAction)}] Instance is not exists. Creating new instance...");
                     new GameObject(DefualtGameObjectName).AddComponent<CoroutineAction>();
                 }
                 return _instance;
