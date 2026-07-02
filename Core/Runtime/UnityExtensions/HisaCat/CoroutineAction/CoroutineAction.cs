@@ -17,51 +17,57 @@ namespace HisaCat
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
             {
-                instance = null;
+                Instance = null;
             }
         }
 #pragma warning restore IDE0051
 #endif
 
         #region Singleton
-        private static CoroutineAction instance = null;
-
+        public static CoroutineAction Instance { get; private set; } = null;
         private void Awake()
         {
-            if (instance != null)
+            if (Instance != null)
             {
-                ManagedDebug.LogError($"[{nameof(CoroutineAction)}] Instance already exists!");
-                Destroy(gameObject);
+                Debug.LogError($"[{nameof(CoroutineAction)}] Instance already exists!");
                 return;
             }
-            instance = this;
+
+            Instance = this;
+            Init();
         }
         private void OnDestroy()
         {
-            if (instance == this)
-                instance = null;
+            if (Instance == this)
+            {
+                Instance = null;
+                Dispose();
+            }
         }
         #endregion Singleton
 
+        private void Init() { }
+        private void Dispose() { }
+
         public static Coroutine Start(IEnumerator enumerator)
         {
-            return instance.StartCoroutine(enumerator);
+            return Instance.StartCoroutine(enumerator);
         }
 
         public static void Stop(Coroutine coroutine)
         {
             if (ApplicationUtils.IsQuitting()) return;
-            instance.StopCoroutine(coroutine);
+            Instance.StopCoroutine(coroutine);
         }
 
         public static void RestartCoroutine(ref Coroutine coroutine, IEnumerator enumerator)
-            => instance.RestartCoroutine(ref coroutine, enumerator);
+            => Instance.RestartCoroutine(ref coroutine, enumerator);
         public static void StartOrStopCoroutine(ref Coroutine coroutine, IEnumerator enumerator, bool play, bool restartIfAlreadyPlaying)
-            => instance.StartOrStopCoroutine(ref coroutine, enumerator, play, restartIfAlreadyPlaying);
+            => Instance.StartOrStopCoroutine(ref coroutine, enumerator, play, restartIfAlreadyPlaying);
 
         public static void LoadImageFromURL(Texture2D texture, string url, Action<Texture2D> onLoaded)
         {
-            instance.StartCoroutine(LoadImageFromURLRoutine(texture, url, onLoaded));
+            Instance.StartCoroutine(LoadImageFromURLRoutine(texture, url, onLoaded));
         }
 
         public static IEnumerator LoadImageFromURLRoutine(Texture2D texture, string url, Action<Texture2D> onLoaded)
@@ -99,7 +105,7 @@ namespace HisaCat
         }
         public static void LoadImageFromURLWithCache(string url, Action<Texture2D> onLoaded)
         {
-            instance.StartCoroutine(LoadImageFromURLWithCacheRoutine(url, onLoaded));
+            Instance.StartCoroutine(LoadImageFromURLWithCacheRoutine(url, onLoaded));
         }
 
         private const string FileCacheFolderName = "Images"; // Cache folder name.
@@ -194,7 +200,7 @@ namespace HisaCat
 
         public static void WaitFrame(int frameCount, Action callback)
         {
-            instance.StartCoroutine(WaitFrameRoutine(frameCount, callback));
+            Instance.StartCoroutine(WaitFrameRoutine(frameCount, callback));
             static IEnumerator WaitFrameRoutine(int frameCount, Action callback)
             {
                 for (int i = 0; i < frameCount; i++)
@@ -205,7 +211,7 @@ namespace HisaCat
         }
         public static void WaitOneFrame(Action callback)
         {
-            instance.StartCoroutine(WaitOneFrameRoutine(callback));
+            Instance.StartCoroutine(WaitOneFrameRoutine(callback));
             static IEnumerator WaitOneFrameRoutine(Action callback)
             {
                 yield return null;
@@ -215,7 +221,7 @@ namespace HisaCat
 
         public static void WaitSeconds(float seconds, Action callback)
         {
-            instance.StartCoroutine(instance.WaitSecondsRoutine(seconds, callback));
+            Instance.StartCoroutine(Instance.WaitSecondsRoutine(seconds, callback));
         }
         private IEnumerator WaitSecondsRoutine(float seconds, Action callback)
         {
@@ -225,7 +231,7 @@ namespace HisaCat
 
         public static void WaitSecondsRealtime(float seconds, Action callback)
         {
-            instance.StartCoroutine(instance.WaitSecondsRealtimeRoutine(seconds, callback));
+            Instance.StartCoroutine(Instance.WaitSecondsRealtimeRoutine(seconds, callback));
         }
         private IEnumerator WaitSecondsRealtimeRoutine(float seconds, Action callback)
         {
@@ -235,7 +241,7 @@ namespace HisaCat
 
         public static void WaitForEndOfFrame(Action callback)
         {
-            instance.StartCoroutine(instance.WaitForEndOfFrameRoutine(callback));
+            Instance.StartCoroutine(Instance.WaitForEndOfFrameRoutine(callback));
         }
         private IEnumerator WaitForEndOfFrameRoutine(Action callback)
         {
@@ -245,7 +251,7 @@ namespace HisaCat
 
         public static void SimpleShake(GameObject obj, float power, float duration)
         {
-            instance.StartCoroutine(instance.SimpleShakeRoutine(obj, power, duration));
+            Instance.StartCoroutine(Instance.SimpleShakeRoutine(obj, power, duration));
         }
         private IEnumerator SimpleShakeRoutine(GameObject obj, float power, float duration)
         {
