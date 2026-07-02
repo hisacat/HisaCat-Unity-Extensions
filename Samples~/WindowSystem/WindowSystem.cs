@@ -2,33 +2,52 @@ using HisaCat.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace HisaCat.HUE.UI.Windows
 {
     public class WindowSystem : WindowSystemBase
     {
-        public static readonly string DefaultWindowPrefabFolder = "<Your default window prefab's directory>";
-        public override string GetDefaultWindowPath(Type type) => UniPath.Join(DefaultWindowPrefabFolder, type.Name, $"{type.Name}.prefab");
+        public static readonly string DefaultWindowPrefabFolder = ""; // <Your default window prefab's directory>
+        public override string GetDefaultWindowPath(System.Type type) => UniPath.Join(DefaultWindowPrefabFolder, type.Name, $"{type.Name}.prefab");
 
-        public override WindowBase LoadWindowBasePrefabFrom(string path)
+        public sealed override WindowBase LoadWindowBasePrefabFromSource(string path)
         {
             // ==============================
             // Load your window prefab here.
             // ==============================
-            // Example:
-            // return Assets.AssetLoader.Addressables.LoadSync<WindowBase>(path);
+#if UNITY_WEBGL
+            // Synchronous Addressable loading (WaitForCompletion) is not supported on WebGL.
+            // Prefabs must be preloaded via PreloadWindow / PreloadAllWindowPrefabsRoutine beforehand.
+            UnityEngine.Debug.LogError(
+                $"[{nameof(WindowSystem)}] Synchronous window load is not supported on WebGL: {path}."
+                + $"Call {nameof(PreloadWindow)} or {nameof(PreloadAllWindowPrefabsRoutine)} beforehand.");
             return null;
+#else
+            return Assets.AssetLoader.Addressables.LoadSync<WindowBase>(path);
+#endif
         }
 
-        public override IEnumerator LoadOrderedWindowBasePrefabsFrom(List<string> paths, Action<IList<WindowBase>> onCompleted)
+        protected sealed override IEnumerator LoadWindowBasePrefabFromSource(string path, Action<WindowBase> onCompleted)
         {
             // ==============================
             // Load your window prefabs here.
             // ==============================
-            // Example:
-            // var op = Assets.AssetLoader.Addressables.LoadManyOrderedAsync<WindowBase>(paths);
-            // yield return op;
-            // onCompleted.Invoke(op.Result);
+            var op = Assets.AssetLoader.Addressables.LoadAsync<WindowBase>(path);
+            yield return op;
+            onCompleted.Invoke(op.Result);
+
+            yield break;
+        }
+
+        protected sealed override IEnumerator LoadOrderedWindowBasePrefabsFromSource(List<string> paths, Action<IList<WindowBase>> onCompleted)
+        {
+            // ==============================
+            // Load your window prefabs here.
+            // ==============================
+            var op = Assets.AssetLoader.Addressables.LoadManyOrderedAsync<WindowBase>(paths);
+            yield return op;
+            onCompleted.Invoke(op.Result);
 
             yield break;
         }
@@ -38,9 +57,8 @@ namespace HisaCat.HUE.UI.Windows
             // ==============================
             // Delegate ui events here.
             // ==============================
-            // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigatePerformed += OnUINavigatePerformed;
-            // Inputs.InputManager.Maps.UI.OnCancelPerformed += OnCancelPerformed;
+            Inputs.InputManager.Maps.UI.OnNavigatePerformed += OnUINavigatePerformed;
+            Inputs.InputManager.Maps.UI.OnCancelPerformed += OnCancelPerformed;
         }
 
         protected override void Dispose()
@@ -48,16 +66,14 @@ namespace HisaCat.HUE.UI.Windows
             // ==============================
             // Undelegate ui events here.
             // ==============================
-            // Example:
-            // Inputs.InputManager.Maps.UI.OnNavigatePerformed -= OnUINavigatePerformed;
-            // Inputs.InputManager.Maps.UI.OnCancelPerformed -= OnCancelPerformed;
+            Inputs.InputManager.Maps.UI.OnNavigatePerformed -= OnUINavigatePerformed;
+            Inputs.InputManager.Maps.UI.OnCancelPerformed -= OnCancelPerformed;
         }
 
         // ==============================
         // Define ui event callbacks here.
         // ==============================
-        // Example:
-        // private void OnUINavigatePerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnUINavigatePerformed();
-        // private void OnCancelPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnBackButton();
+        private void OnUINavigatePerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnUINavigatePerformed();
+        private void OnCancelPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => base.OnBackButton();
     }
 }
