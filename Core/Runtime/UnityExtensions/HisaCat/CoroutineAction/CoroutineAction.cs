@@ -39,6 +39,9 @@ namespace HisaCat
 #endif
                 if (_instance == null)
                 {
+                    // If the application is quitting, do not create a new instance.
+                    if (ApplicationUtils.IsQuitting()) return null;
+
                     var go = new GameObject(DefualtGameObjectName);
                     _instance = go.AddComponent<CoroutineAction>();
                 }
