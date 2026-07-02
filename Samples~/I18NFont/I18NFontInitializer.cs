@@ -9,9 +9,9 @@ namespace HisaCat.HUE.Fonts
     {
         [SerializeField] private I18NFontDataListAsset m_I18NFontDataListAsset = null;
         [ReadOnly][SerializeField] private string m_I18NFontDataListAssetKey = null;
-        [SerializeField] private bool AlwaysInitializeAddressablesFontAsynchronously = false;
+        [SerializeField] private bool m_AlwaysInitializeAsynchronously = false;
 
-        public bool IsAddressablesFontInitialized { get; private set; } = false;
+        public bool IsFontInitialized { get; private set; } = false;
         private void Awake()
         {
             var assetOnBuild = this.m_I18NFontDataListAsset;
@@ -60,9 +60,10 @@ namespace HisaCat.HUE.Fonts
 #endif
                         {
                             InitializeAll(assetOnBundle);
-                            this.IsAddressablesFontInitialized = true;
                         }
                     }
+
+                    this.IsFontInitialized = true;
                 }
 
             }
