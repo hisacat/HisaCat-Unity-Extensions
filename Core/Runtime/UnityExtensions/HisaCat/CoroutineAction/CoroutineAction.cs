@@ -46,7 +46,13 @@ namespace HisaCat
         }
         #endregion Singleton
 
-        private void Init() { }
+        [SerializeField] private bool m_DontDestroyOnLoad = false;
+
+        private void Init()
+        {
+            if (this.m_DontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
+        }
         private void Dispose() { }
 
         public static Coroutine Start(IEnumerator enumerator)
