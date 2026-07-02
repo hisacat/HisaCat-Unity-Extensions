@@ -17,42 +17,52 @@ namespace HisaCat
         {
             if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
             {
-                Instance = null;
+                _instance = null;
             }
         }
 #pragma warning restore IDE0051
 #endif
 
-        #region Singleton
-        public static CoroutineAction Instance { get; private set; } = null;
+        private static CoroutineAction _instance = null;
+        public static CoroutineAction Instance
+        {
+            get
+            {
+#if UNITY_EDITOR
+                if (Application.isPlaying == false)
+                {
+                    Debug.LogError($"[{nameof(CoroutineAction)}] Instance is not available in editor mode.");
+                    return null;
+                }
+#endif
+                if (_instance == null)
+                {
+                    var go = new GameObject($"[{nameof(CoroutineAction)}]");
+                    _instance = go.AddComponent<CoroutineAction>();
+                }
+                return _instance;
+            }
+        }
         private void Awake()
         {
             if (Instance != null)
             {
                 Debug.LogError($"[{nameof(CoroutineAction)}] Instance already exists!");
+                Destroy(this.gameObject);
                 return;
             }
-
-            Instance = this;
             Init();
         }
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
                 Dispose();
             }
         }
-        #endregion Singleton
 
-        [SerializeField] private bool m_DontDestroyOnLoad = false;
-
-        private void Init()
-        {
-            if (this.m_DontDestroyOnLoad)
-                DontDestroyOnLoad(this.gameObject);
-        }
+        private void Init() => DontDestroyOnLoad(this.gameObject);
         private void Dispose() { }
 
         public static Coroutine Start(IEnumerator enumerator)
