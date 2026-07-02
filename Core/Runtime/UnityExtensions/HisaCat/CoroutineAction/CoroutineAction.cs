@@ -23,6 +23,8 @@ namespace HisaCat
 #pragma warning restore IDE0051
 #endif
 
+        public static string DefualtGameObjectName => $"[{nameof(CoroutineAction)}]";
+
         private static CoroutineAction _instance = null;
         public static CoroutineAction Instance
         {
@@ -37,7 +39,7 @@ namespace HisaCat
 #endif
                 if (_instance == null)
                 {
-                    var go = new GameObject($"[{nameof(CoroutineAction)}]");
+                    var go = new GameObject(DefualtGameObjectName);
                     _instance = go.AddComponent<CoroutineAction>();
                 }
                 return _instance;
