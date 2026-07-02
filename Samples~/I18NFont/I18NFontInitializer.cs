@@ -1,3 +1,4 @@
+using System.Collections;
 using HisaCat.HUE.Assets;
 using HisaCat.PropertyAttributes;
 using UnityEngine;
@@ -8,6 +9,9 @@ namespace HisaCat.HUE.Fonts
     {
         [SerializeField] private I18NFontDataListAsset m_I18NFontDataListAsset = null;
         [ReadOnly][SerializeField] private string m_I18NFontDataListAssetKey = null;
+        [SerializeField] private bool AlwaysInitializeAddressablesFontAsynchronously = false;
+
+        public bool IsAddressablesFontInitialized { get; private set; } = false;
         private void Awake()
         {
             var assetOnBuild = this.m_I18NFontDataListAsset;
@@ -15,25 +19,50 @@ namespace HisaCat.HUE.Fonts
 
             if (string.IsNullOrEmpty(this.m_I18NFontDataListAssetKey) == false)
             {
-                var assetOnBundle = AssetLoader.Addressables.LoadSync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
-                if (assetOnBuild == null)
+                StartCoroutine(InitializeAddressablesRoutine());
+                IEnumerator InitializeAddressablesRoutine()
                 {
-                    Debug.LogError($"[{nameof(I18NFontInitializer)}] I18N Font Data List Asset not found in bundle! (Key: {this.m_I18NFontDataListAssetKey})");
-                }
-                else
-                {
-                    // If the asset in the build and the asset in the bundle are different instances,
-                    // each instance must be initialized.
-                    // (This handles duplicated assets caused by Addressables’ duplicate bundle dependencies.)
-#if UNITY_6000_4_OR_NEWER
-                    // GetInstanceID is deprecated in Unity 6.4 or newer.
-                    // https://docs.unity3d.com/6000.4/Documentation/ScriptReference/Object.GetInstanceID.html
-                    if (assetOnBundle != null && assetOnBuild.GetEntityId() != assetOnBundle.GetInstanceID())
-                        InitializeAll(assetOnBundle);
+                    I18NFontDataListAsset assetOnBundle = null;
+
+                    // In WebGL, LoadSync is not supported so always load font asynchronously.
+#if UNITY_WEBGL
+                    var assetOnBundleOp = AssetLoader.Addressables.LoadAsync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
+                    yield return assetOnBundleOp;
+                    assetOnBundle = assetOnBundleOp.Result;
 #else
-                    if (assetOnBundle != null && assetOnBuild.GetInstanceID() != assetOnBundle.GetInstanceID())
-                        InitializeAll(assetOnBundle);
+                    if (this.AlwaysInitializeAddressablesFontAsynchronously)
+                    {
+                        var assetOnBundleOp = AssetLoader.Addressables.LoadAsync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
+                        yield return assetOnBundleOp;
+                        assetOnBundle = assetOnBundleOp.Result;
+                    }
+                    else
+                    {
+                        assetOnBundle = AssetLoader.Addressables.LoadSync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
+                    }
 #endif
+
+                    if (assetOnBundle == null)
+                    {
+                        Debug.LogError($"[{nameof(I18NFontInitializer)}] I18N Font Data List Asset not found in bundle! (Key: {this.m_I18NFontDataListAssetKey})");
+                    }
+                    else
+                    {
+                        // If the asset in the build and the asset in the bundle are different instances,
+                        // each instance must be initialized.
+                        // (This handles duplicated assets caused by Addressables’ duplicate bundle dependencies.)
+#if UNITY_6000_4_OR_NEWER
+                        // GetInstanceID is deprecated in Unity 6.4 or newer.
+                        // https://docs.unity3d.com/6000.4/Documentation/ScriptReference/Object.GetInstanceID.html
+                        if (assetOnBundle != null && assetOnBuild.GetEntityId() != assetOnBundle.GetInstanceID())
+#else
+                        if (assetOnBundle != null && assetOnBuild.GetInstanceID() != assetOnBundle.GetInstanceID())
+#endif
+                        {
+                            InitializeAll(assetOnBundle);
+                            this.IsAddressablesFontInitialized = true;
+                        }
+                    }
                 }
 
             }
