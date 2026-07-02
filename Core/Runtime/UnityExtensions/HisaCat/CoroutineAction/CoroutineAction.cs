@@ -41,21 +41,20 @@ namespace HisaCat
                 {
                     // If the application is quitting, do not create a new instance.
                     if (ApplicationUtils.IsQuitting()) return null;
-
-                    var go = new GameObject(DefualtGameObjectName);
-                    _instance = go.AddComponent<CoroutineAction>();
+                    new GameObject(DefualtGameObjectName).AddComponent<CoroutineAction>();
                 }
                 return _instance;
             }
         }
         private void Awake()
         {
-            if (Instance != null)
+            if (_instance != null)
             {
                 Debug.LogError($"[{nameof(CoroutineAction)}] Instance already exists!");
                 Destroy(this.gameObject);
                 return;
             }
+            _instance = this;
             Init();
         }
         private void OnDestroy()
