@@ -228,6 +228,34 @@ namespace HisaCat.HUE.UnityExtensions
             if (parent == null) return false;
             return transform.IsChildOf(parent);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetPositionXY(this Transform transform, float x, float y)
+        {
+            var pos = transform.position;
+            pos.SetXY(x, y);
+            transform.position = pos;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetPositionXY(this Transform transform, Vector2 xy)
+        {
+            var pos = transform.position;
+            pos.SetXY(xy);
+            transform.position = pos;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetLocalPositionXY(this Transform transform, float x, float y)
+        {
+            var pos = transform.localPosition;
+            pos.SetXY(x, y);
+            transform.position = pos;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetLocalPositionXY(this Transform transform, Vector2 xy)
+        {
+            var pos = transform.localPosition;
+            pos.SetXY(xy);
+            transform.position = pos;
+        }
     }
 
     public static class RectTransformExtensions
@@ -381,6 +409,10 @@ namespace HisaCat.HUE.UnityExtensions
         public static Vector3 SetX(this Vector3 v, float x) => new(x, v.y, v.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SetY(this Vector3 v, float y) => new(v.x, y, v.z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SetXY(this Vector3 v, float x, float y) => new(x, y, v.z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SetXY(this Vector3 v, Vector2 xy) => new(xy.x, xy.y, v.z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SetZ(this Vector3 v, float z) => new(v.x, v.y, z);
 
