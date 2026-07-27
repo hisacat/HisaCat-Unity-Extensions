@@ -30,7 +30,7 @@ namespace HisaCat.HUE.Fonts
                     yield return assetOnBundleOp;
                     assetOnBundle = assetOnBundleOp.Result;
 #else
-                    if (this.AlwaysInitializeAddressablesFontAsynchronously)
+                    if (this.m_AlwaysInitializeAsynchronously)
                     {
                         var assetOnBundleOp = AssetLoader.Addressables.LoadAsync<I18NFontDataListAsset>(this.m_I18NFontDataListAssetKey);
                         yield return assetOnBundleOp;
