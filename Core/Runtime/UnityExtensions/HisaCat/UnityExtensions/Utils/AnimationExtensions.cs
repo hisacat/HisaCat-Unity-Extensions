@@ -47,7 +47,7 @@ namespace HisaCat
         /// <param name="clipName">재생할 AnimationState 이름입니다.</param>
         /// <returns>재생이 완료될 때까지 yield하는 코루틴입니다.</returns>
         /// <remarks>
-        /// 내부적으로 state.speed를 0으로 고정한 뒤 <see cref="Time.realtimeSinceStartup"/> 기준으로
+        /// 내부적으로 state.speed를 0으로 고정한 뒤 <see cref="Time.unscaledTime"/> 기준으로
         /// normalizedTime을 직접 갱신하고 <see cref="Animation.Sample"/>을 호출합니다.
         /// </remarks>
         public static IEnumerator PlayUnscaledTimeRoutine([NotNull] this Animation animation, string clipName)
@@ -74,7 +74,7 @@ namespace HisaCat
 
                 bool isPlaying = true;
                 float progressTime = 0f;
-                float timeAtLastFrame = Time.realtimeSinceStartup;
+                float timeAtLastFrame = Time.unscaledTime;
 
                 while (isPlaying)
                 {
@@ -82,7 +82,7 @@ namespace HisaCat
                     if (animation == null || state == null)
                         break;
 
-                    float timeAtCurrentFrame = Time.realtimeSinceStartup;
+                    float timeAtCurrentFrame = Time.unscaledTime;
                     float deltaTime = timeAtCurrentFrame - timeAtLastFrame;
                     timeAtLastFrame = timeAtCurrentFrame;
 
@@ -174,7 +174,7 @@ namespace HisaCat
 
                 float fadeDuration = Mathf.Max(0f, fadeLength);
                 float fadeProgressTime = 0f;
-                float timeAtLastFrame = Time.realtimeSinceStartup;
+                float timeAtLastFrame = Time.unscaledTime;
 
                 // CrossFade 구간: weight를 realtime 기준으로 보간합니다.
                 if (fadeDuration > 0f)
@@ -184,7 +184,7 @@ namespace HisaCat
                         if (animation == null || targetState == null)
                             yield break;
 
-                        float timeAtCurrentFrame = Time.realtimeSinceStartup;
+                        float timeAtCurrentFrame = Time.unscaledTime;
                         float deltaTime = timeAtCurrentFrame - timeAtLastFrame;
                         timeAtLastFrame = timeAtCurrentFrame;
 
@@ -234,14 +234,14 @@ namespace HisaCat
 
                 bool isPlaying = true;
                 float progressTime = targetState.normalizedTime * targetState.length;
-                timeAtLastFrame = Time.realtimeSinceStartup;
+                timeAtLastFrame = Time.unscaledTime;
 
                 while (isPlaying)
                 {
                     if (animation == null || targetState == null)
                         break;
 
-                    float timeAtCurrentFrame = Time.realtimeSinceStartup;
+                    float timeAtCurrentFrame = Time.unscaledTime;
                     float deltaTime = timeAtCurrentFrame - timeAtLastFrame;
                     timeAtLastFrame = timeAtCurrentFrame;
 

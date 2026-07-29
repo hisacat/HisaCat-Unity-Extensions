@@ -362,12 +362,12 @@ namespace FastSceneChanger
                 {
                     if (e.button == 0)
                     {
-                        if (lastClickedScene == nowSceneIndex && Time.realtimeSinceStartup - lastClickTime <= DoubleClickDelay)
+                        if (lastClickedScene == nowSceneIndex && Time.unscaledTime - lastClickTime <= DoubleClickDelay)
                             SceneMenuCallback(new object[] { scene, SceneMenuType.Open });
                         else
                         {
                             lastClickedScene = nowSceneIndex;
-                            lastClickTime = Time.realtimeSinceStartup;
+                            lastClickTime = Time.unscaledTime;
                         }
                     }
                     else if (e.button == 1)

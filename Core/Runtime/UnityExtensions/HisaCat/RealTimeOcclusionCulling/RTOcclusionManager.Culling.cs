@@ -78,7 +78,7 @@ namespace HisaCat.RealTimeOcclusionCulling
         public static void ForceUpdateCulling()
         {
             Profiler.BeginSample("RTOcclusion.ForceUpdateCulling");
-            var startTime = Time.realtimeSinceStartup;
+            var startTime = Time.unscaledTime;
 
             // Stats 초기화
             currentStats = new CullingStats
@@ -280,7 +280,7 @@ namespace HisaCat.RealTimeOcclusionCulling
             // Stats 마무리
             currentStats.CulledOccludees = culledOccludees.Count;
             currentStats.CulledOccluders = culledOccluders.Count;
-            currentStats.LastUpdateTimeMs = (Time.realtimeSinceStartup - startTime) * 1000f;
+            currentStats.LastUpdateTimeMs = (Time.unscaledTime - startTime) * 1000f;
 
             Profiler.EndSample(); // RTOcclusion.ForceUpdateCulling
         }

@@ -40,10 +40,10 @@ namespace HisaCat.HUE.UI
         {
             if (this.m_AudioClip == null) return;
             if (this.m_DontPlayAudioOnStart && Time.frameCount == this.startFrameCount) return;
-            if (Time.realtimeSinceStartup - this.m_LastAudioPlayedTime < this.m_MinimumPlayAudioInterval) return;
+            if (Time.unscaledTime - this.m_LastAudioPlayedTime < this.m_MinimumPlayAudioInterval) return;
 
             AudioSourceExtensions.PlayClipAtPoint(this.m_AudioClip, Vector3.zero, this.m_AudioMixerGroup, this.m_Volume, spatialBlend: 0f);
-            this.m_LastAudioPlayedTime = Time.realtimeSinceStartup;
+            this.m_LastAudioPlayedTime = Time.unscaledTime;
         }
     }
 }

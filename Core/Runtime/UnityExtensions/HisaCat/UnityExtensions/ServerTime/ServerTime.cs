@@ -61,7 +61,7 @@ namespace HisaCat
                         //Debug.Log(localDateTime + " " + localDateTime.Kind);
                         //Debug.Log(utcDataTime + " " + utcDataTime.Kind);
 
-                        LastFetchedServerTime = new ServerTimeCache(localDateTime, Time.realtimeSinceStartupAsDouble);
+                        LastFetchedServerTime = new ServerTimeCache(localDateTime, Time.unscaledTimeAsDouble);
                         result?.Invoke(true, localDateTime);
                     }
                 }
@@ -93,7 +93,7 @@ namespace HisaCat
             }
 
             var lastFetchedServerTime = LastFetchedServerTime.Value;
-            var clientSpendTime = Time.realtimeSinceStartupAsDouble - lastFetchedServerTime.FetchedClientTime;
+            var clientSpendTime = Time.unscaledTimeAsDouble - lastFetchedServerTime.FetchedClientTime;
             var expectedTime = lastFetchedServerTime.ServerLocalDataTime.AddSeconds(clientSpendTime);
             return (isSuccess: true, expectedServerLocalTime: expectedTime);
         }
