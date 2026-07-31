@@ -92,6 +92,13 @@ namespace HisaCat.HUE.UnityExtensions.Editors
     public static class SerializePropertyExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsArrayElement(this SerializedProperty property)
+        {
+            var pathParts = property.propertyPath.Split('.');
+            return pathParts.Length > 1 && pathParts[^2] == "Array";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetEnumValue<T>(this SerializedProperty enumArrayProperty) where T : System.Enum
         {
             return (T)System.Enum.ToObject(typeof(T), enumArrayProperty.intValue);
