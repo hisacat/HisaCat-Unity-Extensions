@@ -46,8 +46,8 @@ namespace HisaCat.HUE.Inputs
             internal void ClearNode() => this.Node = null;
         }
         private static SimpleLinkedList<CursorStateTicket> cursorStateTickets = new();
-        public static CursorLockMode CurrentLockMode => cursorStateTickets.Count <= 0 ? CursorLockMode.None : cursorStateTickets.Last.Value.LockMode;
-        public static bool CurrentVisible => cursorStateTickets.Count <= 0 ? true : cursorStateTickets.Last.Value.Visible;
+        public static CursorLockMode CurrentCursorLockMode => cursorStateTickets.Count <= 0 ? CursorLockMode.None : cursorStateTickets.Last.Value.LockMode;
+        public static bool CurrentCursorVisible => cursorStateTickets.Count <= 0 ? true : cursorStateTickets.Last.Value.Visible;
         public static CursorStateTicket SetCursorState(object owner, CursorLockMode lockState, bool visible, string logMessage = null)
         {
             string stackTrace = null;
@@ -84,8 +84,8 @@ namespace HisaCat.HUE.Inputs
         private static void UpdateCursorStatus()
         {
             if (Instance == null) return;
-            Cursor.lockState = CurrentLockMode;
-            Cursor.visible = CurrentVisible;
+            Cursor.lockState = CurrentCursorLockMode;
+            Cursor.visible = CurrentCursorVisible;
         }
     }
 }
