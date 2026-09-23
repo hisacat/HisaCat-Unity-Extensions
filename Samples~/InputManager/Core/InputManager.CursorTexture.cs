@@ -6,7 +6,7 @@ namespace HisaCat.HUE.Inputs
 {
     public partial class InputManager : MonoBehaviour
     {
-        public class CursorIconTicket
+        public class CursorTextureTicket
         {
 #if UNITY_EDITOR
 #pragma warning disable IDE0051
@@ -15,7 +15,7 @@ namespace HisaCat.HUE.Inputs
             {
                 if (options.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
                 {
-                    cursorIconTickets.Clear();
+                    cursorTextureTickets.Clear();
                 }
             }
 
@@ -27,7 +27,7 @@ namespace HisaCat.HUE.Inputs
             public readonly CursorMode Mode = CursorMode.Auto;
             public readonly string LogMessage = null;
             public readonly string StackTrace = null;
-            public CursorIconTicket(object owner, Texture2D texture, Vector2 hotspot, CursorMode mode, string logMessage, string stackTrace)
+            public CursorTextureTicket(object owner, Texture2D texture, Vector2 hotspot, CursorMode mode, string logMessage, string stackTrace)
             {
                 this.Owner = owner;
                 this.Texture = texture;
@@ -37,21 +37,21 @@ namespace HisaCat.HUE.Inputs
                 this.StackTrace = stackTrace;
             }
 
-            internal SimpleLinkedList<CursorIconTicket>.Node Node = null;
-            internal void SetNode(SimpleLinkedList<CursorIconTicket>.Node node)
+            internal SimpleLinkedList<CursorTextureTicket>.Node Node = null;
+            internal void SetNode(SimpleLinkedList<CursorTextureTicket>.Node node)
             {
-                if (ConditionLog.LogError(this.Node != null, $"[{nameof(CursorIconTicket)}] {nameof(SetNode)}: Node already set!"))
+                if (ConditionLog.LogError(this.Node != null, $"[{nameof(CursorTextureTicket)}] {nameof(SetNode)}: Node already set!"))
                     return;
 
                 this.Node = node;
             }
             internal void ClearNode() => this.Node = null;
         }
-        private static SimpleLinkedList<CursorIconTicket> cursorIconTickets = new();
-        public static Texture2D CurrentCursorTexture => cursorIconTickets.Count <= 0 ? null : cursorIconTickets.Last.Value.Texture;
-        public static Vector2 CurrentCursorHotspot => cursorIconTickets.Count <= 0 ? Vector2.zero : cursorIconTickets.Last.Value.Hotspot;
-        public static CursorMode CurrentCursorMode => cursorIconTickets.Count <= 0 ? CursorMode.Auto : cursorIconTickets.Last.Value.Mode;
-        public static CursorIconTicket SetCursorTexture(object owner, Texture2D texture, Vector2 hotspot, CursorMode mode, string logMessage = null)
+        private static SimpleLinkedList<CursorTextureTicket> cursorTextureTickets = new();
+        public static Texture2D CurrentCursorTexture => cursorTextureTickets.Count <= 0 ? null : cursorTextureTickets.Last.Value.Texture;
+        public static Vector2 CurrentCursorHotspot => cursorTextureTickets.Count <= 0 ? Vector2.zero : cursorTextureTickets.Last.Value.Hotspot;
+        public static CursorMode CurrentCursorMode => cursorTextureTickets.Count <= 0 ? CursorMode.Auto : cursorTextureTickets.Last.Value.Mode;
+        public static CursorTextureTicket SetCursorTexture(object owner, Texture2D texture, Vector2 hotspot, CursorMode mode, string logMessage = null)
         {
             string stackTrace = null;
 
@@ -64,22 +64,22 @@ namespace HisaCat.HUE.Inputs
                 $"StackTrace:\r\n" +
                 $"{stackTrace}");
 
-            var ticket = new CursorIconTicket(owner, texture, hotspot, mode, logMessage, stackTrace);
-            var node = cursorIconTickets.AddLast(ticket);
+            var ticket = new CursorTextureTicket(owner, texture, hotspot, mode, logMessage, stackTrace);
+            var node = cursorTextureTickets.AddLast(ticket);
             ticket.SetNode(node);
 
             UpdateCursorTexture();
 
             return ticket;
         }
-        public static void ClearCursorIcon(CursorIconTicket ticket)
+        public static void ClearCursorTexture(CursorTextureTicket ticket)
         {
-            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearCursorIcon)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\r\n" +
+            ManagedDebug.Log($"[{nameof(InputManager)}] {nameof(ClearCursorTexture)}: From {(ticket.Owner == null ? "null" : ticket.Owner.ToString())}\r\n" +
                 $"LogMessage: {ticket.LogMessage}\r\n" +
                 $"StackTrace:\r\n" +
                 $"{ticket.StackTrace}");
 
-            cursorIconTickets.Remove(ticket.Node);
+            cursorTextureTickets.Remove(ticket.Node);
             ticket.ClearNode();
 
             UpdateCursorTexture();
